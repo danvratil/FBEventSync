@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.SyncResult;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
 
