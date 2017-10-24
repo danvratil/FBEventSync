@@ -17,41 +17,49 @@
 
 package cz.dvratil.fbeventsync;
 
-import com.facebook.FacebookSdk;
+import com.facebook.AccessToken;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
 
+
+import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
+
+import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class AuthenticatorActivity extends AppCompatActivity {
+public class AuthenticatorActivity extends AccountAuthenticatorActivity
+                                   implements FacebookCallback<LoginResult> {
 
-    static public String ARG_ACCOUNT_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AccountType";
     static public String ARG_AUTH_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AuthType";
     static public String ARG_IS_ADDING_NEW_ACCOUNT = "cz.dvratil.fbeventsync.AuthenticatorActivity.IsAddingNewAccount";
 
     private CallbackManager mCallback;
+    private AccountManager mAccountManager;
+    private String mAuthType;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        Log.d("AUTH", "Activity created");
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+
+        mAccountManager = AccountManager.get(getBaseContext());
+        mAuthType = getIntent().getStringExtra(ARG_AUTH_TYPE);
 
         mCallback = CallbackManager.Factory.create();
-
         LoginManager manager = LoginManager.getInstance();
         manager.setLoginBehavior(LoginBehavior.NATIVE_WITH_FALLBACK);
-        manager.registerCallback(mCallback, new FbAuthenticationCallback(this));
+        manager.registerCallback(mCallback, this);
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_events"));
     }
 
@@ -59,5 +67,57 @@ public class AuthenticatorActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallback.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onSuccess(LoginResult loginResult) {
+        Log.d("AUTH", "Authentication success");
+
+        final AccessToken accessToken = loginResult.getAccessToken();
+        GraphRequest request = GraphRequest.newMeRequest(
+                loginResult.getAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        try {
+                            String accountName = object.getString("name");
+                            createAccount(accessToken, accountName);
+                        } catch (org.json.JSONException e) {
+                            Log.e("AUTH", "JSON error: " + e.getMessage());
+                            finish();
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "name");
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+    private void createAccount(AccessToken accessToken, String accountName) {
+        Log.d("AUTH", "Creating account " + accountName);
+        Intent intent = getIntent();
+        Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+        if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
+            mAccountManager.addAccountExplicitly(account, null, null);
+        }
+
+        mAccountManager.setAuthToken(account, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE), accessToken.getToken());
+
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
+    public void onCancel() {
+        Log.d("AUTH", "Authentication cancelled by user");
+        setResult(RESULT_CANCELED, getIntent());
+    }
+
+    @Override
+    public void onError(FacebookException error) {
+        Log.d("AUTH", "Authentication error: " + error.getMessage());
+        finish();
     }
 }

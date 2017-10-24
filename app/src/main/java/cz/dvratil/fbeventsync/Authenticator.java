@@ -34,8 +34,6 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     private final Context mContext;
 
-    static public String KEY_INTENT = "cz.dvratil.fbeventsync.Authenticator.KeyIntent";
-
     public Authenticator(Context context) {
         super(context);
         mContext = context;
@@ -46,14 +44,13 @@ public class Authenticator extends AbstractAccountAuthenticator {
                              String authTokenType, String[] requiredFeatures, Bundle options) throws NetworkErrorException {
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
-        intent.putExtra(AuthenticatorActivity.ARG_ACCOUNT_TYPE, accountType);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
         intent.putExtra(AuthenticatorActivity.ARG_AUTH_TYPE, authTokenType);
         intent.putExtra(AuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        mContext.startActivity(intent);
 
         final Bundle bundle = new Bundle();
-        bundle.putParcelable(Authenticator.KEY_INTENT, intent);
+        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
     }
 
@@ -73,23 +70,27 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account,
                                      Bundle options) throws NetworkErrorException {
+        Log.d("AUTH", "Confirm credentials");
         return null;
     }
 
     @Override
     public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account,
                                     String authTokenType, Bundle options) throws NetworkErrorException {
+        Log.d("AUTH", "Update crendentials");
         return null;
     }
 
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account,
                               String[] features) throws NetworkErrorException {
+        Log.d("AUTH", "Has features" + features);
         return null;
     }
 
     @Override
     public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
+        Log.d("AUTH", "Edit properties");
         return null;
     }
 }
