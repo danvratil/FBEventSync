@@ -17,15 +17,24 @@
 
 package cz.dvratil.fbeventsync;
 
-import android.support.v7.app.AppCompatActivity;
+import android.accounts.Account;
+import android.content.AbstractThreadedSyncAdapter;
+import android.content.ContentProviderClient;
+import android.content.Context;
+import android.content.SyncResult;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
+public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
+
+    public CalendarSyncAdapter(Context context, boolean autoInitialize) {
+        super(context,  autoInitialize);
+        Log.d("SYNC", "Sync adapter created");
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        finish();
+    public void onPerformSync(Account account, Bundle bundle, String authority, ContentProviderClient contentProviderClient, SyncResult syncResult) {
+        Log.d("SYNC", "Perform sync request for account " + account.name + ", authority:" + authority);
+
     }
 }

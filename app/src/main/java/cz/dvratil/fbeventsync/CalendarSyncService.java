@@ -17,15 +17,30 @@
 
 package cz.dvratil.fbeventsync;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.TextView;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
+public class CalendarSyncService extends Service {
+
+    private CalendarSyncAdapter mAdapter;
+    private static final Object sAdapterLock  = new Object();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        finish();
+    public void onCreate() {
+        super.onCreate();
+        Log.d("SYNC", "Sync service created");
+        synchronized (sAdapterLock) {
+            if (mAdapter == null) {
+                mAdapter = new CalendarSyncAdapter(getApplicationContext(), true);
+            }
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.d("SYNC", "Sync service binded");
+        return mAdapter.getSyncAdapterBinder();
     }
 }

@@ -31,8 +31,10 @@ import com.facebook.GraphRequest;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -100,6 +102,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
         if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
             mAccountManager.addAccountExplicitly(account, null, null);
+
+            ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1);
+            ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
         }
 
         mAccountManager.setAuthToken(account, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE), accessToken.getToken());
