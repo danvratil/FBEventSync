@@ -4,4 +4,9 @@
     <string name="facebook_app_id">1775235912769870</string>
     <string name="fb_login_protocol_scheme">fb1775235912769870</string>
     <string name="title_activity_authenticator">AuthenticatorActivity</string>
+
+    <string name="cz_dvratil_fbeventsync_not_responded_calendar">Events I have not Responded To</string>
+    <string name="cz_dvratil_fbeventsync_declined_calendar">Events I\'m not Attending</string>
+    <string name="cz_dvratil_fbeventsync_tentative_calendar">Events I May Be Attending</string>
+    <string name="cz_dvratil_fbeventsync_attending_calendar">Events I\'m Attending</string>
 </resources>

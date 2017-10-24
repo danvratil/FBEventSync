@@ -109,6 +109,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
         mAccountManager.setAuthToken(account, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE), accessToken.getToken());
 
+        AccessToken.setCurrentAccessToken(accessToken);
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         finish();

@@ -18,9 +18,12 @@
 package cz.dvratil.fbeventsync;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.facebook.FacebookSdk;
 
 public class CalendarSyncService extends Service {
 
@@ -31,6 +34,9 @@ public class CalendarSyncService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("SYNC", "Sync service created");
+
+        FacebookSdk.sdkInitialize(this);
+
         synchronized (sAdapterLock) {
             if (mAdapter == null) {
                 mAdapter = new CalendarSyncAdapter(getApplicationContext(), true);
