@@ -1,6 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            def props = new Properties()
+            props.load(new FileInputStream(rootProject.file("debug.properties")))
+            android.signingConfigs.debug.storeFile rootProject.file(props.keyStore)
+            android.signingConfigs.debug.storePassword props.keyStorePassword
+            android.signingConfigs.debug.keyAlias props.keyAlias
+            android.signingConfigs.debug.keyPassword props.keyAliasPassword
+        }
+    }
+
     compileSdkVersion 25
     buildToolsVersion "26.0.2"
     defaultConfig {
@@ -15,6 +26,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
     productFlavors {

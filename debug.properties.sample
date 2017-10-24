@@ -1,0 +1,4 @@
+keyStore=/path/to/my/android.keystore
+keyStorePassword=myKeyStorePassword
+keyAlias=myKeyAlias
+keyAliasPassword=myKeyAliasPassword
