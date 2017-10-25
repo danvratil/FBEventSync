@@ -28,6 +28,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.AccessToken;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -88,19 +90,6 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
     private FBCalendar[] FB_CALENDARS = null;
-
-    private static final String[] CALENDAR_COLUMNS = new String[] {
-            CalendarContract.Calendars._ID,                           // 0
-            CalendarContract.Calendars.ACCOUNT_NAME,                  // 1
-            CalendarContract.Calendars.NAME,                          // 2
-            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,         // 3
-            CalendarContract.Calendars.OWNER_ACCOUNT                  // 4
-    };
-    private static final int CALENDAR_ID_COLUMN = 0;
-    private static final int CALENDAR_ACCOUNT_NAME_COLUMN = 1;
-    private static final int CALENDAR_NAME_COLUMN = 2;
-    private static final int CALENDAR_DISPLAY_NAME_COLUMN = 3;
-    private static final int CALENDAR_OWNER_ACCOUNT_COLUMN = 4;
 
     public CalendarSyncAdapter(Context context, boolean autoInitialize) {
         super(context,  autoInitialize);
@@ -163,12 +152,32 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 return -1;
             }
 
-            return cur.getLong(CALENDAR_ID_COLUMN);
+            return cur.getLong(0);
         } catch (android.os.RemoteException e) {
             Log.d("SYNC", "RemoteException: " + e.getMessage());
             syncResult.stats.numIoExceptions++;
             return -1;
         }
+    }
+
+    @Nullable
+    private HashSet<Long> findLocalEvents(long calendarId, Account account, ContentProviderClient provider) {
+        Cursor cur = null;
+        try {
+            cur = provider.query(CalendarContract.Events.CONTENT_URI,
+                                 new String[]{ CalendarContract.Events.UID_2445 },
+                                 "(" + CalendarContract.Events.CALENDAR_ID + " = ?)",
+                                 new String[]{ String.valueOf(calendarId) }, null);
+        } catch (android.os.RemoteException e) {
+            Log.d("SYNC", "Failed to query events: " + e.getMessage());
+            return null;
+        }
+
+        HashSet<Long> ids = new HashSet<Long>();
+        while (cur != null && cur.moveToNext()) {
+            ids.add(Long.parseLong(cur.getString(0)));
+        }
+        return ids;
     }
 
     private long createLocalCalendar(FBCalendar calendar, Account account, ContentProviderClient provider, SyncResult syncResult) {
@@ -211,6 +220,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
+    @Nullable
     private String getNextCursor(JSONObject obj) {
         try {
             return obj.getJSONObject("paging").getJSONObject("cursor").getString("after");
@@ -219,8 +229,15 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void syncCalendarEvents(FBCalendar calendar, long calendarId, Account account,
+    private void syncCalendarEvents(FBCalendar calendar, long localCalendarId, Account account,
                                     ContentProviderClient provider, SyncResult result) {
+
+        // TODO: Query existing event IDs, so we can decide whether to insert, modify or remove
+        HashSet<Long> knownIds = findLocalEvents(localCalendarId, account, provider);
+        if (knownIds == null) {
+            // We failed to query events, so don't event attempt to sync them
+            return;
+        }
 
         String nextCursor = null;
         do {
@@ -241,7 +258,14 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 JSONObject obj = response.getJSONObject();
                 JSONArray data = obj.getJSONArray("data");
                 for (int i = 0, c = data.length(); i < c; ++i) {
-                    createLocalEvent(data.getJSONObject(i), calendar, calendarId, account, provider, result);
+                    JSONObject event = data.getJSONObject(i);
+                    long id = Long.parseLong(event.getString("id"));
+                    if (knownIds.contains(id)) {
+                        updateLocalEvent(event, calendar, localCalendarId, account, provider, result);
+                        knownIds.remove(id);
+                    } else {
+                        createLocalEvent(event, calendar, localCalendarId, account, provider, result);
+                    }
                 }
 
                 nextCursor = getNextCursor(obj);
@@ -249,8 +273,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 break;
             }
         } while (nextCursor != null);
+
+        removeLocalEvents(knownIds, localCalendarId, account, provider, result);
     }
 
+    @Nullable
     private String parseLocation(JSONObject event) {
         try {
             List<String> locationStr = new ArrayList<String>();
@@ -295,12 +322,16 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void createLocalEvent(JSONObject event, FBCalendar calendar, long calendarId, Account account,
-                                  ContentProviderClient provider, SyncResult result)
+    @Nullable
+    private ContentValues parseEvent(JSONObject event, FBCalendar calendar, long localCalendarId,
+                                     Account account)
     {
-        ContentValues values = new ContentValues();
+        ContentValues values =  new ContentValues();
         try {
-            values.put(CalendarContract.Events.CALENDAR_ID, calendarId);
+            // FIXME: Right now we are abusing UID_2445 to store the Facebook ID - maybe there's a
+            // better field for that (ideally an integer-based one)?
+            values.put(CalendarContract.Events.UID_2445, event.getString("id"));
+            values.put(CalendarContract.Events.CALENDAR_ID, localCalendarId);
             if (event.has("owner")) {
                 values.put(CalendarContract.Events.ORGANIZER, event.getJSONObject("owner").getString("name"));
             }
@@ -310,13 +341,13 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             if (event.has("description")) {
                 String description = event.getString("description");
-                description += "\n\nhttps://www.facebook.com/events/" + String.valueOf(event.getLong("id"));
+                description += "\n\nhttps://www.facebook.com/events/" + event.getString("id");
                 values.put(CalendarContract.Events.DESCRIPTION, description);
             }
             long dtstart = parseDateTime(event.getString("start_time"));
             if (dtstart < 0) {
                 Log.e("SYNC", "Failed to prase start_time: " + event.getString("start_time"));
-                return;
+                return null;
             }
             values.put(CalendarContract.Events.DTSTART, dtstart);
             values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
@@ -324,7 +355,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 long dtend = parseDateTime(event.getString("end_time"));
                 if (dtend < 0) {
                     Log.e("SYNC", "Failed to parse end_time: " + event.getString("end_time"));
-                    return;
+                    return null;
                 }
                 values.put(CalendarContract.Events.DTEND, dtend);
                 values.put(CalendarContract.Events.EVENT_END_TIMEZONE, TimeZone.getDefault().getID());
@@ -333,17 +364,72 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(CalendarContract.Events.DURATION, "P1H");
             }
             values.put(CalendarContract.Events.AVAILABILITY, calendar.availability());
-            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=" + String.valueOf(event.getLong("id")));
+            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=" + event.getString("id"));
         } catch (org.json.JSONException e) {
             Log.d("SYNC", "Event parsing error: " + e.getMessage());
+            return null;
+        }
+        return values;
+    }
+
+    private void updateLocalEvent(JSONObject event, FBCalendar calendar, long localCalendarId, Account account,
+                                  ContentProviderClient provider, SyncResult result)
+    {
+        ContentValues values = parseEvent(event, calendar, localCalendarId, account);
+        if (values == null) {
+            result.stats.numParseExceptions++;
+            return;
+        }
+
+        try {
+            String selection = "((" + CalendarContract.Events.CALENDAR_ID + " = ?) AND " +
+                                "(" + CalendarContract.Events.UID_2445 + " = ?))";
+            String selectionArgs[] = { String.valueOf(localCalendarId),
+                                       event.getString("id") };
+            provider.update(CalendarContract.Events.CONTENT_URI, values, selection, selectionArgs);
+            result.stats.numUpdates++;
+        } catch (android.os.RemoteException e) {
+            Log.e("SYNC", "Failed to update an event: " + e.getMessage());
+            result.stats.numIoExceptions++;
+        } catch (org.json.JSONException e) {
+            Log.e("SYNC", "Failed to parse event: " + e.getMessage());
+            result.stats.numParseExceptions++;
+        }
+    }
+
+    private void createLocalEvent(JSONObject event, FBCalendar calendar, long localCalendarId, Account account,
+                                  ContentProviderClient provider, SyncResult result)
+    {
+        ContentValues values = parseEvent(event, calendar, localCalendarId, account);
+        if (values == null) {
+            result.stats.numParseExceptions++;
             return;
         }
 
         try {
             provider.insert(CalendarContract.Events.CONTENT_URI, values);
+            result.stats.numInserts++;
         } catch (android.os.RemoteException e) {
             Log.e("SYNC", "Failed to create an event: " + e.getMessage());
+            result.stats.numIoExceptions++;
         }
     }
 
+    private void removeLocalEvents(HashSet<Long> eventIds, long localCalendarId, Account account,
+                                   ContentProviderClient provider, SyncResult result)
+    {
+        String selection = "((" + CalendarContract.Events.CALENDAR_ID + " = ?) AND " +
+                            "(" + CalendarContract.Events.UID_2445 + " = ?))";
+        for (Long eventId : eventIds) {
+            try {
+                String selectionArgs[] = { String.valueOf(localCalendarId),
+                                           String.valueOf(eventId) };
+                provider.delete(CalendarContract.Events.CONTENT_URI, selection, selectionArgs);
+                result.stats.numDeletes++;
+            } catch (android.os.RemoteException e) {
+                Log.e("SYNC", "Failed to delete an event: " + e.getMessage());
+                result.stats.numIoExceptions++;
+            }
+        }
+    }
 }
