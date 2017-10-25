@@ -22,11 +22,13 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -39,8 +41,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Date;
+import java.util.Set;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -78,15 +84,43 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         public int availability() {
-            if (mType == TYPE_NOT_REPLIED || mType == TYPE_DECLINED) {
-                return CalendarContract.Events.AVAILABILITY_FREE;
-            } else if (mType == TYPE_MAYBE) {
-                return CalendarContract.Events.AVAILABILITY_TENTATIVE;
-            } else if (mType == TYPE_ATTENDING) {
-                return CalendarContract.Events.AVAILABILITY_BUSY;
+            switch (mType) {
+                case TYPE_NOT_REPLIED:
+                case TYPE_DECLINED:
+                    return CalendarContract.Events.AVAILABILITY_FREE;
+                case TYPE_MAYBE:
+                    return CalendarContract.Events.AVAILABILITY_TENTATIVE;
+                case TYPE_ATTENDING:
+                    return CalendarContract.Events.AVAILABILITY_BUSY;
+                default:
+                    assert(false);
+                    return 0;
             }
-            // FIXME: Unreachable
-            return CalendarContract.Events.AVAILABILITY_FREE;
+        }
+
+        public Set<Integer> reminderIntervals() {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            Set<String> as = null;
+            switch (mType) {
+                case TYPE_NOT_REPLIED:
+                    as = prefs.getStringSet("pref_not_responded_reminders", null);
+                    break;
+                case TYPE_DECLINED:
+                    as = prefs.getStringSet("pref_declined_reminders", null);
+                    break;
+                case TYPE_MAYBE:
+                    as = prefs.getStringSet("pref_maybe_reminders", null);
+                    break;
+                case TYPE_ATTENDING:
+                    as = prefs.getStringSet("pref_attending_reminders", null);
+                    break;
+            };
+            assert(as != null);
+            Set<Integer> rv = new HashSet<Integer>();
+            for (String s : as) {
+                rv.add(Integer.parseInt(s));
+            }
+            return rv;
         }
     }
     private FBCalendar[] FB_CALENDARS = null;
@@ -116,6 +150,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         for (final FBCalendar calendar : FB_CALENDARS) {
             syncCalendar(calendar, account, provider, syncResult);
         }
+
+        Log.d("SYNC", "Sync done");
     }
 
     private void syncCalendar(FBCalendar calendar, Account account, ContentProviderClient provider,
@@ -154,28 +190,30 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
             return cur.getLong(0);
         } catch (android.os.RemoteException e) {
-            Log.d("SYNC", "RemoteException: " + e.getMessage());
+            Log.e("SYNC", "RemoteException: " + e.getMessage());
             syncResult.stats.numIoExceptions++;
             return -1;
         }
     }
 
     @Nullable
-    private HashSet<Long> findLocalEvents(long calendarId, Account account, ContentProviderClient provider) {
+    private HashMap<Long /* FBID */, Long /* DBID */> findLocalEvents(long calendarId, Account account, ContentProviderClient provider) {
         Cursor cur = null;
         try {
             cur = provider.query(CalendarContract.Events.CONTENT_URI,
-                                 new String[]{ CalendarContract.Events.UID_2445 },
+                                 new String[]{ CalendarContract.Events.UID_2445,
+                                               CalendarContract.Events._ID },
                                  "(" + CalendarContract.Events.CALENDAR_ID + " = ?)",
                                  new String[]{ String.valueOf(calendarId) }, null);
         } catch (android.os.RemoteException e) {
-            Log.d("SYNC", "Failed to query events: " + e.getMessage());
+            Log.e("SYNC", "Failed to query events: " + e.getMessage());
             return null;
         }
 
-        HashSet<Long> ids = new HashSet<Long>();
+        HashMap<Long, Long> ids = new HashMap<Long, Long>();
         while (cur != null && cur.moveToNext()) {
-            ids.add(Long.parseLong(cur.getString(0)));
+            ids.put(Long.parseLong(cur.getString(0)),
+                    cur.getLong(1));
         }
         return ids;
     }
@@ -223,7 +261,15 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     @Nullable
     private String getNextCursor(JSONObject obj) {
         try {
-            return obj.getJSONObject("paging").getJSONObject("cursor").getString("after");
+            JSONObject paging = obj.getJSONObject("paging");
+            if (paging == null) {
+                return null;
+            }
+            JSONObject cursor = paging.getJSONObject("cursor");
+            if (cursor == null) {
+                return null;
+            }
+            return cursor.getString("after");
         } catch (org.json.JSONException e) {
             return null;
         }
@@ -233,7 +279,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                                     ContentProviderClient provider, SyncResult result) {
 
         // TODO: Query existing event IDs, so we can decide whether to insert, modify or remove
-        HashSet<Long> knownIds = findLocalEvents(localCalendarId, account, provider);
+        HashMap<Long /* FBID */, Long /* DBID */> knownIds = findLocalEvents(localCalendarId, account, provider);
         if (knownIds == null) {
             // We failed to query events, so don't event attempt to sync them
             return;
@@ -256,15 +302,17 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
             try {
                 JSONObject obj = response.getJSONObject();
-                JSONArray data = obj.getJSONArray("data");
-                for (int i = 0, c = data.length(); i < c; ++i) {
-                    JSONObject event = data.getJSONObject(i);
-                    long id = Long.parseLong(event.getString("id"));
-                    if (knownIds.contains(id)) {
-                        updateLocalEvent(event, calendar, localCalendarId, account, provider, result);
-                        knownIds.remove(id);
-                    } else {
-                        createLocalEvent(event, calendar, localCalendarId, account, provider, result);
+                if (obj != null) {
+                    JSONArray data = obj.getJSONArray("data");
+                    for (int i = 0, c = data.length(); i < c; ++i) {
+                        JSONObject event = data.getJSONObject(i);
+                        long id = Long.parseLong(event.getString("id"));
+                        if (knownIds.containsKey(id)) {
+                            updateLocalEvent(event, knownIds.get(id), calendar, localCalendarId, account, provider, result);
+                            knownIds.remove(id);
+                        } else {
+                            createLocalEvent(event, calendar, localCalendarId, account, provider, result);
+                        }
                     }
                 }
 
@@ -306,7 +354,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             return StringUtils.join(locationStr, ", ");
         } catch (org.json.JSONException e) {
-            Log.d("SYNC", "Location parsins error: " + e.getMessage());
+            Log.e("SYNC", "Location parsing error: " + e.getMessage());
             return null;
         }
     }
@@ -365,15 +413,16 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             }
             values.put(CalendarContract.Events.AVAILABILITY, calendar.availability());
             values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=" + event.getString("id"));
+
         } catch (org.json.JSONException e) {
-            Log.d("SYNC", "Event parsing error: " + e.getMessage());
+            Log.e("SYNC", "Event parsing error: " + e.getMessage());
             return null;
         }
         return values;
     }
 
-    private void updateLocalEvent(JSONObject event, FBCalendar calendar, long localCalendarId, Account account,
-                                  ContentProviderClient provider, SyncResult result)
+    private void updateLocalEvent(JSONObject event, Long localEventId, FBCalendar calendar, long localCalendarId,
+                                  Account account, ContentProviderClient provider, SyncResult result)
     {
         ContentValues values = parseEvent(event, calendar, localCalendarId, account);
         if (values == null) {
@@ -387,6 +436,39 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             String selectionArgs[] = { String.valueOf(localCalendarId),
                                        event.getString("id") };
             provider.update(CalendarContract.Events.CONTENT_URI, values, selection, selectionArgs);
+            Cursor cur = provider.query(CalendarContract.Reminders.CONTENT_URI,
+                                         new String[]{ CalendarContract.Reminders._ID,
+                                                       CalendarContract.Reminders.MINUTES },
+                                         "(" + CalendarContract.Reminders.EVENT_ID + " = ?)",
+                                         new String[]{ String.valueOf(localEventId) }, null);
+            HashMap<Integer /* minutes */, Long /* reminder ID */> localReminders = new HashMap<Integer, Long>();
+            while (cur.moveToNext()) {
+                localReminders.put(cur.getInt(1), cur.getLong(0));
+            }
+
+
+            Set<Integer> localReminderSet = localReminders.keySet();
+            Set<Integer> configuredReminders = calendar.reminderIntervals();
+
+            // Silly Java can't even subtract Sets...*sigh*
+            Set<Integer> toAdd = new HashSet<Integer>();
+            toAdd.addAll(configuredReminders);
+            toAdd.removeAll(localReminderSet);
+
+            Set<Integer> toRemove = new HashSet<Integer>();
+            toRemove.addAll(localReminderSet);
+            toRemove.removeAll(configuredReminders);
+
+            if (!toAdd.isEmpty()) {
+                createReminders(localEventId, toAdd, provider);
+            }
+            if (!toRemove.isEmpty()) {
+                for (int reminder : toRemove) {
+                    removeReminder(localEventId, localReminders.get(reminder), provider);
+                }
+            }
+
+
             result.stats.numUpdates++;
         } catch (android.os.RemoteException e) {
             Log.e("SYNC", "Failed to update an event: " + e.getMessage());
@@ -394,6 +476,32 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (org.json.JSONException e) {
             Log.e("SYNC", "Failed to parse event: " + e.getMessage());
             result.stats.numParseExceptions++;
+        }
+    }
+
+    private void createReminders(long localEventId, Set<Integer> reminders, ContentProviderClient provider) {
+        ArrayList<ContentValues> reminderValues = new ArrayList<ContentValues>();
+        for (int reminder : reminders) {
+            ContentValues values = new ContentValues();
+            values.put(CalendarContract.Reminders.EVENT_ID, localEventId);
+            values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+            values.put(CalendarContract.Reminders.MINUTES, reminder);
+            reminderValues.add(values);
+        }
+        try {
+            provider.bulkInsert(CalendarContract.Reminders.CONTENT_URI, reminderValues.toArray(new ContentValues[0]));
+        } catch (android.os.RemoteException e) {
+            Log.e("SYNC", "Failed to create reminders: " + e.getMessage());
+        }
+    }
+
+    private void removeReminder(long localEventId, long reminderId, ContentProviderClient provider) {
+        try {
+            provider.delete(CalendarContract.Reminders.CONTENT_URI,
+                            "((" + CalendarContract.Reminders.EVENT_ID + " = ?) AND (" + CalendarContract.Reminders._ID + " = ?))",
+                            new String[]{String.valueOf(localEventId), String.valueOf(reminderId)});
+        } catch (android.os.RemoteException e) {
+            Log.e("SYNC", "Failed to remove a reminder: " + e.getMessage());
         }
     }
 
@@ -407,23 +515,32 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         try {
-            provider.insert(CalendarContract.Events.CONTENT_URI, values);
+            Uri uri = provider.insert(CalendarContract.Events.CONTENT_URI, values);
+            long eventId = Long.parseLong(uri.getLastPathSegment());
+            Set<Integer> reminders = calendar.reminderIntervals();
+            if (!reminders.isEmpty()) {
+                createReminders(eventId, reminders, provider);
+            }
+
             result.stats.numInserts++;
         } catch (android.os.RemoteException e) {
             Log.e("SYNC", "Failed to create an event: " + e.getMessage());
             result.stats.numIoExceptions++;
         }
+
     }
 
-    private void removeLocalEvents(HashSet<Long> eventIds, long localCalendarId, Account account,
+    private void removeLocalEvents(HashMap<Long /* FBID */, Long /* DBID */> eventIds, long localCalendarId, Account account,
                                    ContentProviderClient provider, SyncResult result)
     {
         String selection = "((" + CalendarContract.Events.CALENDAR_ID + " = ?) AND " +
-                            "(" + CalendarContract.Events.UID_2445 + " = ?))";
-        for (Long eventId : eventIds) {
+                            "(" + CalendarContract.Events._ID + " = ?))";
+        Iterator it = eventIds.entrySet().iterator();
+        while (it.hasNext()) {
             try {
+                HashMap.Entry entry = (HashMap.Entry)it.next();
                 String selectionArgs[] = { String.valueOf(localCalendarId),
-                                           String.valueOf(eventId) };
+                                           String.valueOf(entry.getValue()) };
                 provider.delete(CalendarContract.Events.CONTENT_URI, selection, selectionArgs);
                 result.stats.numDeletes++;
             } catch (android.os.RemoteException e) {
