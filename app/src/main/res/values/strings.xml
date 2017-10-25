@@ -3,10 +3,46 @@
 
     <string name="facebook_app_id">1775235912769870</string>
     <string name="fb_login_protocol_scheme">fb1775235912769870</string>
-    <string name="title_activity_authenticator">AuthenticatorActivity</string>
+    <string name="title_activity_authenticator">Authenticate with Facebook</string>
+
+    <string name="settings">Settings</string>
 
     <string name="cz_dvratil_fbeventsync_not_responded_calendar">Events I have not Responded To</string>
     <string name="cz_dvratil_fbeventsync_declined_calendar">Events I\'m not Attending</string>
     <string name="cz_dvratil_fbeventsync_tentative_calendar">Events I May Be Attending</string>
     <string name="cz_dvratil_fbeventsync_attending_calendar">Events I\'m Attending</string>
+
+    <string name="pref_general_settings">General Settings</string>
+    <string name="pref_reminder_settings">Reminder Settings</string>
+    <string name="pref_reminder_settings_summary">Configure reminder settings for individual calendars.</string>
+    <string name="pref_sync_settings">Sync Settings</string>
+    <string name="pref_sync_settings_summary">Configure how often and when to sync events.</string>
+
+    <string name="pref_sync_over_cellular">Sync over cellular data</string>
+    <string name="pref_sync_over_cellular_summary">Allow syncing when only connected via cellular data.</string>
+
+    <string name="pref_sync_frequency">Sync Frequency</string>
+    <string name="pref_sync_frequency_summary">How often should we sync your Facebook events?</string>
+    <string name="pref_sync_frequency_default">3600</string>
+
+
+    <string name="pref_attending_reminders">Attending Events reminders</string>
+    <string name="pref_attending_reminders_summary">Configure reminders for events you are attending.</string>
+
+    <string name="pref_maybe_reminders">Maybe Attending Events reminders</string>
+    <string name="pref_maybe_reminders_summary">Configure reminders for events you may be attending.</string>
+
+    <string name="pref_not_responded_reminders">Not Responded To Events reminders</string>
+    <string name="pref_not_responded_reminders_summary">Configure reminders for events you have not responded to.</string>
+
+    <string name="pref_declined_reminders">Declined Events reminders</string>
+    <string name="pref_declined_reminders_summary">Configure reminders fro events you have declined.</string>
+
+    <string name="pref_reminder_default">60</string>
+
+
+    <string name="pref_misc_settings">Miscellaneous</string>
+    <string name="report_bug">Report a bug</string>
+    <string name="contact_developer">Contact the developer</string>
+    <string name="rate">Rate the app</string>
 </resources>

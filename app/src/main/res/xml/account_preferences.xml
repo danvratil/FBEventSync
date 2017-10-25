@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_general_settings" />
+
+    <PreferenceScreen
+        android:key="pref_reminder_settings"
+        android:summary="@string/pref_reminder_settings_summary"
+        android:title="@string/pref_reminder_settings">
+        <intent
+            android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_REMINDERS"
+            android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"
+            android:targetPackage="cz.dvratil.fbeventsync" />
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="pref_sync_settings"
+        android:title="@string/pref_sync_settings_summary"
+        android:summary="@string/pref_sync_settings">
+        <intent
+            android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC"
+            android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"
+            android:targetPackage="cz.dvratil.fbeventsync" />
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="pref_misc_settings"
+        android:title="@string/pref_misc_settings">
+        <intent
+            android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC"
+            android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"
+            android:targetPackage="cz.dvratil.fbeventsync" />
+    </PreferenceScreen>
+</PreferenceScreen>
+

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
@@ -73,6 +74,16 @@
             android:name=".AuthenticatorActivity"
             android:label="@string/title_activity_authenticator"
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".SettingsActivity"
+            android:label="@string/settings">
+            <intent-filter>
+                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_REMINDERS" />
+                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC" />
+                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
