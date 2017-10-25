@@ -17,10 +17,15 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.ContentResolver;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -45,22 +50,47 @@ public class SettingsActivity extends PreferenceActivity {
             fragment = new MiscPreferenceFragment();
         }
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
+
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    public void onSharedPreferenceChanged(
+                            SharedPreferences prefs, String key) {
+                        if (key == "pref_attending_reminders"
+                            || key == "pref_maybe_reminders"
+                            || key == "pref_not_responded_reminders"
+                            || key == "pref_declined_reminders") {
+                            mShouldForceSync = true;
+                        }
+                    }
+                });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         if (mShouldForceSync) {
-            // TODO: Trigger resync
+            for (Account account : AccountManager.get(this).getAccountsByType("cz.dvratil.fbeventsync")) {
+                Bundle extras = new Bundle();
+                extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
+                extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+                ContentResolver.requestSync(account, "com.android.calendar", extras);
+            }
         }
     }
 
     public static class ReminderPreferenceFragment extends PreferenceFragment {
+
+
+
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.reminder_prefrences);
         }
+
+
     }
 
     public static class SyncPreferenceFragment extends PreferenceFragment {
