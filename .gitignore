@@ -8,3 +8,4 @@
 /captures
 .externalNativeBuild
 debug.properties
+release.properties
