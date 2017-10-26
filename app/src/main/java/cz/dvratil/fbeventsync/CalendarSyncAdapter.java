@@ -18,15 +18,19 @@
 package cz.dvratil.fbeventsync;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
@@ -41,7 +45,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -140,6 +143,35 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             new FBCalendar("fb_attending_calendar", FBCalendar.TYPE_ATTENDING,
                            res.getString(R.string.cz_dvratil_fbeventsync_attending_calendar))
         };
+    }
+
+    static public void updateSync(Context context) {
+        String accountType = context.getString(R.string.account_type);
+
+        String syncFreq = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_sync_frequency", null);
+        int syncInterval = Integer.parseInt(syncFreq);
+        assert(syncFreq != null);
+
+        for (Account account : AccountManager.get(context).getAccountsByType(accountType)) {
+            Bundle extras = new Bundle();
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            ContentResolver.requestSync(account, context.getString(R.string.content_authority), extras);
+
+            // Schedule periodic sync based on current configuration
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                // we can enable inexact timers in our periodic sync
+                SyncRequest request = new SyncRequest.Builder()
+                        .syncPeriodic(syncInterval, syncInterval / 3)
+                        .setSyncAdapter(account, context.getString(R.string.content_authority))
+                        .setExtras(new Bundle()).build();
+                ContentResolver.requestSync(request);
+                Log.d("MAIN", "Scheduled periodic sync for account " + account.name + " using requestSync");
+            } else {
+                ContentResolver.addPeriodicSync(account, context.getString(R.string.content_authority), new Bundle(), syncInterval);
+                Log.d("MAIN", "Scheduled periodic sync for account " + account.name + " using addPeriodicSync");
+            }
+        }
     }
 
     @Override

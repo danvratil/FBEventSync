@@ -112,6 +112,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         AccessToken.setCurrentAccessToken(accessToken);
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
+
+        CalendarSyncAdapter.updateSync(this);
+
         finish();
     }
 

@@ -28,6 +28,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Window;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -60,7 +61,8 @@ public class SettingsActivity extends PreferenceActivity {
                         if (key == "pref_attending_reminders"
                             || key == "pref_maybe_reminders"
                             || key == "pref_not_responded_reminders"
-                            || key == "pref_declined_reminders") {
+                            || key == "pref_declined_reminders"
+                            || key == "pref_sync_frequency") {
                             mShouldForceSync = true;
                         }
                     }
@@ -71,12 +73,7 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onPause() {
         super.onPause();
         if (mShouldForceSync) {
-            for (Account account : AccountManager.get(this).getAccountsByType("cz.dvratil.fbeventsync")) {
-                Bundle extras = new Bundle();
-                extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
-                extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-                ContentResolver.requestSync(account, "com.android.calendar", extras);
-            }
+            CalendarSyncAdapter.updateSync(this);
         }
     }
 
