@@ -17,9 +17,10 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.content.Intent;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,5 +28,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         finish();
+
+        Bundle extras = new Bundle();
+        extras.putString(Settings.EXTRA_AUTHORITIES, getString(R.string.content_authority));
+        extras.putString(Settings.EXTRA_ACCOUNT_TYPES, getString(R.string.account_type));
+        Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+        intent.putExtras(extras);
+        startActivity(intent);
     }
 }
