@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">FBEventSync</string>
+    <string name="app_name">FB Event Sync</string>
+    <string name="full_app_name">Event Sync for Facebook</string>
+    <string name="account_type">cz.dvratil.fbeventsync</string>
+    <string name="content_authority">com.android.calendar</string>
 
     <string name="facebook_app_id">1775235912769870</string>
     <string name="fb_login_protocol_scheme">fb1775235912769870</string>

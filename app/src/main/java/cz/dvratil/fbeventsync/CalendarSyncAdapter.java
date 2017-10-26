@@ -208,7 +208,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 "(" + CalendarContract.Calendars.NAME + "= ?))";
 
         String[] selectionArgs = new String[] {
-                account.name, getContext().getResources().getString(R.string.app_name),
+                account.name, getContext().getResources().getString(R.string.account_type),
                 account.name, calendar.id()
         };
 
@@ -252,10 +252,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private long createLocalCalendar(FBCalendar calendar, Account account, ContentProviderClient provider, SyncResult syncResult) {
 
-        String accountType = getContext().getResources().getString(R.string.app_name);
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name);
-        values.put(CalendarContract.Calendars.ACCOUNT_TYPE, accountType);
+        values.put(CalendarContract.Calendars.ACCOUNT_TYPE, getContext().getString(R.string.account_type));
         values.put(CalendarContract.Calendars.NAME, calendar.id());
         values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, calendar.name());
         values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0x3b5998 /* Facebook blue */);

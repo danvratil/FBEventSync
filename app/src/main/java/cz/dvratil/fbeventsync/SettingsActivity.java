@@ -21,6 +21,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.SharedPreferences;
+import android.content.SyncRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -41,6 +43,7 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         PreferenceFragment fragment = null;
         String action = getIntent().getAction();
         if (action == CONFIGURE_REMINDERS_ACTION) {
@@ -51,7 +54,6 @@ public class SettingsActivity extends PreferenceActivity {
             fragment = new MiscPreferenceFragment();
         }
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
-
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(
