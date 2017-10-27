@@ -350,9 +350,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                             createLocalEvent(event, calendar, localCalendarId, account, provider, result);
                         }
                     }
-                }
 
-                nextCursor = getNextCursor(obj);
+                    nextCursor = getNextCursor(obj);
+                }
             } catch (org.json.JSONException e) {
                 break;
             }
