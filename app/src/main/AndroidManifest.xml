@@ -3,8 +3,8 @@
     package="cz.dvratil.fbeventsync">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
@@ -36,7 +36,6 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
         <service
             android:name=".CalendarSyncService"
             android:exported="true"
@@ -44,6 +43,7 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
@@ -57,7 +57,6 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
-
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
@@ -70,13 +69,12 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".AuthenticatorActivity"
             android:label="@string/title_activity_authenticator"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".SettingsActivity"
+        <activity
+            android:name=".SettingsActivity"
             android:label="@string/settings"
             android:theme="@style/SettingsTheme">
             <intent-filter>
@@ -85,7 +83,10 @@
                 <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".PermissionRequestActivity"
+            android:label="@string/title_activity_permission_request"
+            android:theme="@style/TranslucentTheme"></activity>
     </application>
 
 </manifest>

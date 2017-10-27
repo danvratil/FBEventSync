@@ -28,13 +28,18 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 
 
+import android.Manifest;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -44,8 +49,10 @@ import java.util.Arrays;
 public class AuthenticatorActivity extends AccountAuthenticatorActivity
                                    implements FacebookCallback<LoginResult> {
 
-    static public String ARG_AUTH_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AuthType";
-    static public String ARG_IS_ADDING_NEW_ACCOUNT = "cz.dvratil.fbeventsync.AuthenticatorActivity.IsAddingNewAccount";
+    public static String ARG_AUTH_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AuthType";
+    public static String ARG_IS_ADDING_NEW_ACCOUNT = "cz.dvratil.fbeventsync.AuthenticatorActivity.IsAddingNewAccount";
+
+    private static final int PERMISSION_REQUEST_INTERNET = 1;
 
     private CallbackManager mCallback;
     private AccountManager mAccountManager;
@@ -55,6 +62,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
+
         mAccountManager = AccountManager.get(getBaseContext());
         mAuthType = getIntent().getStringExtra(ARG_AUTH_TYPE);
 
@@ -62,7 +70,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         LoginManager manager = LoginManager.getInstance();
         manager.setLoginBehavior(LoginBehavior.NATIVE_WITH_FALLBACK);
         manager.registerCallback(mCallback, this);
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_events"));
+
+        // Callback to permission check will trigger authentication
+        checkInternetPermission();
     }
 
     @Override
@@ -128,5 +138,30 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     public void onError(FacebookException error) {
         Log.d("AUTH", "Authentication error: " + error.getMessage());
         finish();
+    }
+
+    private void checkInternetPermission()
+    {
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{ Manifest.permission.INTERNET },
+                    PERMISSION_REQUEST_INTERNET);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_REQUEST_INTERNET:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_events"));
+                } else {
+                    // TODO: What to do when we don't get the permissions?
+                    finish();
+                }
+                break;
+        }
     }
 }

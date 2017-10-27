@@ -48,4 +48,5 @@
     <string name="report_bug">Report a bug</string>
     <string name="contact_developer">Contact the developer</string>
     <string name="rate">Rate the app</string>
+    <string name="title_activity_permission_request">PermissionRequestActivity</string>
 </resources>

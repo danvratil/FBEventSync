@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        finish();
 
         Bundle extras = new Bundle();
         extras.putString(Settings.EXTRA_AUTHORITIES, getString(R.string.content_authority));
@@ -35,5 +34,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
         intent.putExtras(extras);
         startActivity(intent);
+
+        finish();
     }
 }

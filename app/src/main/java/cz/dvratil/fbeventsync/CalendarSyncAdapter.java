@@ -17,6 +17,7 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
@@ -24,9 +25,11 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -35,6 +38,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.facebook.AccessToken;
@@ -135,6 +139,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         super(context,  autoInitialize);
         Log.d("SYNC", "Sync adapter created");
 
+        checkPermissions();
+
         Resources res = context.getResources();
         FB_CALENDARS = new FBCalendar[] {
             new FBCalendar("fb_not_responded",      FBCalendar.TYPE_NOT_REPLIED,
@@ -148,8 +154,19 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         };
     }
 
+    static public void requestSync(Context context) {
+        String accountType = context.getResources().getString(R.string.account_type);
+        for (Account account : AccountManager.get(context).getAccountsByType(accountType)){
+            Bundle extras = new Bundle();
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            ContentResolver.requestSync(account, context.getString(R.string.content_authority), extras);
+            Log.d("SYNC", "Explicitly requested sync for account " + account.name);
+        }
+    }
+
     static public void updateSync(Context context) {
-        String accountType = context.getString(R.string.account_type);
+        String accountType = context.getResources().getString(R.string.account_type);
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String syncFreq = pref.getString("pref_sync_frequency",
@@ -183,6 +200,10 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle bundle, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
         Log.d("SYNC", "Perform sync request for account " + account.name + ", authority:" + authority);
+
+        if (!checkPermissions()) {
+            return;
+        }
 
         for (final FBCalendar calendar : FB_CALENDARS) {
             syncCalendar(calendar, account, provider, syncResult);
@@ -584,5 +605,33 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 result.stats.numIoExceptions++;
             }
         }
+    }
+
+    private boolean checkPermissions()
+    {
+        ArrayList<String> missingPermissions = new ArrayList<String>();
+        int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            missingPermissions.add(Manifest.permission.READ_CALENDAR);
+            missingPermissions.add(Manifest.permission.WRITE_CALENDAR);
+        }
+        permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_SYNC_SETTINGS);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            missingPermissions.add(Manifest.permission.ACCOUNT_MANAGER);
+            missingPermissions.add(Manifest.permission.READ_SYNC_SETTINGS);
+            missingPermissions.add(Manifest.permission.WRITE_SYNC_SETTINGS);
+        }
+
+        Log.d("SYNC", "Missing permissions: " + missingPermissions.toString());
+        if (!missingPermissions.isEmpty()) {
+            Bundle extras = new Bundle();
+            extras.putStringArrayList(PermissionRequestActivity.MISSING_PERMISSIONS, missingPermissions);
+
+            Intent intent = new Intent(getContext(), PermissionRequestActivity.class);
+            intent.putExtras(extras);
+            getContext().startActivity(intent);
+            return false;
+        }
+        return true;
     }
 }
