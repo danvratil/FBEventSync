@@ -22,6 +22,6 @@
         android:title="@string/rate">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="http://play.google.com/store/apps/details?id=cz.dvratil.FBEventSync" />
+            android:data="https://play.google.com/store/apps/details?id=cz.dvratil.fbeventsync" />
     </Preference>
 </PreferenceScreen>
