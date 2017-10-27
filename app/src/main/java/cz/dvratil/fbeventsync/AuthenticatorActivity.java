@@ -81,6 +81,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         mCallback.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void startLogin() {
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_events"));
+    }
+
     @Override
     public void onSuccess(LoginResult loginResult) {
         Log.d("AUTH", "Authentication success");
@@ -147,6 +151,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             ActivityCompat.requestPermissions(this,
                     new String[]{ Manifest.permission.INTERNET },
                     PERMISSION_REQUEST_INTERNET);
+        } else {
+            startLogin();
         }
     }
 
@@ -156,7 +162,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         switch (requestCode) {
             case PERMISSION_REQUEST_INTERNET:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_events"));
+                    startLogin();
                 } else {
                     // TODO: What to do when we don't get the permissions?
                     finish();
