@@ -103,19 +103,22 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
         public Set<Integer> reminderIntervals() {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            Set<String> defaultReminder = new HashSet<String>();
+            defaultReminder.add(getContext().getResources().getString(R.string.pref_reminder_default));
+
             Set<String> as = null;
             switch (mType) {
                 case TYPE_NOT_REPLIED:
-                    as = prefs.getStringSet("pref_not_responded_reminders", null);
+                    as = prefs.getStringSet("pref_not_responded_reminders", defaultReminder);
                     break;
                 case TYPE_DECLINED:
-                    as = prefs.getStringSet("pref_declined_reminders", null);
+                    as = prefs.getStringSet("pref_declined_reminders", defaultReminder);
                     break;
                 case TYPE_MAYBE:
-                    as = prefs.getStringSet("pref_maybe_reminders", null);
+                    as = prefs.getStringSet("pref_maybe_reminders", defaultReminder);
                     break;
                 case TYPE_ATTENDING:
-                    as = prefs.getStringSet("pref_attending_reminders", null);
+                    as = prefs.getStringSet("pref_attending_reminders", defaultReminder);
                     break;
             };
             assert(as != null);
