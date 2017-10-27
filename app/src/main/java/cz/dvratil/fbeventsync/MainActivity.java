@@ -21,20 +21,21 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        Bundle extras = new Bundle();
-        extras.putString(Settings.EXTRA_AUTHORITIES, getString(R.string.content_authority));
-        extras.putString(Settings.EXTRA_ACCOUNT_TYPES, getString(R.string.account_type));
-        Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-        intent.putExtras(extras);
+    }
+
+    public void onAddAccountClicked(View view) {
+        Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
+        intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[]{ getString(R.string.account_type) });
         startActivity(intent);
-
         finish();
     }
 }
