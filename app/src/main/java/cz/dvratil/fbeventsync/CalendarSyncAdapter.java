@@ -148,10 +148,12 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     static public void updateSync(Context context) {
         String accountType = context.getString(R.string.account_type);
 
-        String syncFreq = PreferenceManager.getDefaultSharedPreferences(context).getString("pref_sync_frequency", null);
-        int syncInterval = Integer.parseInt(syncFreq);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        String syncFreq = pref.getString("pref_sync_frequency",
+                                         context.getResources().getString(R.string.pref_sync_frequency_default));
         assert(syncFreq != null);
-
+        int syncInterval = Integer.parseInt(syncFreq);
+        Log.d("MAIN", "Sync interval: " + syncFreq);
         for (Account account : AccountManager.get(context).getAccountsByType(accountType)) {
             Bundle extras = new Bundle();
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
