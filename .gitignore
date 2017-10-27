@@ -10,3 +10,4 @@
 debug.properties
 release.properties
 *.apk
+.idea
