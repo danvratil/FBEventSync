@@ -11,3 +11,5 @@ debug.properties
 release.properties
 *.apk
 .idea
+app/release
+app/build
