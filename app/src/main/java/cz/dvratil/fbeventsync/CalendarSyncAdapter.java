@@ -628,6 +628,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             extras.putStringArrayList(PermissionRequestActivity.MISSING_PERMISSIONS, missingPermissions);
 
             Intent intent = new Intent(getContext(), PermissionRequestActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtras(extras);
             getContext().startActivity(intent);
             return false;
