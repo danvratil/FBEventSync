@@ -549,6 +549,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             provider.bulkInsert(CalendarContract.Reminders.CONTENT_URI, reminderValues.toArray(new ContentValues[0]));
         } catch (android.os.RemoteException e) {
             Log.e("SYNC", "Failed to create reminders: " + e.getMessage());
+        } catch (android.database.sqlite.SQLiteException e) {
+            Log.e("SYNC", "Failed to create reminders: " + e.getMessage());
         }
     }
 
@@ -558,6 +560,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                             "((" + CalendarContract.Reminders.EVENT_ID + " = ?) AND (" + CalendarContract.Reminders._ID + " = ?))",
                             new String[]{String.valueOf(localEventId), String.valueOf(reminderId)});
         } catch (android.os.RemoteException e) {
+            Log.e("SYNC", "Failed to remove a reminder: " + e.getMessage());
+        } catch (android.database.sqlite.SQLiteException e) {
             Log.e("SYNC", "Failed to remove a reminder: " + e.getMessage());
         }
     }
@@ -583,6 +587,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (android.os.RemoteException e) {
             Log.e("SYNC", "Failed to create an event: " + e.getMessage());
             result.stats.numIoExceptions++;
+        } catch (android.database.sqlite.SQLiteException e) {
+            Log.e("SYNC", "Failed to create an event: " + e.getMessage());
+            result.stats.numIoExceptions++;
         }
 
     }
@@ -601,6 +608,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 provider.delete(CalendarContract.Events.CONTENT_URI, selection, selectionArgs);
                 result.stats.numDeletes++;
             } catch (android.os.RemoteException e) {
+                Log.e("SYNC", "Failed to delete an event: " + e.getMessage());
+                result.stats.numIoExceptions++;
+            } catch (android.database.sqlite.SQLiteException e) {
                 Log.e("SYNC", "Failed to delete an event: " + e.getMessage());
                 result.stats.numIoExceptions++;
             }
