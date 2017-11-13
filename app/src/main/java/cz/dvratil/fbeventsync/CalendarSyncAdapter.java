@@ -62,77 +62,6 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
-    private class FBCalendar {
-        private String mId;
-        private String mType;
-        private String mName;
-
-        public static final String TYPE_NOT_REPLIED = "not_replied";
-        public static final String TYPE_DECLINED = "declined";
-        public static final String TYPE_MAYBE = "maybe";
-        public static final String TYPE_ATTENDING = "attending";
-
-        public FBCalendar(String id, String type, String name) {
-            mId = id;
-            mType = type;
-            mName = name;
-        }
-
-        public String id() {
-            return mId;
-        }
-
-        public String type() {
-            return mType;
-        }
-
-        public String name() {
-            return mName;
-        }
-
-        public int availability() {
-            switch (mType) {
-                case TYPE_NOT_REPLIED:
-                case TYPE_DECLINED:
-                    return CalendarContract.Events.AVAILABILITY_FREE;
-                case TYPE_MAYBE:
-                    return CalendarContract.Events.AVAILABILITY_TENTATIVE;
-                case TYPE_ATTENDING:
-                    return CalendarContract.Events.AVAILABILITY_BUSY;
-                default:
-                    assert(false);
-                    return 0;
-            }
-        }
-
-        public Set<Integer> reminderIntervals() {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            Set<String> defaultReminder = new HashSet<String>();
-            defaultReminder.add(getContext().getResources().getString(R.string.pref_reminder_default));
-
-            Set<String> as = null;
-            switch (mType) {
-                case TYPE_NOT_REPLIED:
-                    as = prefs.getStringSet("pref_not_responded_reminders", defaultReminder);
-                    break;
-                case TYPE_DECLINED:
-                    as = prefs.getStringSet("pref_declined_reminders", defaultReminder);
-                    break;
-                case TYPE_MAYBE:
-                    as = prefs.getStringSet("pref_maybe_reminders", defaultReminder);
-                    break;
-                case TYPE_ATTENDING:
-                    as = prefs.getStringSet("pref_attending_reminders", defaultReminder);
-                    break;
-            };
-            assert(as != null);
-            Set<Integer> rv = new HashSet<Integer>();
-            for (String s : as) {
-                rv.add(Integer.parseInt(s));
-            }
-            return rv;
-        }
-    }
     private FBCalendar[] FB_CALENDARS = null;
 
     public CalendarSyncAdapter(Context context, boolean autoInitialize) {
@@ -505,7 +434,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
             Set<Integer> localReminderSet = localReminders.keySet();
-            Set<Integer> configuredReminders = calendar.reminderIntervals();
+            Set<Integer> configuredReminders = calendar.reminderIntervals(getContext());
 
             // Silly Java can't even subtract Sets...*sigh*
             Set<Integer> toAdd = new HashSet<Integer>();
@@ -578,7 +507,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             Uri uri = provider.insert(CalendarContract.Events.CONTENT_URI, values);
             long eventId = Long.parseLong(uri.getLastPathSegment());
-            Set<Integer> reminders = calendar.reminderIntervals();
+            Set<Integer> reminders = calendar.reminderIntervals(getContext());
             if (!reminders.isEmpty()) {
                 createReminders(eventId, reminders, provider);
             }
