@@ -21,6 +21,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,6 +33,9 @@ import java.util.Date;
 public class Logger {
 
     public static String LOG_FILE = "logs/sync.log";
+
+    private static int MAX_LOG_SIZE  = 512 * 1024; // 512KB
+    private static int TRIM_LOG_SIZE = 256 * 1024; // 256KB
 
     private static WeakReference<Logger> sInstance = null;
 
@@ -80,11 +84,11 @@ public class Logger {
     }
 
     public void clearLogs() {
-        synchronized (mLogWriter) {
-            if (mLogWriter == null) {
-                return;
-            }
+        if (mLogWriter == null) {
+            return;
+        }
 
+        synchronized (mLogWriter) {
             try {
                 mLogWriter.close();
 
@@ -95,6 +99,35 @@ public class Logger {
                 mLogWriter = new FileWriter(mLogFile, true);
             } catch (IOException e) {
                 Log.e("LOG","IOException when truncating log file: " + e.getMessage());
+            }
+        }
+    }
+
+    private void truncateLogs() {
+        if (mLogWriter == null) {
+            return;
+        }
+
+        synchronized (mLogWriter) {
+            try {
+                mLogWriter.close();
+
+                File tmpFile = new File(mContext.getFilesDir(), LOG_FILE + ".old");
+                if (tmpFile.exists()) {
+                    tmpFile.delete();
+                }
+                mLogFile.renameTo(tmpFile);
+                mLogFile = new File(mContext.getFilesDir(), LOG_FILE);
+                FileChannel inChan = new FileInputStream(tmpFile).getChannel();
+                FileChannel outChan = new FileOutputStream(mLogFile, false).getChannel();
+                inChan.transferTo(Math.max(0, tmpFile.length() - TRIM_LOG_SIZE), TRIM_LOG_SIZE, outChan);
+                inChan.close();
+                tmpFile.delete();
+                outChan.close();
+
+                mLogWriter = new FileWriter(mLogFile, true);
+            } catch (IOException e) {
+                Log.e("LOG","IOException when shrinking log file:" + e.getMessage());
             }
         }
     }
@@ -147,6 +180,10 @@ public class Logger {
                 } catch (IOException e) {
                     Log.e("LOG", "Log IOException: " + e.getMessage());
                 }
+            }
+
+            if (mLogFile.length() >= MAX_LOG_SIZE) {
+                truncateLogs();
             }
         }
 
