@@ -136,6 +136,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     public void onCancel() {
         Log.d("AUTH", "Authentication cancelled by user");
         setResult(RESULT_CANCELED, getIntent());
+        finish();
     }
 
     @Override
