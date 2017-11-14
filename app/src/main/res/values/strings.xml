@@ -5,6 +5,15 @@
     <string name="content_authority">com.android.calendar</string>
 
     <string name="add_account_btn">Add Account</string>
+    <string name="show_logs">Show Logs</string>
+    <string name="title_activity_permission_request">Permissions Request</string>
+    <string name="title_activity_log_view">Log View</string>
+
+    <string name="action_clear_log">Clear Log</string>
+    <string name="action_send_log_to_dev">Send to Developer</string>
+    <string name="intent_send_email">Send Email...</string>
+
+    <string name="toast_error_sending_log">Failed to send logs: cannot read the log file</string>
 
     <string name="facebook_app_id">1775235912769870</string>
     <string name="fb_login_protocol_scheme">fb1775235912769870</string>
@@ -50,5 +59,6 @@
     <string name="report_bug">Report a bug</string>
     <string name="contact_developer">Contact the developer</string>
     <string name="rate">Rate the app</string>
-    <string name="title_activity_permission_request">PermissionRequestActivity</string>
+
+
 </resources>

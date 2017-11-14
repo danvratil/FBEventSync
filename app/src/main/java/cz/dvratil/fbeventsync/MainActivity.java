@@ -38,4 +38,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    public void onShowLogsClicked(View view) {
+        Intent intent = new Intent(this, LogViewActivity.class);
+        startActivity(intent);
+    }
 }

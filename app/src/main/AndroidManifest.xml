@@ -83,10 +83,31 @@
                 <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".PermissionRequestActivity"
             android:label="@string/title_activity_permission_request"
-            android:theme="@style/TranslucentTheme"></activity>
-    </application>
+            android:theme="@style/TranslucentTheme" />
 
+        <activity
+            android:name=".LogViewActivity"
+            android:label="@string/title_activity_log_view"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName="cz.dvratil.fbeventsync.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cz.dvratil.fbeventsync.MainActivity" />
+        </activity>
+
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="cz.dvratil.fbeventsync.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
 </manifest>
