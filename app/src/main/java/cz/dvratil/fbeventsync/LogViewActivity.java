@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +21,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Locale;
 
-import cz.dvratil.fbeventsync.BuildConfig;
-
 public class LogViewActivity extends AppCompatActivity {
+
+    TextView mTextView = null;
+    ScrollView mScrollView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,9 @@ public class LogViewActivity extends AppCompatActivity {
 
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
+
+        mTextView = (TextView) findViewById(R.id.log_text_view);
+        mScrollView = (ScrollView) findViewById(R.id.log_scroll_view);
     }
 
     @Override
@@ -92,7 +98,6 @@ public class LogViewActivity extends AppCompatActivity {
     }
 
     private void loadLogFile() {
-        TextView textView = (TextView) findViewById(R.id.logtextview);
         File file = new File(getFilesDir(), Logger.LOG_FILE);
         StringBuilder builder = new StringBuilder();
         try {
@@ -110,6 +115,12 @@ public class LogViewActivity extends AppCompatActivity {
             Log.e("LOGVIEW", "Exception when opening log: " + e.getMessage());
         }
 
-        textView.setText(builder.toString());
+        mTextView.setText(builder.toString());
+        mScrollView.post(new Runnable() {
+            public void run()
+            {
+                mScrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 }
