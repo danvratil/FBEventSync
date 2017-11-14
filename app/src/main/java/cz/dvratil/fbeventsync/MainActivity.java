@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
         intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[]{ getString(R.string.account_type) });
         startActivity(intent);
-        finish();
     }
 
     public void onShowLogsClicked(View view) {
