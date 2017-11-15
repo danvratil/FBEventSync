@@ -14,6 +14,9 @@
     <string name="intent_send_email">Send Email...</string>
 
     <string name="toast_error_sending_log">Failed to send logs: cannot read the log file</string>
+    <string name="toast_account_creation_error">Error during authentication</string>
+    <string name="toast_account_creation_cancelled">Authentication canceled</string>
+    <string name="toast_account_creation_success">Account successfully added</string>
 
     <string name="facebook_app_id">1775235912769870</string>
     <string name="fb_login_protocol_scheme">fb1775235912769870</string>
