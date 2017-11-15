@@ -67,7 +67,7 @@ public class Logger {
             return lvlChar;
         }
     }
-    private LogLevel mMinLogCatLvl = LogLevel.DEBUG;
+    private LogLevel mMinLogCatLvl = LogLevel.INFO;
 
     protected Logger() {
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
