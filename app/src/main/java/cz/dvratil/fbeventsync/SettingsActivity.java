@@ -17,20 +17,12 @@
 
 package cz.dvratil.fbeventsync;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.SharedPreferences;
-import android.content.SyncRequest;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.util.Log;
-import android.view.Window;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -80,16 +72,11 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     public static class ReminderPreferenceFragment extends PreferenceFragment {
-
-
-
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.reminder_prefrences);
         }
-
-
     }
 
     public static class SyncPreferenceFragment extends PreferenceFragment {

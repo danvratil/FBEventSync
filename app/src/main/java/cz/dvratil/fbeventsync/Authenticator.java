@@ -17,8 +17,6 @@
 
 package cz.dvratil.fbeventsync;
 
-import java.util.Arrays;
-
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountManager;
