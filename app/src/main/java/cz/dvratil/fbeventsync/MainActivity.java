@@ -17,6 +17,8 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+
+        checkAccounts();
     }
 
     public void onAddAccountClicked(View view) {
@@ -40,8 +44,35 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void onConfigureAccountClicked(View view) {
+        Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
+        Account accounts[] = AccountManager.get(this).getAccountsByType(getString(R.string.account_type));
+        if (accounts.length > 0) {
+            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{ getString(R.string.content_authority) });
+            startActivity(intent);
+        }
+    }
+
     public void onShowLogsClicked(View view) {
         Intent intent = new Intent(this, LogViewActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAccounts();
+    }
+
+    private void checkAccounts() {
+        Account accounts[] = AccountManager.get(this).getAccountsByType(getString(R.string.account_type));
+        if (accounts.length == 0) {
+            findViewById(R.id.account_details_btn).setVisibility(View.GONE);
+            findViewById(R.id.add_account_btn).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.account_details_btn).setVisibility(View.VISIBLE);
+            findViewById(R.id.add_account_btn).setVisibility(View.GONE);
+        }
+    }
+
 }
