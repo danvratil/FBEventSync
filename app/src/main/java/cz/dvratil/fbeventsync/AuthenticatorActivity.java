@@ -130,7 +130,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
         CalendarSyncAdapter.updateSync(this);
 
-        Toast.makeText(this, R.string.toast_account_creation_success, Toast.LENGTH_SHORT);
+        Toast.makeText(this, R.string.toast_account_creation_success, Toast.LENGTH_SHORT)
+                .show();
         finish();
     }
 
@@ -138,14 +139,16 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     public void onCancel() {
         Log.d("AUTH", "Authentication cancelled by user");
         setResult(RESULT_CANCELED, getIntent());
-        Toast.makeText(this, R.string.toast_account_creation_cancelled, Toast.LENGTH_SHORT);
+        Toast.makeText(this, R.string.toast_account_creation_cancelled, Toast.LENGTH_SHORT)
+                .show();
         finish();
     }
 
     @Override
     public void onError(FacebookException error) {
         Log.d("AUTH", "Authentication error: " + error.getMessage());
-        Toast.makeText(this, R.string.toast_account_creation_error, Toast.LENGTH_SHORT);
+        Toast.makeText(this, R.string.toast_account_creation_error, Toast.LENGTH_SHORT)
+                .show();
         finish();
     }
 
