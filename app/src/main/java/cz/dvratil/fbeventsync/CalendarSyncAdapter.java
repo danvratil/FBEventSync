@@ -152,7 +152,6 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void syncCalendar(FBCalendar calendar, Account account, ContentProviderClient provider,
                               SyncResult syncResult) {
-
         logger.debug("SYNC.CAL", "=== START: Calendar sync for \"%s\"", calendar.id());
 
         long calendarId = findLocalCalendar(calendar, account, provider, syncResult);
@@ -205,7 +204,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     @Nullable
-    private HashMap<Long /* FBID */, Long /* DBID */> findLocalEvents(long calendarId, Account account, ContentProviderClient provider) {
+    private HashMap<Long /* FBID */, Long /* DBID */> findLocalEvents(long calendarId, Account account,
+                                                                      ContentProviderClient provider) {
         Cursor cur = null;
         try {
             cur = provider.query(CalendarContract.Events.CONTENT_URI,
@@ -229,8 +229,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         return ids;
     }
 
-    private long createLocalCalendar(FBCalendar calendar, Account account, ContentProviderClient provider, SyncResult syncResult) {
-
+    private long createLocalCalendar(FBCalendar calendar, Account account, ContentProviderClient provider,
+                                     SyncResult syncResult) {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name);
         values.put(CalendarContract.Calendars.ACCOUNT_TYPE, getContext().getString(R.string.account_type));
@@ -326,7 +326,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                         JSONObject event = data.getJSONObject(i);
                         long id = Long.parseLong(event.getString("id"));
                         if (knownIds.containsKey(id)) {
-                            updateLocalEvent(event, knownIds.get(id), calendar, localCalendarId, account, provider, result);
+                            updateLocalEvent(event, knownIds.get(id), calendar, localCalendarId,
+                                    account, provider, result);
                             knownIds.remove(id);
                         } else {
                             createLocalEvent(event, calendar, localCalendarId, account, provider, result);
@@ -380,8 +381,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private long parseDateTime(String dt)
-    {
+    private long parseDateTime(String dt) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
         try {
             Date date = format.parse(dt);
@@ -393,8 +393,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Nullable
     private ContentValues parseEvent(JSONObject event, FBCalendar calendar, long localCalendarId,
-                                     Account account)
-    {
+                                     Account account) {
         ContentValues values =  new ContentValues();
         try {
             // FIXME: Right now we are abusing UID_2445 to store the Facebook ID - maybe there's a
@@ -442,9 +441,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         return values;
     }
 
-    private void updateLocalEvent(JSONObject event, Long localEventId, FBCalendar calendar, long localCalendarId,
-                                  Account account, ContentProviderClient provider, SyncResult result)
-    {
+    private void updateLocalEvent(JSONObject event, Long localEventId, FBCalendar calendar,
+                                  long localCalendarId, Account account, ContentProviderClient provider,
+                                  SyncResult result) {
         logger.debug("SYNC.EVENT","====== START Update local event %d", localEventId);
         ContentValues values = parseEvent(event, calendar, localCalendarId, account);
         if (values == null) {
@@ -542,8 +541,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void createLocalEvent(JSONObject event, FBCalendar calendar, long localCalendarId, Account account,
-                                  ContentProviderClient provider, SyncResult result)
-    {
+                                  ContentProviderClient provider, SyncResult result) {
         logger.debug("SYNC.EVENT","====== START Creating new local event");
         ContentValues values = parseEvent(event, calendar, localCalendarId, account);
         if (values == null) {
@@ -572,9 +570,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
-    private void removeLocalEvents(HashMap<Long /* FBID */, Long /* DBID */> eventIds, long localCalendarId, Account account,
-                                   ContentProviderClient provider, SyncResult result)
-    {
+    private void removeLocalEvents(HashMap<Long /* FBID */, Long /* DBID */> eventIds,
+                                   long localCalendarId, Account account,
+                                   ContentProviderClient provider, SyncResult result) {
         String selection = "((" + CalendarContract.Events.CALENDAR_ID + " = ?) AND " +
                             "(" + CalendarContract.Events._ID + " = ?))";
         Iterator it = eventIds.entrySet().iterator();
@@ -596,8 +594,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private boolean checkPermissions()
-    {
+    private boolean checkPermissions() {
         ArrayList<String> missingPermissions = new ArrayList<String>();
         int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_CALENDAR);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {

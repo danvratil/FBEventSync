@@ -130,7 +130,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
             ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
         }
 
-        mAccountManager.setAuthToken(account, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE), accessToken.getToken());
+        mAccountManager.setAuthToken(account, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE),
+                accessToken.getToken());
 
         AccessToken.setCurrentAccessToken(accessToken);
         setAccountAuthenticatorResult(intent.getExtras());
@@ -160,8 +161,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         finish();
     }
 
-    private void checkInternetPermission()
-    {
+    private void checkInternetPermission() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
