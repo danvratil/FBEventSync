@@ -20,19 +20,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+        <!-- Services //-->
         <service android:name=".AuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
-
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
@@ -44,20 +36,60 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
 
+        <!-- Meta data //-->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
+        <!-- Our activities //-->
+        <activity android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AuthenticatorActivity"
+            android:label="@string/title_activity_authenticator"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings"
+            android:theme="@style/SettingsTheme">
+            <intent-filter>
+                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_REMINDERS" />
+                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC" />
+                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".PermissionRequestActivity"
+            android:label="@string/title_activity_permission_request"
+            android:theme="@style/TranslucentTheme">
+        </activity>
+        <activity
+            android:name=".LogViewActivity"
+            android:label="@string/title_activity_log_view"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName="cz.dvratil.fbeventsync.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cz.dvratil.fbeventsync.MainActivity" />
+        </activity>
+
+        <!-- Facebook activities //-->
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
+            android:label="@string/app_name">
+        </activity>
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
@@ -70,37 +102,8 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".AuthenticatorActivity"
-            android:label="@string/title_activity_authenticator"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/settings"
-            android:theme="@style/SettingsTheme">
-            <intent-filter>
-                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_REMINDERS" />
-                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC" />
-                <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC" />
-            </intent-filter>
-        </activity>
 
-        <activity
-            android:name=".PermissionRequestActivity"
-            android:label="@string/title_activity_permission_request"
-            android:theme="@style/TranslucentTheme" />
-
-        <activity
-            android:name=".LogViewActivity"
-            android:label="@string/title_activity_log_view"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName="cz.dvratil.fbeventsync.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="cz.dvratil.fbeventsync.MainActivity" />
-        </activity>
-
-
+        <!-- Providers //-->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="cz.dvratil.fbeventsync.FileProvider"
