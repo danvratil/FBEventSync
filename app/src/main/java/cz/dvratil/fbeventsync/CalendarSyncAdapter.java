@@ -347,7 +347,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     @Nullable
-    private String parseLocation(JSONObject event) {
+    private String parsePlace(JSONObject event) {
         try {
             List<String> locationStr = new ArrayList<String>();
             if (event.has("place")) {
@@ -405,8 +405,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 values.put(CalendarContract.Events.ORGANIZER, event.getJSONObject("owner").getString("name"));
             }
             values.put(CalendarContract.Events.TITLE, event.getString("name"));
-            if (event.has("location")) {
-                values.put(CalendarContract.Events.EVENT_LOCATION, parseLocation(event));
+            if (event.has("place")) {
+                values.put(CalendarContract.Events.EVENT_LOCATION, parsePlace(event));
             }
             if (event.has("description")) {
                 String description = event.getString("description");
