@@ -91,6 +91,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         Log.d("AUTH", "Authentication success");
 
         final AccessToken accessToken = loginResult.getAccessToken();
+        if (accessToken.getDeclinedPermissions().contains("user_events")) {
+            Log.d("AUTH","User rejected access to user_events, aborting");
+            Toast.makeText(this, getString(R.string.toast_fb_user_events_denied), Toast.LENGTH_SHORT)
+                    .show();
+            finish();
+            return;
+        }
+
         GraphRequest request = GraphRequest.newMeRequest(
                 loginResult.getAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
