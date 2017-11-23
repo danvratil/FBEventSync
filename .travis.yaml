@@ -1,0 +1,13 @@
+language: android
+android:
+  components:
+    - tools
+    - platform-tools
+    # Duplicated on purpose!
+    - tools 
+
+    # The BuildTools used by us
+    - build-tools-25.0.0
+
+    # The SDK we build against
+    - android-25
