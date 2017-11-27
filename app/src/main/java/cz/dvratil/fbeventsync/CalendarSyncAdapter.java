@@ -203,7 +203,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult);
 
         for (final FBCalendar calendar : FB_CALENDARS) {
-            //syncCalendar(calendar);
+            syncCalendar(calendar);
         }
 
         syncBirthdayCalendar();
