@@ -338,7 +338,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             if (paging == null) {
                 return null;
             }
-            JSONObject cursor = paging.getJSONObject("cursor");
+            JSONObject cursor = paging.getJSONObject("cursors");
             if (cursor == null) {
                 return null;
             }
