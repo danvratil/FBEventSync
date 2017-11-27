@@ -123,13 +123,13 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                         .setExtras(new Bundle()).build();
                 ContentResolver.requestSync(request);
                 logger.info("SYNC.SCHED",
-                            "Scheduled periodic sync for account %s using requestSync",
-                            account.name);
+                            "Scheduled periodic sync for account %s using requestSync, interval: %d",
+                            account.name, syncInterval);
             } else {
                 ContentResolver.addPeriodicSync(account, context.getString(R.string.content_authority), new Bundle(), syncInterval);
                 logger.info("SYNC.SCHED",
-                            "Scheduled periodic sync for account %s using addPeriodicSync",
-                            account.name);
+                            "Scheduled periodic sync for account %s using addPeriodicSync, interval: %d",
+                            account.name, syncInterval);
             }
         }
     }

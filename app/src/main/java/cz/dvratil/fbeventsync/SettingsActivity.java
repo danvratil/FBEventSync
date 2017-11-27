@@ -17,11 +17,11 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
 public class SettingsActivity extends PreferenceActivity {
@@ -45,22 +45,27 @@ public class SettingsActivity extends PreferenceActivity {
         } else if (action == CONFIGURE_MISC_ACTION) {
             fragment = new MiscPreferenceFragment();
         }
-        getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // API 21
+        //String preferencesName = PreferenceManager.getDefaultSharedPreferencesName(this);
+        final String preferencesName = "cz.dvratil.fbeventsync_preferences";
+        SharedPreferences prefs = getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
         prefs.registerOnSharedPreferenceChangeListener(
                 new SharedPreferences.OnSharedPreferenceChangeListener() {
                     public void onSharedPreferenceChanged(
                             SharedPreferences prefs, String key) {
-                        if (key == "pref_attending_reminders"
-                            || key == "pref_maybe_reminders"
-                            || key == "pref_not_responded_reminders"
-                            || key == "pref_declined_reminders"
-                            || key == "pref_sync_frequency") {
+                        if (key.equals("pref_attending_reminders")
+                            || key.equals("pref_maybe_reminders")
+                            || key.equals("pref_not_responded_reminders")
+                            || key.equals("pref_declined_reminders")
+                            || key.equals("pref_birthday_reminders")
+                            || key.equals("pref_sync_frequency")) {
                             mShouldForceSync = true;
                         }
                     }
                 });
+
+        getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
     }
 
     @Override
