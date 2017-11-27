@@ -42,9 +42,10 @@ import android.support.v4.content.ContextCompat;
 import android.text.format.Time;
 
 import com.loopj.android.http.DataAsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
+
+import cz.msebera.android.httpclient.Header;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -66,8 +67,6 @@ import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
 import biweekly.util.ICalDate;
-
-import cz.msebera.android.httpclient.Header;
 
 public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -374,10 +373,10 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             logger.debug("SYNC.EVENTS","Sending Graph request...");
-            RequestHandle handle = Graph.events(mSyncContext.accessToken, params, new JsonHttpResponseHandler() {
+            RequestHandle handle = Graph.events(mSyncContext.accessToken, params, new GraphResponseHandler(mSyncContext.context) {
 
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                public void handleResponse(JSONObject response) {
                     SyncContext sync = syncAdapter.mSyncContext;
                     try {
                         JSONArray data = response.getJSONArray("data");
@@ -397,11 +396,6 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                         sync.nextCursor = null;
                         logger.error("SYNC.EVENTS","JSON Exception: %s" + e.getMessage());
                     }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    super.onFailure(statusCode, headers, throwable, errorResponse);
                 }
             });
 
