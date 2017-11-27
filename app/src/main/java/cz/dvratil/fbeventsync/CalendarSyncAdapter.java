@@ -385,7 +385,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                             JSONObject event = data.getJSONObject(i);
                             String id = event.getString("id");
                             if (sync.localEventIds.containsKey(id)) {
-                                syncAdapter.updateLocalEvent(event, sync.localEventIds.get(Long.parseLong(id)), sync.calendar, sync.localCalendarId);
+                                syncAdapter.updateLocalEvent(event, sync.localEventIds.get(id), sync.calendar, sync.localCalendarId);
                                 sync.localEventIds.remove(id);
                             } else {
                                 syncAdapter.createLocalEvent(event, sync.calendar, sync.localCalendarId);
@@ -512,7 +512,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         return values;
     }
 
-    private void updateLocalEvent(JSONObject event, Long localEventId, FBCalendar calendar,
+    private void updateLocalEvent(JSONObject event, long localEventId, FBCalendar calendar,
                                   long localCalendarId) {
         logger.debug("SYNC.EVENT","====== START Update local event %d", localEventId);
         ContentValues values = parseEvent(event, calendar, localCalendarId);
