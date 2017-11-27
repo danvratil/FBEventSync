@@ -840,6 +840,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 String err = responseBody == null ? "Unknown error" : new String(responseBody);
                 logger.error("SYNC.BDAY", "Error retrieving birthday iCal file: %s", err);
             }
+
+            @Override
+            public void onProgressData(byte[] responseBody) {
+                // silence debug output
+            }
         });
     }
 }
