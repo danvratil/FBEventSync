@@ -33,7 +33,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -41,6 +40,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -48,7 +48,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.auth.AUTH;
 
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
@@ -66,6 +65,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     private WebView mWebView = null;
     private ProgressBar mProgressBar = null;
+    private TextView mProgressLabel = null;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -75,8 +75,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         final AccountAuthenticatorActivity activity = this;
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mWebView = (WebView) findViewById(R.id.webview);
+        mProgressBar = (ProgressBar) findViewById(R.id.authProgressBar);
+        mProgressLabel = (TextView) findViewById(R.id.authProgressString);
+                mWebView = (WebView) findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -97,12 +98,16 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 Uri uri = Uri.parse(url);
 
                 if (uri.getPath().contains("/login.php")) {
-
+                    mWebView.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
+                    mProgressLabel.setVisibility(View.GONE);
                 } else if (uri.getPath().equals("/connect/login_success.html")) {
                     // TODO: Check if all privileges were granted
 
                     mWebView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(View.VISIBLE);
+                    mProgressLabel.setVisibility(View.VISIBLE);
+                    mProgressLabel.setText(getString(R.string.auth_progress_retrieving_birthday));
 
                     mAccessToken = Uri.parse("http://localhost/?" + uri.getFragment()).getQueryParameter("access_token");
 
@@ -128,6 +133,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
                                     // Remove opening and trailing quotes that come from JavaScript
                                     mBDayCalendar = s.substring(1, s.length() - 1);
+                                    mProgressLabel.setText(getString(R.string.auth_progress_retrieving_userinfo));
                                     fetchUserInfo(mAccessToken);
                                 }
                             });
