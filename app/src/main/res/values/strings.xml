@@ -55,7 +55,10 @@
     <string name="pref_not_responded_reminders_summary">Configure reminders for events you have not responded to.</string>
 
     <string name="pref_declined_reminders">Declined Events reminders</string>
-    <string name="pref_declined_reminders_summary">Configure reminders fro events you have declined.</string>
+    <string name="pref_declined_reminders_summary">Configure reminders for events you have declined.</string>
+
+    <string name="pref_birthday_reminders">Birthday reminders</string>
+    <string name="pref_birthday_reminders_summary">Configure reminders for friend\'s birthdays.</string>
 
     <string name="pref_reminder_default">60</string>
 

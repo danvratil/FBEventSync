@@ -34,6 +34,7 @@ public class FBCalendar {
     public static final String TYPE_DECLINED = "declined";
     public static final String TYPE_MAYBE = "maybe";
     public static final String TYPE_ATTENDING = "attending";
+    public static final String TYPE_BIRTHDAY = "birthday";
 
     public FBCalendar(String id, String type, String name) {
         mId = id;
@@ -87,6 +88,8 @@ public class FBCalendar {
             case TYPE_ATTENDING:
                 as = prefs.getStringSet("pref_attending_reminders", defaultReminder);
                 break;
+            case TYPE_BIRTHDAY:
+                as = prefs.getStringSet("pref_birthday_reminders", defaultReminder);
         };
         assert(as != null);
         Set<Integer> rv = new HashSet<>();

@@ -30,10 +30,11 @@ import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -43,26 +44,25 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Arrays;
-
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AUTH;
 
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     public static String ARG_AUTH_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AuthType";
     public static String ARG_IS_ADDING_NEW_ACCOUNT = "cz.dvratil.fbeventsync.AuthenticatorActivity.IsAddingNewAccount";
 
-    private static final String TOKEN_SCOPE = "me,user_events";
+    public static final String TOKEN_SCOPE = "me,user_events";
 
     private static final int PERMISSION_REQUEST_INTERNET = 1;
 
     private AccountManager mAccountManager = null;
     private String mAuthType = null;
+    private String mAccessToken = null;
+    private String mBDayCalendar = null;
 
     private WebView mWebView = null;
     private ProgressBar mProgressBar = null;
@@ -104,8 +104,34 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     mWebView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(View.VISIBLE);
 
-                    String accessToken = Uri.parse("http://localhost/?" + uri.getFragment()).getQueryParameter("access_token");
-                    fetchUserInfo(accessToken);
+                    mAccessToken = Uri.parse("http://localhost/?" + uri.getFragment()).getQueryParameter("access_token");
+
+                    // Use a desktop user-agent to make sure we get a desktop version - otherwise we
+                    // won't be able to get to the birthday link
+                    mWebView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0");
+                    mWebView.loadUrl("https://www.facebook.com/events");
+                } else if (uri.getPath().equals("/events/")) {
+                    view.evaluateJavascript(
+                            "(function() { " +
+                                   "  var elems = document.getElementsByTagName(\"a\");" +
+                                   "  for (var i = 0; i < elems.length; i++) {" +
+                                   "    var link = elems[i];" +
+                                   "    if (link.href.startsWith(\"webcal://www.facebook.com/ical/b.php\")) {" +
+                                   "      return link.href;" +
+                                   "    }" +
+                                   "  }" +
+                                   "})();",
+                            new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String s) {
+                                    Log.d("BDAY","Found bday URL: " + s);
+
+                                    // Remove opening and trailing quotes that come from JavaScript
+                                    mBDayCalendar = s.substring(1, s.length() - 1);
+                                    fetchUserInfo(mAccessToken);
+                                }
+                            });
+
                 }
             }
         });
@@ -171,6 +197,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         mAccountManager.setAuthToken(account, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE),
                 accessToken);
+        mAccountManager.setUserData(account, Authenticator.DATA_BDAY_URI, mBDayCalendar);
 
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);

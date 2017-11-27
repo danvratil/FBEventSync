@@ -17,16 +17,14 @@
 
 package cz.dvratil.fbeventsync;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
+import android.util.Log;
 
 import com.loopj.android.http.*;
 
 public class Graph {
 
     private static final String BASE_URL = "https://graph.facebook.com/v2.9/";
-    private static AsyncHttpClient mClient = new AsyncHttpClient();
 
     public static final String FIELDS_PARAM = "fields";
 
@@ -43,4 +41,21 @@ public class Graph {
         return client.get(BASE_URL + "/me/events", params, handler);
     }
 
+    public static RequestHandle refreshTokens(Context context, String scopes, AsyncHttpResponseHandler handler) {
+        SyncHttpClient client = new SyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("client_id", context.getString(R.string.facebook_app_id));
+        params.put("redirect_uri", "https://www.facebook.com/connect/login_success.html");
+        params.put("response_type", "token");
+        params.put("scopes", scopes);
+        return client.get("https://www.facebook.com/v2.9/dialog/oauth", params, handler);
+    }
+
+    public static RequestHandle fetchBirthdayICal(String birthdayICalUri, AsyncHttpResponseHandler handler) {
+        SyncHttpClient client = new SyncHttpClient();
+        // Pretend we are cURL, so that Facebook does not redirect us to facebook.com/unsupportedbrowser
+        client.setUserAgent("curl/7.55.1");
+        Log.d("GRAPH", "fetchBirthdayICal: " + birthdayICalUri);
+        return client.get(birthdayICalUri, handler);
+    }
 }

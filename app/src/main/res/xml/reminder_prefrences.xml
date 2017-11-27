@@ -34,4 +34,12 @@
         android:entryValues="@array/pref_reminder_values"
         android:defaultValue="@string/pref_reminder_default"/>
 
+    <MultiSelectListPreference
+        android:key="pref_birthday_reminders"
+        android:title="@string/pref_birthday_reminders"
+        android:summary="@string/pref_birthday_reminders_summary"
+        android:entries="@array/pref_reminder_entries"
+        android:entryValues="@array/pref_reminder_values"
+        android:defaultValue="@string/pref_reminder_default"/>
+
 </PreferenceScreen>
