@@ -22,8 +22,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.facebook.FacebookSdk;
-
 public class CalendarSyncService extends Service {
 
     private CalendarSyncAdapter mAdapter;
@@ -33,8 +31,6 @@ public class CalendarSyncService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("SYNC", "Sync service created");
-
-        FacebookSdk.sdkInitialize(this);
 
         synchronized (sAdapterLock) {
             if (mAdapter == null) {

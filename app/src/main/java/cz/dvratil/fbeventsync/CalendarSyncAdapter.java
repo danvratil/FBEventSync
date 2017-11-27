@@ -39,15 +39,18 @@ import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.format.Time;
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
+import com.loopj.android.http.DataAsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,11 +62,45 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
 
+import biweekly.Biweekly;
+import biweekly.ICalendar;
+import biweekly.component.VEvent;
+import biweekly.util.ICalDate;
+
+import cz.msebera.android.httpclient.Header;
+
 public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private FBCalendar[] FB_CALENDARS = null;
 
     private Logger logger = null;
+
+    private class SyncContext {
+        public Context context = null;
+        public Account account = null;
+        public String accessToken = null;
+        public ContentProviderClient providerClient = null;
+        public SyncResult syncResult = null;
+        FBCalendar calendar = null;
+        long localCalendarId = -1;
+
+        HashMap<String /* FBID */, Long /* DBID */> localEventIds = null;
+        String nextCursor = null;
+
+        public SyncContext(Context context, Account account, String accessToken,
+                           ContentProviderClient providerClient, SyncResult syncResult) {
+            this.context = context;
+            this.account = account;
+            this.accessToken = accessToken;
+            this.providerClient = providerClient;
+            this.syncResult = syncResult;
+
+            ClassLoader cl = ClassLoader.getSystemClassLoader();
+            Thread.currentThread().setContextClassLoader(cl);
+        }
+    }
+    SyncContext mSyncContext = null;
+
 
     public CalendarSyncAdapter(Context context, boolean autoInitialize) {
         super(context,  autoInitialize);
@@ -143,50 +180,76 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return;
         }
 
-        for (final FBCalendar calendar : FB_CALENDARS) {
-            syncCalendar(calendar, account, provider, syncResult);
+        Context ctx = getContext();
+        AccountManager mgr = AccountManager.get(ctx);
+        String accessToken = null;
+        try {
+            accessToken = mgr.blockingGetAuthToken(account, ctx.getString(R.string.account_type), false);
+        } catch (android.accounts.OperationCanceledException e) {
+            logger.error("SYNC", "Failed to obtain auth token: %s", e.getMessage());
+            syncResult.stats.numAuthExceptions++;
+            return;
+        } catch (android.accounts.AuthenticatorException e) {
+            logger.error("SYNC", "Failed to obtain auth token: %s", e.getMessage());
+            syncResult.stats.numAuthExceptions++;
+            return;
+        } catch (java.io.IOException e) {
+            logger.error("SYNC", "Failed to obtain auth token: %s", e.getMessage());
+            syncResult.stats.numAuthExceptions++;
+            return;
         }
+
+
+        mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult);
+
+        for (final FBCalendar calendar : FB_CALENDARS) {
+            syncCalendar(calendar);
+        }
+
+        syncBirthdayCalendar();
+
+        mSyncContext = null;
 
         logger.info("SYNC", "Sync for %s done", account.name);
     }
 
-    private void syncCalendar(FBCalendar calendar, Account account, ContentProviderClient provider,
-                              SyncResult syncResult) {
+    private void syncCalendar(FBCalendar calendar) {
         logger.debug("SYNC.CAL", "=== START: Calendar sync for \"%s\"", calendar.id());
 
-        long calendarId = findLocalCalendar(calendar, account, provider, syncResult);
-        if (calendarId < 0) {
-            logger.debug("SYNC.CAL","Local calendar does not exist, will create a new one");
-            calendarId = createLocalCalendar(calendar, account, provider, syncResult);
+        long localCalendarId = findLocalCalendar(calendar);
+        if (localCalendarId < 0) {
+            localCalendarId = createLocalCalendar(calendar);
+            if (localCalendarId > 0) {
+                logger.debug("SYNC.CAL", "Local calendar does not exist, created calendar ID %d", localCalendarId);
+            } else {
+                logger.error("SYNC.CAL","Creating local calendar failed, skipping event sync");
+                return;
+            }
         } else {
-            logger.debug("SYNC.CAL","Found local calendar (ID: %d)", calendarId);
-        }
-        if (calendarId < 0) {
-            logger.debug("SYNC.CAL","Creating local calendar failed, skipping event sync");
-            return;
+            logger.debug("SYNC.CAL","Found local calendar (ID: %d)", localCalendarId);
         }
 
-        syncCalendarEvents(calendar, calendarId, account, provider, syncResult);
+        syncCalendarEvents(calendar, localCalendarId);
 
         logger.debug("SYNC.CAL", "=== END: Calendar sync for \"%s\"", calendar.id());
     }
 
-    private long findLocalCalendar(FBCalendar calendar, Account account, ContentProviderClient provider,
-                                     SyncResult syncResult) {
+    private long findLocalCalendar(FBCalendar calendar) {
         String selection = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?) AND " +
                 "(" + CalendarContract.Calendars.ACCOUNT_TYPE + " = ?) AND " +
                 "(" + CalendarContract.Calendars.OWNER_ACCOUNT + " = ?) AND " +
                 "(" + CalendarContract.Calendars.NAME + "= ?))";
 
         String[] selectionArgs = new String[] {
-                account.name, getContext().getResources().getString(R.string.account_type),
-                account.name, calendar.id()
+                mSyncContext.account.name, getContext().getResources().getString(R.string.account_type),
+                mSyncContext.account.name, calendar.id()
         };
 
         try {
-            Cursor cur = provider.query(CalendarContract.Calendars.CONTENT_URI,
-                                        new String[]{ CalendarContract.Calendars._ID },
-                                        selection, selectionArgs, null);
+            Cursor cur = mSyncContext.providerClient.query(
+                    CalendarContract.Calendars.CONTENT_URI,
+                    new String[]{ CalendarContract.Calendars._ID },
+                    selection, selectionArgs, null);
             if (!cur.moveToNext()) {
                 return -1;
             }
@@ -194,25 +257,25 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return cur.getLong(0);
         } catch (android.os.RemoteException e) {
             logger.error("SYNC.CAL", "findLocalCalendar RemoteException: %s", e.getMessage());
-            syncResult.stats.numIoExceptions++;
+            mSyncContext.syncResult.stats.numIoExceptions++;
             return -1;
         } catch (android.database.sqlite.SQLiteException e) {
             logger.error("SYNC.CAL","findLocalCalendar SQLiteException: %s", e.getMessage());
-            syncResult.stats.numIoExceptions++;
+            mSyncContext.syncResult.stats.numIoExceptions++;
             return -1;
         }
     }
 
     @Nullable
-    private HashMap<Long /* FBID */, Long /* DBID */> findLocalEvents(long calendarId, Account account,
-                                                                      ContentProviderClient provider) {
+    private HashMap<String /* FBID */, Long /* DBID */> findLocalEvents(long localCalendarId) {
         Cursor cur = null;
         try {
-            cur = provider.query(CalendarContract.Events.CONTENT_URI,
-                                 new String[]{ CalendarContract.Events.UID_2445,
-                                               CalendarContract.Events._ID },
-                                 "(" + CalendarContract.Events.CALENDAR_ID + " = ?)",
-                                 new String[]{ String.valueOf(calendarId) }, null);
+            cur = mSyncContext.providerClient.query(
+                    CalendarContract.Events.CONTENT_URI,
+                    new String[]{ CalendarContract.Events.UID_2445,
+                                  CalendarContract.Events._ID },
+                    "(" + CalendarContract.Events.CALENDAR_ID + " = ?)",
+                    new String[]{ String.valueOf(localCalendarId) }, null);
         } catch (android.os.RemoteException e) {
             logger.error("SYNC.EVENT", "findLocalEvents RemoteException: %s", e.getMessage());
             return null;
@@ -221,25 +284,23 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return null;
         }
 
-        HashMap<Long, Long> ids = new HashMap<Long, Long>();
+        HashMap<String, Long> ids = new HashMap<>();
         while (cur != null && cur.moveToNext()) {
-            ids.put(Long.parseLong(cur.getString(0)),
-                    cur.getLong(1));
+            ids.put(cur.getString(0), cur.getLong(1));
         }
         return ids;
     }
 
-    private long createLocalCalendar(FBCalendar calendar, Account account, ContentProviderClient provider,
-                                     SyncResult syncResult) {
+    private long createLocalCalendar(FBCalendar calendar) {
         ContentValues values = new ContentValues();
-        values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name);
+        values.put(CalendarContract.Calendars.ACCOUNT_NAME, mSyncContext.account.name);
         values.put(CalendarContract.Calendars.ACCOUNT_TYPE, getContext().getString(R.string.account_type));
         values.put(CalendarContract.Calendars.NAME, calendar.id());
         values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, calendar.name());
         values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0x3b5998 /* Facebook blue */);
         values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
                    CalendarContract.Calendars.CAL_ACCESS_READ);
-        values.put(CalendarContract.Calendars.OWNER_ACCOUNT, account.name);
+        values.put(CalendarContract.Calendars.OWNER_ACCOUNT, mSyncContext.account.name);
         values.put(CalendarContract.Calendars.SYNC_EVENTS, 1);
         // TODO: Figure out how to get local timezone
         //values.put(CalendarContract.Calendars.CALENDAR_TIMEZONE, tz);
@@ -255,12 +316,12 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
         Uri uri = CalendarContract.Calendars.CONTENT_URI.buildUpon()
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, mSyncContext.account.name)
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
                 .build();
 
         try {
-            Uri calUri = provider.insert(uri, values);
+            Uri calUri = mSyncContext.providerClient.insert(uri, values);
             return Long.parseLong(calUri.getLastPathSegment());
         } catch (android.os.RemoteException e) {
             logger.error("SYNC.CAL", "createLocalCalendar RemoteException: %s", e.getMessage());
@@ -288,61 +349,67 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void syncCalendarEvents(FBCalendar calendar, long localCalendarId, Account account,
-                                    ContentProviderClient provider, SyncResult result) {
+    private void syncCalendarEvents(FBCalendar calendar, long localCalendarId) {
 
         logger.debug("SYNC.EVENTS","==== START event sync");
 
         // TODO: Query existing event IDs, so we can decide whether to insert, modify or remove
-        HashMap<Long /* FBID */, Long /* DBID */> knownIds = findLocalEvents(localCalendarId, account, provider);
+        HashMap<String /* FBID */, Long /* DBID */> knownIds = findLocalEvents(localCalendarId);
         if (knownIds == null) {
             // We failed to query events, so don't event attempt to sync them
             logger.debug("SYNC.EVENTS", "==== END event sync");
             return;
         }
 
-        String nextCursor = null;
+        mSyncContext.calendar = calendar;
+        mSyncContext.localCalendarId = localCalendarId;
+        mSyncContext.localEventIds = knownIds;
+        final CalendarSyncAdapter syncAdapter = this;
         do {
-            Bundle params = new Bundle();
-            params.putString(GraphRequest.FIELDS_PARAM, "id,name,description,place,start_time,end_time,owner,is_canceled");
-            params.putString("type", calendar.type());
-            if (nextCursor != null) {
-                params.putString("after", nextCursor);
+            RequestParams params = new RequestParams();
+            params.add(Graph.FIELDS_PARAM, "id,name,description,place,start_time,end_time,owner,is_canceled");
+            params.add("type", calendar.type());
+            if (mSyncContext.nextCursor != null) {
+                params.add("after", mSyncContext.nextCursor);
             }
 
-            GraphRequest request = new GraphRequest();
-            request.setAccessToken(AccessToken.getCurrentAccessToken());
-            request.setGraphPath("/me/events");
-            request.setParameters(params);
             logger.debug("SYNC.EVENTS","Sending Graph request...");
-            GraphResponse response = request.executeAndWait();
+            RequestHandle handle = Graph.events(mSyncContext.accessToken, params, new JsonHttpResponseHandler() {
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    SyncContext sync = syncAdapter.mSyncContext;
+                    try {
+                        JSONArray data = response.getJSONArray("data");
+                        for (int i = 0, c = data.length(); i < c; ++i) {
+                            JSONObject event = data.getJSONObject(i);
+                            String id = event.getString("id");
+                            if (sync.localEventIds.containsKey(id)) {
+                                syncAdapter.updateLocalEvent(event, sync.localEventIds.get(Long.parseLong(id)), sync.calendar, sync.localCalendarId);
+                                sync.localEventIds.remove(id);
+                            } else {
+                                syncAdapter.createLocalEvent(event, sync.calendar, sync.localCalendarId);
+                            }
+                        }
+
+                        sync.nextCursor = getNextCursor(response);
+                    } catch (org.json.JSONException e) {
+                        sync.nextCursor = null;
+                        logger.error("SYNC.EVENTS","JSON Exception: %s" + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                }
+            });
+
             logger.debug("SYNC.EVENTS","Response from Facebook arrived");
 
-            try {
-                JSONObject obj = response.getJSONObject();
-                if (obj != null) {
-                    JSONArray data = obj.getJSONArray("data");
-                    for (int i = 0, c = data.length(); i < c; ++i) {
-                        JSONObject event = data.getJSONObject(i);
-                        long id = Long.parseLong(event.getString("id"));
-                        if (knownIds.containsKey(id)) {
-                            updateLocalEvent(event, knownIds.get(id), calendar, localCalendarId,
-                                    account, provider, result);
-                            knownIds.remove(id);
-                        } else {
-                            createLocalEvent(event, calendar, localCalendarId, account, provider, result);
-                        }
-                    }
+        } while (mSyncContext.nextCursor != null);
 
-                    nextCursor = getNextCursor(obj);
-                }
-            } catch (org.json.JSONException e) {
-                logger.error("SYNC.EVENTS","JSON Exception: %s" + e.getMessage());
-                break;
-            }
-        } while (nextCursor != null);
-
-        removeLocalEvents(knownIds, localCalendarId, account, provider, result);
+        removeLocalEvents(knownIds, localCalendarId);
 
         logger.debug("SYNC.EVENTS","==== END event sync");
     }
@@ -382,7 +449,12 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private long parseDateTime(String dt) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+        SimpleDateFormat format = null;
+        if (dt.length() > 8) {
+            format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+        } else {
+            format = new SimpleDateFormat("yyyyMMdd");
+        }
         try {
             Date date = format.parse(dt);
             return date.getTime();
@@ -392,8 +464,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     @Nullable
-    private ContentValues parseEvent(JSONObject event, FBCalendar calendar, long localCalendarId,
-                                     Account account) {
+    private ContentValues parseEvent(JSONObject event, FBCalendar calendar, long localCalendarId) {
         ContentValues values =  new ContentValues();
         try {
             // FIXME: Right now we are abusing UID_2445 to store the Facebook ID - maybe there's a
@@ -442,13 +513,12 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void updateLocalEvent(JSONObject event, Long localEventId, FBCalendar calendar,
-                                  long localCalendarId, Account account, ContentProviderClient provider,
-                                  SyncResult result) {
+                                  long localCalendarId) {
         logger.debug("SYNC.EVENT","====== START Update local event %d", localEventId);
-        ContentValues values = parseEvent(event, calendar, localCalendarId, account);
+        ContentValues values = parseEvent(event, calendar, localCalendarId);
         if (values == null) {
             logger.debug("SYNC.EVENT","====== END Update local event %d", localEventId);
-            result.stats.numParseExceptions++;
+            mSyncContext.syncResult.stats.numParseExceptions++;
             return;
         }
 
@@ -457,15 +527,17 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                                 "(" + CalendarContract.Events.UID_2445 + " = ?))";
             String selectionArgs[] = { String.valueOf(localCalendarId),
                                        event.getString("id") };
-            provider.update(CalendarContract.Events.CONTENT_URI, values, selection, selectionArgs);
+            mSyncContext.providerClient.update(
+                    CalendarContract.Events.CONTENT_URI, values, selection, selectionArgs);
             logger.debug("SYNC.EVENT","Event updated");
 
             logger.debug("SYNC.EVENT", "Querying reminders...");
-            Cursor cur = provider.query(CalendarContract.Reminders.CONTENT_URI,
-                                         new String[]{ CalendarContract.Reminders._ID,
-                                                       CalendarContract.Reminders.MINUTES },
-                                         "(" + CalendarContract.Reminders.EVENT_ID + " = ?)",
-                                         new String[]{ String.valueOf(localEventId) }, null);
+            Cursor cur = mSyncContext.providerClient.query(
+                    CalendarContract.Reminders.CONTENT_URI,
+                    new String[]{ CalendarContract.Reminders._ID,
+                                  CalendarContract.Reminders.MINUTES },
+                    "(" + CalendarContract.Reminders.EVENT_ID + " = ?)",
+                    new String[]{ String.valueOf(localEventId) }, null);
             HashMap<Integer /* minutes */, Long /* reminder ID */> localReminders = new HashMap<Integer, Long>();
             while (cur.moveToNext()) {
                 localReminders.put(cur.getInt(1), cur.getLong(0));
@@ -485,30 +557,30 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             toRemove.removeAll(configuredReminders);
 
             if (!toAdd.isEmpty()) {
-                createReminders(localEventId, toAdd, provider);
+                createReminders(localEventId, toAdd);
             }
             if (!toRemove.isEmpty()) {
                 for (int reminder : toRemove) {
-                    removeReminder(localEventId, localReminders.get(reminder), provider);
+                    removeReminder(localEventId, localReminders.get(reminder));
                 }
             }
 
-            result.stats.numUpdates++;
+            mSyncContext.syncResult.stats.numUpdates++;
         } catch (android.os.RemoteException e) {
             logger.error("SYNC.EVENT", "updateLocalEvent RemoteException: %s", e.getMessage());
-            result.stats.numIoExceptions++;
+            mSyncContext.syncResult.stats.numIoExceptions++;
         } catch (org.json.JSONException e) {
             logger.error("SYNC.EVENT", "updateLocalEvent JSONException: %s", e.getMessage());
-            result.stats.numParseExceptions++;
+            mSyncContext.syncResult.stats.numParseExceptions++;
         } catch (android.database.sqlite.SQLiteException e) {
             logger.error("SYNC.EVENT", "updateLocalEvent SQLiteException: %s", e.getMessage());
-            result.stats.numParseExceptions++;
+            mSyncContext.syncResult.stats.numParseExceptions++;
         }
 
         logger.debug("SYNC.EVENT","====== END Update local event %d", localEventId);
     }
 
-    private void createReminders(long localEventId, Set<Integer> reminders, ContentProviderClient provider) {
+    private void createReminders(long localEventId, Set<Integer> reminders) {
         ArrayList<ContentValues> reminderValues = new ArrayList<ContentValues>();
         for (int reminder : reminders) {
             ContentValues values = new ContentValues();
@@ -519,7 +591,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
         try {
             logger.debug("SYNC.REM", "Creating reminders %s for event %d", reminders.toString(), localEventId);
-            provider.bulkInsert(CalendarContract.Reminders.CONTENT_URI, reminderValues.toArray(new ContentValues[0]));
+            mSyncContext.providerClient.bulkInsert(
+                    CalendarContract.Reminders.CONTENT_URI,
+                    reminderValues.toArray(new ContentValues[0]));
         } catch (android.os.RemoteException e) {
             logger.error("SYNC.REM", "createReminders RemoteException: %s", e.getMessage());
         } catch (android.database.sqlite.SQLiteException e) {
@@ -527,12 +601,13 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void removeReminder(long localEventId, long reminderId, ContentProviderClient provider) {
+    private void removeReminder(long localEventId, long reminderId) {
         try {
             logger.debug("SYNC.REM", "Removing reminder ID %d from event %d", reminderId, localEventId);
-            provider.delete(CalendarContract.Reminders.CONTENT_URI,
-                            "((" + CalendarContract.Reminders.EVENT_ID + " = ?) AND (" + CalendarContract.Reminders._ID + " = ?))",
-                            new String[]{String.valueOf(localEventId), String.valueOf(reminderId)});
+            mSyncContext.providerClient.delete(
+                    CalendarContract.Reminders.CONTENT_URI,
+                    "((" + CalendarContract.Reminders.EVENT_ID + " = ?) AND (" + CalendarContract.Reminders._ID + " = ?))",
+                    new String[]{String.valueOf(localEventId), String.valueOf(reminderId)});
         } catch (android.os.RemoteException e) {
             logger.error("SYNC.REM", "removeReminder RemoteException: %s", e.getMessage());
         } catch (android.database.sqlite.SQLiteException e) {
@@ -540,39 +615,35 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void createLocalEvent(JSONObject event, FBCalendar calendar, long localCalendarId, Account account,
-                                  ContentProviderClient provider, SyncResult result) {
+    private void createLocalEvent(JSONObject event, FBCalendar calendar, long localCalendarId) {
         logger.debug("SYNC.EVENT","====== START Creating new local event");
-        ContentValues values = parseEvent(event, calendar, localCalendarId, account);
+        ContentValues values = parseEvent(event, calendar, localCalendarId);
         if (values == null) {
-            result.stats.numParseExceptions++;
+            mSyncContext.syncResult.stats.numParseExceptions++;
             logger.debug("SYNC.EVENT","====== END Creating new local event");
             return;
         }
 
         try {
-            Uri uri = provider.insert(CalendarContract.Events.CONTENT_URI, values);
+            Uri uri = mSyncContext.providerClient.insert(CalendarContract.Events.CONTENT_URI, values);
             long eventId = Long.parseLong(uri.getLastPathSegment());
             logger.debug("SYNC.EVENT", "Stored new event as %d", eventId);
             Set<Integer> reminders = calendar.reminderIntervals(getContext());
             if (!reminders.isEmpty()) {
-                createReminders(eventId, reminders, provider);
+                createReminders(eventId, reminders);
             }
 
-            result.stats.numInserts++;
+            mSyncContext.syncResult.stats.numInserts++;
         } catch (android.os.RemoteException e) {
             logger.error("SYNC.EVENT", "createLocalEvent RemoteException: %s", e.getMessage());
-            result.stats.numIoExceptions++;
+            mSyncContext.syncResult.stats.numIoExceptions++;
         } catch (android.database.sqlite.SQLiteException e) {
             logger.error("SYNC.EVENT", "createLocalEvent SQLiteException: %s", e.getMessage());
-            result.stats.numIoExceptions++;
+            mSyncContext.syncResult.stats.numIoExceptions++;
         }
-
     }
 
-    private void removeLocalEvents(HashMap<Long /* FBID */, Long /* DBID */> eventIds,
-                                   long localCalendarId, Account account,
-                                   ContentProviderClient provider, SyncResult result) {
+    private void removeLocalEvents(HashMap<String /* FBID */, Long /* DBID */> eventIds, long localCalendarId) {
         String selection = "((" + CalendarContract.Events.CALENDAR_ID + " = ?) AND " +
                             "(" + CalendarContract.Events._ID + " = ?))";
         Iterator it = eventIds.entrySet().iterator();
@@ -582,14 +653,15 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 HashMap.Entry entry = (HashMap.Entry)it.next();
                 String selectionArgs[] = { String.valueOf(localCalendarId),
                                            String.valueOf(entry.getValue()) };
-                provider.delete(CalendarContract.Events.CONTENT_URI, selection, selectionArgs);
-                result.stats.numDeletes++;
+                mSyncContext.providerClient.delete(
+                        CalendarContract.Events.CONTENT_URI, selection, selectionArgs);
+                mSyncContext.syncResult.stats.numDeletes++;
             } catch (android.os.RemoteException e) {
                 logger.error("SYNC.EVENTS", "removeLocalEvents RemoteException: %s", e.getMessage());
-                result.stats.numIoExceptions++;
+                mSyncContext.syncResult.stats.numIoExceptions++;
             } catch (android.database.sqlite.SQLiteException e) {
                 logger.error("SYNC.EVENTS", "removeLocalEvents SQLiteException: %s ", e.getMessage());
-                result.stats.numIoExceptions++;
+                mSyncContext.syncResult.stats.numIoExceptions++;
             }
         }
     }
@@ -621,5 +693,159 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return false;
         }
         return true;
+    }
+
+    private ContentValues parseBirthdayEvent(long localCalendarId, VEvent vevent) {
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.UID_2445, vevent.getUid().getValue());
+        values.put(CalendarContract.Events.TITLE, vevent.getSummary().getValue());
+        values.put(CalendarContract.Events.ALL_DAY, true);
+        ICalDate date = vevent.getDateStart().getValue();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.set(date.getYear() + 1900, date.getMonth(), date.getDate(), 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        values.put(CalendarContract.Events.DTSTART, calendar.getTimeInMillis());
+        values.put(CalendarContract.Events.CALENDAR_ID, localCalendarId);
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, Time.TIMEZONE_UTC);
+        // Those are identical for all birthdays, so we hardcode them
+        values.put(CalendarContract.Events.RRULE, "FREQ=YEARLY");
+        values.put(CalendarContract.Events.DURATION, "P1D");
+        return values;
+    }
+
+    private void updateLocalBirthdayEvent(FBCalendar calendar, long localCalendarId, long localEventId, VEvent event) {
+        logger.debug("SYNC.BDAY","====== START Update local birthday %d", localEventId);
+        ContentValues values = parseBirthdayEvent(localCalendarId, event);
+        try {
+            String selection = "((" + CalendarContract.Events.CALENDAR_ID + " = ?) AND " +
+                                "(" + CalendarContract.Events._ID + " = ?))";
+            String selectionArgs[] = { String.valueOf(localCalendarId), String.valueOf(localEventId) };
+            mSyncContext.providerClient.update(
+                    CalendarContract.Events.CONTENT_URI, values, selection, selectionArgs);
+            logger.debug("SYNC.BDAY","Event updated");
+
+            logger.debug("SYNC.BDAY", "Querying reminders...");
+            Cursor cur = mSyncContext.providerClient.query(
+                    CalendarContract.Reminders.CONTENT_URI,
+                    new String[]{ CalendarContract.Reminders._ID,
+                                  CalendarContract.Reminders.MINUTES },
+                    "(" + CalendarContract.Reminders.EVENT_ID + " = ?)",
+                    new String[]{ String.valueOf(localEventId) }, null);
+            HashMap<Integer /* minutes */, Long /* reminder ID */> localReminders = new HashMap<Integer, Long>();
+            while (cur.moveToNext()) {
+                localReminders.put(cur.getInt(1), cur.getLong(0));
+            }
+
+            Set<Integer> localReminderSet = localReminders.keySet();
+            Set<Integer> configuredReminders = calendar.reminderIntervals(getContext());
+
+            // Silly Java can't even subtract Sets...*sigh*
+            Set<Integer> toAdd = new HashSet<Integer>();
+            toAdd.addAll(configuredReminders);
+            toAdd.removeAll(localReminderSet);
+
+            Set<Integer> toRemove = new HashSet<Integer>();
+            toRemove.addAll(localReminderSet);
+            toRemove.removeAll(configuredReminders);
+
+            if (!toAdd.isEmpty()) {
+                createReminders(localEventId, toAdd);
+            }
+            if (!toRemove.isEmpty()) {
+                for (int reminder : toRemove) {
+                    removeReminder(localEventId, localReminders.get(reminder));
+                }
+            }
+
+            mSyncContext.syncResult.stats.numUpdates++;
+        } catch (android.os.RemoteException e) {
+            logger.error("SYNC.BDAY", "updateLocalBirthdayEvent RemoteException: %s", e.getMessage());
+            mSyncContext.syncResult.stats.numIoExceptions++;
+        } catch (android.database.sqlite.SQLiteException e) {
+            logger.error("SYNC.BDAY", "updateLocalBirthdayEvent SQLiteException: %s", e.getMessage());
+            mSyncContext.syncResult.stats.numParseExceptions++;
+        }
+
+        logger.debug("SYNC.BDAY","====== END Update local birthday event %d", localEventId);
+    }
+
+    private void createLocalBirthdayEvent(FBCalendar calendar, long localCalendarId, VEvent event) {
+        logger.debug("SYNC.BDAY","====== START Creating new local birthday event");
+        ContentValues values = parseBirthdayEvent(localCalendarId, event);
+        try {
+            Uri uri = mSyncContext.providerClient.insert(CalendarContract.Events.CONTENT_URI, values);
+            long eventId = Long.parseLong(uri.getLastPathSegment());
+            logger.debug("SYNC.BDAY", "Stored new birthday event as %d", eventId);
+            Set<Integer> reminders = calendar.reminderIntervals(getContext());
+            if (!reminders.isEmpty()) {
+                createReminders(eventId, reminders);
+            }
+
+            mSyncContext.syncResult.stats.numInserts++;
+        } catch (android.os.RemoteException e) {
+            logger.error("SYNC.BDAY", "createLocalBirthdayEvent RemoteException: %s", e.getMessage());
+            mSyncContext.syncResult.stats.numIoExceptions++;
+        } catch (android.database.sqlite.SQLiteException e) {
+            logger.error("SYNC.BDAY", "createLocalBirthdayEvent SQLiteException: %s", e.getMessage());
+            mSyncContext.syncResult.stats.numIoExceptions++;
+        }
+    }
+
+    private void syncBirthdayCalendar() {
+        final FBCalendar birthdayCalendar = new FBCalendar("birthday", FBCalendar.TYPE_BIRTHDAY, "Friend's Birthdays");
+        long calendarId = findLocalCalendar(birthdayCalendar);
+        if (calendarId < 0) {
+            calendarId = createLocalCalendar(birthdayCalendar);
+            if (calendarId > 0) {
+                logger.debug("SYNC.BDAY", "Local birthday calendar does not exist, created calendar ID %d", calendarId);
+            } else {
+                logger.error("SYNC.BDAY","Creating local birthday calendar failed, skipping event sync");
+                return;
+            }
+        } else {
+            logger.debug("SYNC.BDAY","Found local birthday calendar (ID: %d)", calendarId);
+        }
+
+        final long localCalendarId = calendarId;
+
+        AccountManager accManager = AccountManager.get(mSyncContext.context);
+        String uri = accManager.getUserData(mSyncContext.account, Authenticator.DATA_BDAY_URI);
+        if (uri == null || uri.isEmpty()) {
+            // We don't have the URI, possibly we did not migrate from the old authentication system
+            // yet, let's schedule it now
+            logger.info("SYNC.BDAY","Birthday iCal URL not set, forcing re-authentication");
+            accManager.invalidateAuthToken(
+                    mSyncContext.context.getString(R.string.account_type),
+                    mSyncContext.accessToken);
+            return;
+        }
+        uri = uri.replace("webcal", "https");
+        Graph.fetchBirthdayICal(uri, new DataAsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                if (responseBody == null) {
+                    logger.error("SYNC.BDAY", "Response body is empty!!!!!");
+                    return;
+                }
+                HashMap<String /* FBID */, Long /* DBID */> localEvents = findLocalEvents(localCalendarId);
+                ICalendar cal = Biweekly.parse(new String(responseBody)).first();
+                for (VEvent event : cal.getEvents()) {
+                    String uid = event.getUid().toString();
+                    if (localEvents.containsKey(uid)) {
+                        updateLocalBirthdayEvent(birthdayCalendar, localCalendarId, localEvents.get(uid), event);
+                        localEvents.remove(uid);
+                    } else {
+                        createLocalBirthdayEvent(birthdayCalendar, localCalendarId, event);
+                    }
+                }
+                removeLocalEvents(localEvents, localCalendarId);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String err = responseBody == null ? "Unknown error" : new String(responseBody);
+                logger.error("SYNC.BDAY", "Error retrieving birthday iCal file: %s", err);
+            }
+        });
     }
 }

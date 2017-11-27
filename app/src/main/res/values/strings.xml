@@ -24,6 +24,10 @@
     <string name="fb_login_protocol_scheme">fb1775235912769870</string>
     <string name="title_activity_authenticator">Authenticate with Facebook</string>
 
+    <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook...</string>
+    <string name="auth_progress_retrieving_birthday">Retrieving friend\'s birthday list...</string>
+    <string name="auth_progress_retrieving_userinfo">Retrieving user info...</string>
+
     <string name="settings">Settings</string>
 
     <string name="cz_dvratil_fbeventsync_not_responded_calendar">Events I have not Responded To</string>
@@ -55,7 +59,10 @@
     <string name="pref_not_responded_reminders_summary">Configure reminders for events you have not responded to.</string>
 
     <string name="pref_declined_reminders">Declined Events reminders</string>
-    <string name="pref_declined_reminders_summary">Configure reminders fro events you have declined.</string>
+    <string name="pref_declined_reminders_summary">Configure reminders for events you have declined.</string>
+
+    <string name="pref_birthday_reminders">Birthday reminders</string>
+    <string name="pref_birthday_reminders_summary">Configure reminders for friend\'s birthdays.</string>
 
     <string name="pref_reminder_default">60</string>
 

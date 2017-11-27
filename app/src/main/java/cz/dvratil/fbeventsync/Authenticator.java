@@ -30,6 +30,8 @@ import android.os.Bundle;
 
 public class Authenticator extends AbstractAccountAuthenticator {
 
+    public static final String DATA_BDAY_URI = "bday_uri";
+
     private final Context mContext;
 
     public Authenticator(Context context) {
@@ -55,8 +57,18 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
                                String authTokenType, Bundle options) throws NetworkErrorException {
-        Log.d("AUTH", "GetAuthToken:" + account.name + ", authTokenType:" + authTokenType);
-        return null;
+        Log.d("AUTH","GetAuthToken: " + authTokenType);
+        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mContext.getString(R.string.account_type));
+        intent.putExtra(AuthenticatorActivity.ARG_AUTH_TYPE, authTokenType);
+        intent.putExtra(AuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, false);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        mContext.startActivity(intent);
+
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+        return bundle;
     }
 
     @Override
