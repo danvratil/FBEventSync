@@ -48,6 +48,10 @@ abstract public class GraphResponseHandler extends JsonHttpResponseHandler {
 
     @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+        if (errorResponse == null) {
+            mLogger.error("GRAPH","Graph error: failure and empty response (code %d)", statusCode);
+            return;
+        }
         try {
             JSONObject err = errorResponse.getJSONObject("error");
             int errCode = err.getInt("code");
