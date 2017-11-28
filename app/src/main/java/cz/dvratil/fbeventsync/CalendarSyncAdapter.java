@@ -824,7 +824,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 HashMap<String /* FBID */, Long /* DBID */> localEvents = findLocalEvents(localCalendarId);
                 ICalendar cal = Biweekly.parse(new String(responseBody)).first();
                 for (VEvent event : cal.getEvents()) {
-                    String uid = event.getUid().toString();
+                    String uid = event.getUid().getValue();
                     if (localEvents.containsKey(uid)) {
                         updateLocalBirthdayEvent(birthdayCalendar, localCalendarId, localEvents.get(uid), event);
                         localEvents.remove(uid);
