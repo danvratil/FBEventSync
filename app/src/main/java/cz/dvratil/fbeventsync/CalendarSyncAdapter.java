@@ -396,7 +396,19 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                             }
                         }
 
-                        sync.nextCursor = getNextCursor(response);
+                        sync.nextCursor = null;
+                        // Only request the next page if the last event in the current response is
+                        // no older than last year - this is to reduce the amount of queries
+                        if (data.length() > 0) {
+                            JSONObject event = data.getJSONObject(data.length() - 1);
+                            String start_time = event.optString("start_time");
+                            if (start_time != null && start_time.length() >= 4) {
+                                int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+                                if (Integer.parseInt(start_time.substring(0, 4)) >= currentYear - 1) {
+                                    sync.nextCursor = getNextCursor(response);
+                                }
+                            }
+                        }
                     } catch (org.json.JSONException e) {
                         sync.nextCursor = null;
                         logger.error("SYNC.EVENTS","JSON Exception: %s" + e.getMessage());
