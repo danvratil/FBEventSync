@@ -182,6 +182,21 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    try {
+                        JSONObject err = errorResponse.getJSONObject("error");
+                        int errCode = err.getInt("code");
+                        if (errCode == 4) {
+                            Log.e("AUTH","fetchUserInfo: rate limiting error!");
+                            Toast.makeText(activity, getString(R.string.toast_auth_rate_limiting_error), Toast.LENGTH_SHORT)
+                                    .show();
+                            activity.finish();
+                            return;
+                        }
+                    } catch (org.json.JSONException e) {
+                        // pass
+                    }
+                }
                 Log.e("AUTH", "fetchUserInfo failure: " + errorResponse.toString());
                 Toast.makeText(activity, getString(R.string.toast_account_creation_error), Toast.LENGTH_SHORT)
                         .show();
