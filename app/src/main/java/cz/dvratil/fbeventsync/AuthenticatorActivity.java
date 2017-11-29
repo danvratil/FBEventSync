@@ -196,8 +196,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     } catch (org.json.JSONException e) {
                         // pass
                     }
+                    Log.e("AUTH", "fetchUserInfo failure: " + errorResponse.toString());
+                } else {
+                    Log.e("AUTH","fetchUserInfo failure: unknown error");
                 }
-                Log.e("AUTH", "fetchUserInfo failure: " + errorResponse.toString());
                 Toast.makeText(activity, getString(R.string.toast_account_creation_error), Toast.LENGTH_SHORT)
                         .show();
                 activity.finish();
