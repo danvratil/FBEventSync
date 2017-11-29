@@ -27,6 +27,9 @@ public class Graph {
     private static final String BASE_URL = "https://graph.facebook.com/v2.9/";
 
     public static final String FIELDS_PARAM = "fields";
+    public static final String LIMIT_PARAM = "limit";
+    public static final String TYPE_PARAM = "type";
+    public static final String AFTER_PARAM = "after";
 
     public static RequestHandle me(String accessToken, AsyncHttpResponseHandler handler) {
         RequestParams params = new RequestParams();

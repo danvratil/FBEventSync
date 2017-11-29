@@ -371,9 +371,10 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         do {
             RequestParams params = new RequestParams();
             params.add(Graph.FIELDS_PARAM, "id,name,description,place,start_time,end_time,owner,is_canceled");
-            params.add("type", calendar.type());
+            params.add(Graph.LIMIT_PARAM, "100");
+            params.add(Graph.TYPE_PARAM, calendar.type());
             if (mSyncContext.nextCursor != null) {
-                params.add("after", mSyncContext.nextCursor);
+                params.add(Graph.AFTER_PARAM, mSyncContext.nextCursor);
             }
 
             logger.debug("SYNC.EVENTS","Sending Graph request...");
