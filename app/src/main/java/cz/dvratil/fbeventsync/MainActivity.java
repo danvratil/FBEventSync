@@ -21,6 +21,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Build;
+import android.provider.CalendarContract;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
         Account accounts[] = AccountManager.get(this).getAccountsByType(getString(R.string.account_type));
         if (accounts.length > 0) {
-            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{ getString(R.string.content_authority) });
+            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{CalendarContract.AUTHORITY });
             startActivity(intent);
         }
     }

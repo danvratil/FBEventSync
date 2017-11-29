@@ -128,7 +128,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             Bundle extras = new Bundle();
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-            ContentResolver.requestSync(account, context.getString(R.string.content_authority), extras);
+            ContentResolver.requestSync(account, CalendarContract.AUTHORITY, extras);
             logger.info("SYNC", "Explicitly requested sync for account %s", account.name);
         }
     }
@@ -148,21 +148,25 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             Bundle extras = new Bundle();
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-            ContentResolver.requestSync(account, context.getString(R.string.content_authority), extras);
+
+            ContentResolver.cancelSync(account, CalendarContract.AUTHORITY);
+            if (syncInterval == 0) {
+                continue;
+            }
 
             // Schedule periodic sync based on current configuration
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 // we can enable inexact timers in our periodic sync
                 SyncRequest request = new SyncRequest.Builder()
                         .syncPeriodic(syncInterval, syncInterval / 3)
-                        .setSyncAdapter(account, context.getString(R.string.content_authority))
+                        .setSyncAdapter(account, CalendarContract.AUTHORITY)
                         .setExtras(new Bundle()).build();
                 ContentResolver.requestSync(request);
                 logger.info("SYNC.SCHED",
                             "Scheduled periodic sync for account %s using requestSync, interval: %d",
                             account.name, syncInterval);
             } else {
-                ContentResolver.addPeriodicSync(account, context.getString(R.string.content_authority), new Bundle(), syncInterval);
+                ContentResolver.addPeriodicSync(account, CalendarContract.AUTHORITY, new Bundle(), syncInterval);
                 logger.info("SYNC.SCHED",
                             "Scheduled periodic sync for account %s using addPeriodicSync, interval: %d",
                             account.name, syncInterval);
