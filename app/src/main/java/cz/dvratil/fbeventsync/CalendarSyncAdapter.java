@@ -253,7 +253,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                     CalendarContract.Calendars.CONTENT_URI,
                     new String[]{ CalendarContract.Calendars._ID },
                     selection, selectionArgs, null);
-            if (!cur.moveToNext()) {
+            if (cur == null || !cur.moveToNext()) {
                 return -1;
             }
 
