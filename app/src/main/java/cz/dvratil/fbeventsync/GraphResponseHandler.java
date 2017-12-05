@@ -25,24 +25,28 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 
 
-abstract public class GraphResponseHandler extends JsonHttpResponseHandler {
+public class GraphResponseHandler extends JsonHttpResponseHandler {
 
     private Logger mLogger = null;
     private Context mContext = null;
+
+    private JSONObject mResponse = null;
 
     public GraphResponseHandler(Context context) {
         mContext = context;
         mLogger = Logger.getInstance(context);
     }
 
-    abstract public void handleResponse(JSONObject response);
+    public JSONObject getResponse() {
+        return mResponse;
+    }
 
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
         if (response.has("error")) {
             onFailure(statusCode, headers, null, response);
         } else {
-            handleResponse(response);
+            mResponse = response;
         }
     }
 
@@ -57,11 +61,13 @@ abstract public class GraphResponseHandler extends JsonHttpResponseHandler {
             int errCode = err.getInt("code");
             if (errCode == 190) {
                 requestTokenRefresh();
+                return;
             } else if (errorResponse.has("message")) {
                 mLogger.error("GRAPH", "Graph error:" + errorResponse.getString("message"));
             } else {
                 mLogger.error("GRAPH", "Graph error:" + errorResponse.toString());
             }
+            mResponse = errorResponse;
         } catch (org.json.JSONException e) {
             mLogger.error("GRAPH", "JSONException: %s", e.getMessage());
         }
