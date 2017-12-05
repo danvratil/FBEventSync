@@ -71,19 +71,9 @@ import cz.msebera.android.httpclient.client.HttpClient;
 
 public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
-    private FBCalendar[] FB_CALENDARS = null;
-
-    private FBCalendar mAttendingCalendar = null;
-    private FBCalendar mMaybeCalendar = null;
-    private FBCalendar mDeclinedCalendar = null;
-    private FBCalendar mNoAnswerCalendar = null;
-    private FBCalendar mBirthdayCalendar = null;
-
-
     private Logger logger = null;
 
     SyncContext mSyncContext = null;
-
 
     public CalendarSyncAdapter(Context context, boolean autoInitialize) {
         super(context,  autoInitialize);
