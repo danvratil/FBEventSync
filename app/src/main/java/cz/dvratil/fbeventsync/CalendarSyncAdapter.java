@@ -148,7 +148,39 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         logger.info("SYNC", "performSync request for account %s, authority %s", account.name, authority);
 
         if (!checkPermissions()) {
+            logger.info("SYNC","Skipping sync, missing permissions");
             return;
+        }
+
+        SharedPreferences prefs = getContext().getSharedPreferences(
+                getContext().getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE);
+
+        // Don't sync more often than every minute
+        long lastSync = prefs.getLong("lastSync", 0);
+        Calendar calendar = Calendar.getInstance();
+        if (calendar.getTimeInMillis() - lastSync < 60 * 1000) {
+            logger.info("SYNC", "Skipping sync, last sync was only %d seconds ago",
+                    (calendar.getTimeInMillis() - lastSync) / 1000);
+            return;
+        }
+
+        // Allow up to 5 syncs per hour
+        int syncsPerHour = prefs.getInt("syncsPerHour", 0);
+        if (calendar.getTimeInMillis() - lastSync < 3600 * 1000) {
+            int hour = calendar.get(Calendar.HOUR);
+            calendar.setTimeInMillis(lastSync);
+            logger.debug("SYNC", "Lasy sync hour: %d, now sync hour: %d", calendar.get(Calendar.HOUR), hour);
+            if (calendar.get(Calendar.HOUR) != hour) {
+                syncsPerHour = 1;
+            } else {
+                syncsPerHour++;
+            }
+            if (syncsPerHour > 5) {
+                logger.info("SYNC", "Skipping sync, too many syncs per hour");
+                return;
+            }
+        } else {
+            syncsPerHour = 1;
         }
 
         Context ctx = getContext();
@@ -185,6 +217,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         FBCalendar.releaseCalendars();
 
         mSyncContext = null;
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong("lastSync", Calendar.getInstance().getTimeInMillis());
+        editor.putInt("syncsPerHour", syncsPerHour);
+        editor.commit();
 
         logger.info("SYNC", "Sync for %s done", account.name);
     }
