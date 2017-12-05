@@ -39,6 +39,14 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import biweekly.component.VEvent;
+import biweekly.property.DateEnd;
+import biweekly.property.DateStart;
+import biweekly.property.Description;
+import biweekly.property.Location;
+import biweekly.property.Organizer;
+import biweekly.property.RawProperty;
+import biweekly.property.Status;
+import biweekly.property.Url;
 import biweekly.util.ICalDate;
 
 public class FBEvent {
@@ -165,20 +173,68 @@ public class FBEvent {
         FBEvent fbEvent = new FBEvent();
         ContentValues values = fbEvent.mValues;
 
-        values.put(CalendarContract.Events.UID_2445, vevent.getUid().getValue());
-        values.put(CalendarContract.Events.TITLE, vevent.getSummary().getValue());
-        values.put(CalendarContract.Events.ALL_DAY, true);
-        ICalDate date = vevent.getDateStart().getValue();
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.set(date.getYear() + 1900, date.getMonth(), date.getDate(), 0, 0, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        values.put(CalendarContract.Events.DTSTART, calendar.getTimeInMillis());
-        values.put(CalendarContract.Events.EVENT_TIMEZONE, Time.TIMEZONE_UTC);
-        // Those are identical for all birthdays, so we hardcode them
-        values.put(CalendarContract.Events.RRULE, "FREQ=YEARLY");
-        values.put(CalendarContract.Events.DURATION, "P1D");
+        String uid = vevent.getUid().getValue();
+        boolean isBirthday = true;
+        if (uid.startsWith("e")) { // events
+            uid = uid.substring(1, uid.indexOf("@"));
+            isBirthday = false;
+        }
 
-        fbEvent.mRSVP = FBCalendar.CalendarType.TYPE_BIRTHDAY;
+        values.put(CalendarContract.Events.UID_2445, uid);
+        values.put(CalendarContract.Events.TITLE, vevent.getSummary().getValue());
+        Description desc = vevent.getDescription();
+        if (desc != null) {
+            values.put(CalendarContract.Events.DESCRIPTION, desc.getValue());
+        }
+        Organizer organizer = vevent.getOrganizer();
+        if (organizer != null) {
+            values.put(CalendarContract.Events.ORGANIZER, organizer.getCommonName());
+        }
+        Location location = vevent.getLocation();
+        if (location != null) {
+            values.put(CalendarContract.Events.EVENT_LOCATION, location.getValue());
+        }
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+
+        if (isBirthday) {
+            ICalDate date = vevent.getDateStart().getValue();
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            calendar.set(date.getYear() + 1900, date.getMonth(), date.getDate(), 0, 0, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            values.put(CalendarContract.Events.DTSTART, calendar.getTimeInMillis());
+            // Those are identical for all birthdays, so we hardcode them
+            values.put(CalendarContract.Events.ALL_DAY, true);
+            values.put(CalendarContract.Events.RRULE, "FREQ=YEARLY");
+            values.put(CalendarContract.Events.DURATION, "P1D");
+
+            fbEvent.mRSVP = FBCalendar.CalendarType.TYPE_BIRTHDAY;
+        } else {
+            DateStart start = vevent.getDateStart();
+            values.put(CalendarContract.Events.DTSTART, start.getValue().getTime());
+            DateEnd end = vevent.getDateEnd();
+            if (end != null) {
+                values.put(CalendarContract.Events.DTEND, end.getValue().getTime());
+            }
+
+            RawProperty prop = vevent.getExperimentalProperty("PARTSTAT");
+            if (prop != null) {
+                switch (prop.getValue()) {
+                    case "ACCEPTED":
+                        fbEvent.mRSVP = FBCalendar.CalendarType.TYPE_ATTENDING;
+                        break;
+                    case "TENTATIVE":
+                        fbEvent.mRSVP = FBCalendar.CalendarType.TYPE_MAYBE;
+                        break;
+                    case "DECLINED":
+                        fbEvent.mRSVP = FBCalendar.CalendarType.TYPE_DECLINED;
+                        break;
+                    case "NEEDS-ACTION":
+                        fbEvent.mRSVP = FBCalendar.CalendarType.TYPE_NOT_REPLIED;
+                        break;
+                }
+            }
+        }
+
         return fbEvent;
     }
 

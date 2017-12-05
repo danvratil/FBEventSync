@@ -2,6 +2,7 @@
     <string name="app_name">FB Event Sync</string>
     <string name="full_app_name">Event Sync for Facebook</string>
     <string name="account_type">cz.dvratil.fbeventsync</string>
+    <string name="cz_dvratil_fbeventsync_preferences">cz.dvratil.fbeventsync_preferences</string>
 
     <string name="version_label">Version: %s</string>
     <string name="add_account_btn">Add Account</string>

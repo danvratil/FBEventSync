@@ -35,11 +35,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.format.Time;
+import android.widget.Toast;
 
 import com.loopj.android.http.DataAsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
@@ -56,6 +59,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Date;
+import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
@@ -136,6 +140,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
+
+
     @Override
     public void onPerformSync(Account account, Bundle bundle, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
@@ -169,6 +175,21 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
         FBCalendar.initializeCalendars(mSyncContext);
 
+        // Sync via iCal only - not avoiding Graph calls, but it gives us access to private group
+        // events which are otherwise missing from Graph
+        syncEventsViaICal();
+        //syncEventsViaGraph();
+
+        syncBirthdayCalendar();
+
+        FBCalendar.releaseCalendars();
+
+        mSyncContext = null;
+
+        logger.info("SYNC", "Sync for %s done", account.name);
+    }
+
+    private void syncEventsViaGraph() {
         String cursor = null;
         do {
             JSONObject response = fetchEvents(cursor);
@@ -176,6 +197,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 if (response.has("data")) {
                     JSONArray data = response.getJSONArray("data");
                     int len = data.length();
+                    FBEvent lastEvent = null;
                     for (int i = 0; i < len; i++) {
                         FBEvent event = FBEvent.parse(data.getJSONObject(i));
                         if (event != null) {
@@ -186,6 +208,18 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                             }
                             event.setCalendar(calendar);
                             calendar.syncEvent(event);
+                            lastEvent = event;
+                        }
+                    }
+
+                    // Only sync events back one year, don't go any further in the past to save
+                    // bandwidth
+                    if (lastEvent != null) {
+                        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+                        cal.add(Calendar.YEAR, -1);
+                        long lastEventStart = lastEvent.getValues().getAsLong(CalendarContract.Events.DTSTART);
+                        if (lastEventStart < cal.getTimeInMillis()) {
+                            break;
                         }
                     }
                 }
@@ -200,14 +234,6 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 mSyncContext.getSyncResult().stats.numParseExceptions++;
             }
         } while (cursor != null);
-
-        syncBirthdayCalendar();
-
-        FBCalendar.releaseCalendars();
-
-        mSyncContext = null;
-
-        logger.info("SYNC", "Sync for %s done", account.name);
     }
 
     private JSONObject fetchEvents(String cursor) {
@@ -244,7 +270,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private void syncBirthdayCalendar() {
+    private String getICalSyncURI() {
         AccountManager accManager = AccountManager.get(mSyncContext.getContext());
         String uri = accManager.getUserData(mSyncContext.getAccount(), Authenticator.DATA_BDAY_URI);
         if (uri == null || uri.isEmpty()) {
@@ -254,14 +280,36 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             accManager.invalidateAuthToken(
                     mSyncContext.getContext().getString(R.string.account_type),
                     mSyncContext.getAccessToken());
-            return;
+            return null;
         }
         uri = uri.replace("webcal", "https");
+        return uri;
+    }
+
+    private void syncEventsViaICal() {
+        String uri = getICalSyncURI();
+        if (uri == null) {
+            return;
+        }
+
+        uri = uri.replace("/b.php", "/u.php");
+        syncICalCalendar(uri);
+    }
+
+    private void syncBirthdayCalendar() {
+        String uri = getICalSyncURI();
+        if (uri == null) {
+            return;
+        }
+        syncICalCalendar(uri);
+    }
+
+    private void syncICalCalendar(String uri) {
         Graph.fetchBirthdayICal(uri, new DataAsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 if (responseBody == null) {
-                    logger.error("SYNC.BDAY", "Response body is empty!!!!!");
+                    logger.error("SYNC.ICAL", "Response body is empty!!!!!");
                     return;
                 }
 

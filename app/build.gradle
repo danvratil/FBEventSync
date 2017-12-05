@@ -55,5 +55,7 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'org.apache.commons:commons-lang3:3.5'
     compile 'net.sf.biweekly:biweekly:0.6.1'
+
+    debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
     testCompile 'junit:junit:4.12'
 }

@@ -48,8 +48,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         // API 21
         //String preferencesName = PreferenceManager.getDefaultSharedPreferencesName(this);
-        final String preferencesName = "cz.dvratil.fbeventsync_preferences";
-        SharedPreferences prefs = getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE);
         prefs.registerOnSharedPreferenceChangeListener(
                 new SharedPreferences.OnSharedPreferenceChangeListener() {
                     public void onSharedPreferenceChanged(
