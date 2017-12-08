@@ -47,6 +47,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import biweekly.Biweekly;
@@ -308,6 +309,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return null;
         }
         uri = uri.replace("webcal", "https");
+        Locale locale = Locale.getDefault();
+        uri += String.format("&locale=%s_%s", locale.getLanguage(), locale.getCountry());
         return uri;
     }
 
