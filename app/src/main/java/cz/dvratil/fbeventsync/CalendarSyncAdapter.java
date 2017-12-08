@@ -23,26 +23,18 @@ import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.text.format.Time;
-import android.widget.Toast;
 
 import com.loopj.android.http.DataAsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
@@ -55,23 +47,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Date;
-import java.util.Random;
-import java.util.Set;
 import java.util.TimeZone;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-
-import org.apache.commons.lang3.StringUtils;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
-import biweekly.util.ICalDate;
-import cz.msebera.android.httpclient.client.HttpClient;
 
 public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
