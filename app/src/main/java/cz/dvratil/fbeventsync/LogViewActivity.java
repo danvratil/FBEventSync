@@ -91,11 +91,11 @@ public class LogViewActivity extends AppCompatActivity {
                                 "App ID: %s\n" +
                                         "App version: %d (%s)\n" +
                                         "App build: %s\n" +
-                                        "OS: %s %s (API %d)\n",
+                                        "OS: %s (API %d)\n",
                                 BuildConfig.APPLICATION_ID,
                                 BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME,
                                 BuildConfig.BUILD_TYPE,
-                                Build.VERSION.BASE_OS, Build.VERSION.RELEASE, Build.VERSION.SDK_INT));
+                                Build.VERSION.RELEASE, Build.VERSION.SDK_INT));
 
                 File logFile = new File(getFilesDir(), Logger.LOG_FILE);
                 if (!logFile.exists() || !logFile.canRead()) {
