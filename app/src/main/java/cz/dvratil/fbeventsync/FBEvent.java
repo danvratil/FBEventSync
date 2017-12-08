@@ -314,7 +314,10 @@ public class FBEvent {
         throws android.os.RemoteException,
                android.database.sqlite.SQLiteException
     {
-        ContentValues values = new ContentValues();
+        ContentValues values = new ContentValues(mValues);
+        values.remove(CalendarContract.Events._ID);
+        values.remove(CalendarContract.Events.UID_2445);
+
         context.getContentProviderClient().update(
                 CalendarContract.Events.CONTENT_URI,
                 values,
