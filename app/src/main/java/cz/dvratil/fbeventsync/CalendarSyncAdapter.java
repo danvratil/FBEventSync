@@ -189,16 +189,17 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
         mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult);
 
-        FBCalendar.initializeCalendars(mSyncContext);
+        FBCalendar.Set calendars = new FBCalendar.Set();
+        calendars.initialize(mSyncContext);
 
         // Sync via iCal only - not avoiding Graph calls, but it gives us access to private group
         // events which are otherwise missing from Graph
-        syncEventsViaICal();
-        //syncEventsViaGraph();
+        syncEventsViaICal(calendars);
+        //syncEventsViaGraph(calendars);
 
-        syncBirthdayCalendar();
+        syncBirthdayCalendar(calendars);
 
-        FBCalendar.releaseCalendars();
+        calendars.release();
 
         mSyncContext = null;
 
@@ -210,7 +211,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         logger.info("SYNC", "Sync for %s done", account.name);
     }
 
-    private void syncEventsViaGraph() {
+    private void syncEventsViaGraph(FBCalendar.Set calendars) {
         String cursor = null;
         do {
             JSONObject response = fetchEvents(cursor);
@@ -222,7 +223,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                     for (int i = 0; i < len; i++) {
                         FBEvent event = FBEvent.parse(data.getJSONObject(i));
                         if (event != null) {
-                            FBCalendar calendar = FBCalendar.getForEvent(event);
+                            FBCalendar calendar = calendars.getCalendarForEvent(event);
                             if (calendar == null) {
                                 logger.error("SYNC", "Failed to find calendar for event!");
                                 continue;
@@ -307,25 +308,25 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         return uri;
     }
 
-    private void syncEventsViaICal() {
+    private void syncEventsViaICal(FBCalendar.Set calendars) {
         String uri = getICalSyncURI();
         if (uri == null) {
             return;
         }
 
         uri = uri.replace("/b.php", "/u.php");
-        syncICalCalendar(uri);
+        syncICalCalendar(calendars, uri);
     }
 
-    private void syncBirthdayCalendar() {
+    private void syncBirthdayCalendar(FBCalendar.Set calendars) {
         String uri = getICalSyncURI();
         if (uri == null) {
             return;
         }
-        syncICalCalendar(uri);
+        syncICalCalendar(calendars, uri);
     }
 
-    private void syncICalCalendar(String uri) {
+    private void syncICalCalendar(final FBCalendar.Set calendars, String uri) {
         Graph.fetchBirthdayICal(uri, new DataAsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -337,7 +338,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 ICalendar cal = Biweekly.parse(new String(responseBody)).first();
                 for (VEvent vevent : cal.getEvents()) {
                     FBEvent event = FBEvent.parse(vevent);
-                    FBCalendar calendar = FBCalendar.getForEvent(event);
+                    FBCalendar calendar = calendars.getCalendarForEvent(event);
                     event.setCalendar(calendar);
                     calendar.syncEvent(event);
                 }

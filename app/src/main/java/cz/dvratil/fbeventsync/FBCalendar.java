@@ -58,26 +58,24 @@ public class FBCalendar {
     private HashMap<String /* FBID */, Long /* local ID */ > mLocalIds = null;
     private long mLocalCalendarId = -1;
 
-    private static HashMap<CalendarType, FBCalendar> sCalendars = null;
-
-    public static void initializeCalendars(SyncContext ctx) {
-        sCalendars = new HashMap<>();
-        sCalendars.put(CalendarType.TYPE_ATTENDING, new FBCalendar(ctx, CalendarType.TYPE_ATTENDING));
-        sCalendars.put(CalendarType.TYPE_MAYBE, new FBCalendar(ctx, CalendarType.TYPE_MAYBE));
-        sCalendars.put(CalendarType.TYPE_DECLINED, new FBCalendar(ctx, CalendarType.TYPE_DECLINED));
-        sCalendars.put(CalendarType.TYPE_NOT_REPLIED, new FBCalendar(ctx, CalendarType.TYPE_NOT_REPLIED));
-        sCalendars.put(CalendarType.TYPE_BIRTHDAY, new FBCalendar(ctx, CalendarType.TYPE_BIRTHDAY));
-    }
-
-    public static void releaseCalendars() {
-        for (Map.Entry<CalendarType, FBCalendar> entry : sCalendars.entrySet()) {
-            entry.getValue().finalizeSync();
+    public static class Set extends HashMap<CalendarType, FBCalendar> {
+        public void initialize(SyncContext ctx) {
+            put(CalendarType.TYPE_ATTENDING, new FBCalendar(ctx, CalendarType.TYPE_ATTENDING));
+            put(CalendarType.TYPE_MAYBE, new FBCalendar(ctx, CalendarType.TYPE_MAYBE));
+            put(CalendarType.TYPE_DECLINED, new FBCalendar(ctx, CalendarType.TYPE_DECLINED));
+            put(CalendarType.TYPE_NOT_REPLIED, new FBCalendar(ctx, CalendarType.TYPE_NOT_REPLIED));
+            put(CalendarType.TYPE_BIRTHDAY, new FBCalendar(ctx, CalendarType.TYPE_BIRTHDAY));
         }
-        sCalendars = null;
-    }
 
-    public static FBCalendar getForEvent(FBEvent event) {
-        return sCalendars.get(event.getRSVP());
+        FBCalendar getCalendarForEvent(FBEvent event) {
+            return get(event.getRSVP());
+        }
+
+        public void release() {
+            for (Map.Entry<CalendarType, FBCalendar> entry : entrySet()) {
+                entry.getValue().finalizeSync();
+            }
+        }
     }
 
     private long createLocalCalendar() throws android.os.RemoteException,
@@ -234,12 +232,12 @@ public class FBCalendar {
         return CalendarContract.Events.AVAILABILITY_BUSY;
     }
 
-    public Set<Integer> getReminderIntervals() {
+    public java.util.Set<Integer> getReminderIntervals() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext.getContext());
-        Set<String> defaultReminder = new HashSet<>();
+        java.util.Set<String> defaultReminder = new HashSet<>();
         defaultReminder.add(mContext.getContext().getString(R.string.pref_reminder_default));
 
-        Set<String> as = null;
+        java.util.Set<String> as = null;
         switch (mType) {
             case TYPE_NOT_REPLIED:
                 as = prefs.getStringSet("pref_not_responded_reminders", defaultReminder);
@@ -256,7 +254,7 @@ public class FBCalendar {
             case TYPE_BIRTHDAY:
                 as = prefs.getStringSet("pref_birthday_reminders", defaultReminder);
         }
-        Set<Integer> rv = new HashSet<>();
+        java.util.Set<Integer> rv = new HashSet<>();
         for (String s : as) {
             rv.add(Integer.parseInt(s));
         }
