@@ -167,6 +167,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
 
+
         Context ctx = getContext();
         AccountManager mgr = AccountManager.get(ctx);
         String accessToken = null;
@@ -188,6 +189,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
 
         mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult);
+
+        removeOldBirthdayCalendar(mSyncContext);
 
         FBCalendar.Set calendars = new FBCalendar.Set();
         calendars.initialize(mSyncContext);
@@ -355,6 +358,27 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 // silence debug output
             }
         });
+    }
+
+    private void removeOldBirthdayCalendar(SyncContext context) {
+        // remove old "birthday" calendar
+        try {
+            context.getContentProviderClient().delete(
+                    CalendarContract.Calendars.CONTENT_URI,
+                    String.format("((%s = ?) AND (%s = ?) AND (%s = ?))",
+                            CalendarContract.Calendars.NAME,
+                            CalendarContract.Calendars.ACCOUNT_NAME,
+                            CalendarContract.Calendars.ACCOUNT_TYPE),
+                    new String[]{
+                            "birthday", // old name for the fb_birthday_calendar calendar
+                            context.getAccount().name,
+                            context.getAccount().type
+                    });
+        } catch (android.os.RemoteException e) {
+            logger.error("SYNC", "RemoteException when removing legacy calendar: %s", e.getMessage());
+        } catch (android.database.sqlite.SQLiteException e) {
+            logger.error("SYNC","SQLiteException when removing legacy calendar: %s", e.getMessage());
+        }
     }
 
     private boolean checkPermissions() {
