@@ -17,6 +17,7 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -271,6 +272,7 @@ public class FBEvent {
                 String.format("(%s = ?)", CalendarContract.Reminders.EVENT_ID),
                 new String[]{ String.valueOf(localEventId) },
                 null);
+        @SuppressLint("UseSparseArrays")
         HashMap<Integer /* minutes */, Long /* reminder ID */> localReminders = new HashMap<>();
         if (cur != null) {
             while (cur.moveToNext()) {

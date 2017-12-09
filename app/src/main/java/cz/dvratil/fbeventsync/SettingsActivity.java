@@ -17,6 +17,7 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -111,6 +112,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         private void showColorDialog(String key, final Preference preference) {
             LayoutInflater inflater = getActivity().getLayoutInflater();
+            @SuppressLint("InflateParams")
             View colorView = inflater.inflate(R.layout.color_dialog, null);
 
             int color = PreferenceManager.getDefaultSharedPreferences(getActivity())

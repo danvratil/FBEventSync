@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -96,10 +97,10 @@ public class FBCalendar {
         // TODO: Figure out how to get local timezone
         //values.put(CalendarContract.Calendars.CALENDAR_TIMEZONE, tz);
         values.put(CalendarContract.Calendars.ALLOWED_REMINDERS,
-                String.format("%d,%d", CalendarContract.Reminders.METHOD_DEFAULT,
+                String.format(Locale.US, "%d,%d", CalendarContract.Reminders.METHOD_DEFAULT,
                         CalendarContract.Reminders.METHOD_ALERT));
         values.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-                String.format("%d,%d,%d", CalendarContract.Events.AVAILABILITY_BUSY,
+                String.format(Locale.US, "%d,%d,%d", CalendarContract.Events.AVAILABILITY_BUSY,
                         CalendarContract.Events.AVAILABILITY_FREE,
                         CalendarContract.Events.AVAILABILITY_TENTATIVE));
         values.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
@@ -273,7 +274,7 @@ public class FBCalendar {
                 name = "pref_birthday_enabled";
                 break;
             default:
-                assert(false);
+                Log.wtf("FBCalendar","Unhandled calendar type");
                 return true;
         }
         return mContext.getPreferences().getBoolean(name, true);

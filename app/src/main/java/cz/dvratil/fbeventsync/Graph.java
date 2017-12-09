@@ -49,7 +49,7 @@ public class Graph {
             edit.putInt(PREFS_CALLCOUNT, this.callCount);
             edit.putInt(PREFS_TOTALTIME, this.totalTime);
             edit.putInt(PREFS_TOTALCPUTIME, this.totalCPUTime);
-            edit.commit();
+            edit.apply();
         }
 
         static AppUsage load(Context context) {

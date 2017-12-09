@@ -25,6 +25,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -67,6 +69,22 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private ProgressBar mProgressBar = null;
     private TextView mProgressLabel = null;
 
+    protected void onBirthdayLinkExtracted(String s) {
+        Log.d("BDAY","Found bday URL: " + s);
+
+        if (s.isEmpty()) {
+            Toast.makeText(this, "Authentication error: failed to retrieve birthday calendar", Toast.LENGTH_LONG)
+                    .show();
+            finish();
+            return;
+        }
+
+        // Remove opening and trailing quotes that come from JavaScript
+        mBDayCalendar = s.substring(1, s.length() - 1);
+        mProgressLabel.setText(getString(R.string.auth_progress_retrieving_userinfo));
+        fetchUserInfo(mAccessToken);
+    }
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -75,9 +93,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         final AccountAuthenticatorActivity activity = this;
 
-        mProgressBar = (ProgressBar) findViewById(R.id.authProgressBar);
-        mProgressLabel = (TextView) findViewById(R.id.authProgressString);
-                mWebView = (WebView) findViewById(R.id.webview);
+        mProgressBar = findViewById(R.id.authProgressBar);
+        mProgressLabel = findViewById(R.id.authProgressString);
+        mWebView = findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -86,9 +104,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             }
         });
         mWebView.setWebViewClient(new WebViewClient() {
+
             @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                Toast.makeText(activity, "Authentication error: " + error.getDescription(), Toast.LENGTH_SHORT)
+            @SuppressWarnings("deprecation") // Deprecated in API level 23
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Toast.makeText(activity, "Authentication error: " + description, Toast.LENGTH_LONG)
                         .show();
             }
 
@@ -116,28 +136,45 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     mWebView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0");
                     mWebView.loadUrl("https://www.facebook.com/events");
                 } else if (uri.getPath().equals("/events/")) {
-                    view.evaluateJavascript(
-                            "(function() { " +
-                                   "  var elems = document.getElementsByTagName(\"a\");" +
-                                   "  for (var i = 0; i < elems.length; i++) {" +
-                                   "    var link = elems[i];" +
-                                   "    if (link.href.startsWith(\"webcal://www.facebook.com/ical/b.php\")) {" +
-                                   "      return link.href;" +
-                                   "    }" +
-                                   "  }" +
-                                   "})();",
-                            new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String s) {
-                                    Log.d("BDAY","Found bday URL: " + s);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                        class JSObject {
+                            @JavascriptInterface
+                            public void linkExtracted(String s) {
+                                onBirthdayLinkExtracted(s);
+                            }
+                        }
 
-                                    // Remove opening and trailing quotes that come from JavaScript
-                                    mBDayCalendar = s.substring(1, s.length() - 1);
-                                    mProgressLabel.setText(getString(R.string.auth_progress_retrieving_userinfo));
-                                    fetchUserInfo(mAccessToken);
-                                }
-                            });
-
+                        view.addJavascriptInterface(new JSObject(), "android");
+                        view.loadUrl(
+                                "javascript:(function() { " +
+                                        "  var elems = document.getElementByTagName(\"a\");" +
+                                        "  for (var i = 0; i < elems.length; i++) {" +
+                                        "    var link = elems[i];" +
+                                        "    if (link.href.startsWith(\"webcal://www.facebook.com/ical/b.php\")) {" +
+                                        "        android.linkExtracted(link.href); " +
+                                        "        return;" +
+                                        "    }" +
+                                        "  }" +
+                                        "  android.linkExtracted(\"\");" +
+                                        "})();");
+                    } else {
+                        view.evaluateJavascript(
+                                "(function() { " +
+                                        "  var elems = document.getElementsByTagName(\"a\");" +
+                                        "  for (var i = 0; i < elems.length; i++) {" +
+                                        "    var link = elems[i];" +
+                                        "    if (link.href.startsWith(\"webcal://www.facebook.com/ical/b.php\")) {" +
+                                        "      return link.href;" +
+                                        "    }" +
+                                        "  }" +
+                                        "})();",
+                                new ValueCallback<String>() {
+                                    @Override
+                                    public void onReceiveValue(String s) {
+                                        onBirthdayLinkExtracted(s);
+                                    }
+                                });
+                    }
                 }
             }
         });
@@ -148,6 +185,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         // Once the check is finished it will call startLogin()
         checkInternetPermission();
     }
+
 
     private void startLogin() {
         Uri uri = new Uri.Builder()

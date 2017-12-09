@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView view = (TextView) findViewById(R.id.versionLabel);
+        TextView view = findViewById(R.id.versionLabel);
         view.setText(String.format(getString(R.string.version_label), BuildConfig.VERSION_NAME));
 
         checkAccounts();
@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onAddAccountClicked(View view) {
         Intent intent = new Intent(Settings.ACTION_ADD_ACCOUNT);
-        intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[]{ getString(R.string.account_type) });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, new String[]{getString(R.string.account_type)});
+        }
         startActivity(intent);
     }
 

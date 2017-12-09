@@ -16,6 +16,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/full_app_name"
         android:roundIcon="@mipmap/ic_launcher"
@@ -24,7 +25,9 @@
         tools:replace="android:label">
 
         <!-- Services //-->
-        <service android:name=".AuthenticatorService">
+        <service android:name=".AuthenticatorService"
+            android:exported="true"
+            android:permission="android.permission.AUTHENTICATE_ACCOUNTS">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>

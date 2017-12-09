@@ -210,7 +210,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putLong("lastSync", Calendar.getInstance().getTimeInMillis());
         editor.putInt("syncsPerHour", syncsPerHour);
-        editor.commit();
+        editor.apply();
 
         logger.info("SYNC", "Sync for %s done", account.name);
     }

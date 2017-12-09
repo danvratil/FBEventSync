@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Logger {
 
@@ -70,7 +71,7 @@ public class Logger {
     private LogLevel mMinLogCatLvl = LogLevel.INFO;
 
     protected Logger() {
-        mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
     }
 
     public synchronized static Logger getInstance(Context context) {

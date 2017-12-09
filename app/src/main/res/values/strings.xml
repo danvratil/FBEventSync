@@ -5,6 +5,7 @@
     <string name="cz_dvratil_fbeventsync_preferences">cz.dvratil.fbeventsync_preferences</string>
 
     <string name="version_label">Version: %s</string>
+    <string name="main_tagline">Now with birthday sync. Aaawww yeah!</string>
     <string name="add_account_btn">Add Account</string>
     <string name="show_logs_btn">Show Logs</string>
     <string name="configure_calendars_btn">Configure Calendars</string>
@@ -16,21 +17,19 @@
 
     <string name="action_clear_log">Clear Log</string>
     <string name="action_send_log_to_dev">Send to Developer</string>
-    <string name="intent_send_email">Send Email...</string>
+    <string name="intent_send_email">Send Email&#8230;</string>
 
     <string name="toast_error_sending_log">Failed to send logs: cannot read the log file</string>
     <string name="toast_account_creation_error">Error during authentication</string>
-    <string name="toast_account_creation_cancelled">Authentication canceled</string>
     <string name="toast_account_creation_success">Account successfully added</string>
     <string name="toast_auth_rate_limiting_error">Facebook API is currently experiencing problems. Please try again later.</string>
 
     <string name="facebook_app_id">1775235912769870</string>
-    <string name="fb_login_protocol_scheme">fb1775235912769870</string>
     <string name="title_activity_authenticator">Authenticate with Facebook</string>
 
-    <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook...</string>
-    <string name="auth_progress_retrieving_birthday">Retrieving friend\'s birthday list...</string>
-    <string name="auth_progress_retrieving_userinfo">Retrieving user info...</string>
+    <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook&#8230;</string>
+    <string name="auth_progress_retrieving_birthday">Retrieving friend\'s birthday list&#8230;</string>
+    <string name="auth_progress_retrieving_userinfo">Retrieving user info&#8230;</string>
 
     <string name="settings">Settings</string>
 
@@ -41,8 +40,6 @@
     <string name="cz_dvratil_fbeventsync_birthday_calendar">Friends\' Birthdays</string>
 
     <string name="pref_general_settings">General Settings</string>
-    <string name="pref_reminder_settings">Reminder Settings</string>
-    <string name="pref_reminder_settings_summary">Configure reminder settings for individual calendars.</string>
     <string name="pref_sync_settings">Sync Settings</string>
     <string name="pref_sync_settings_summary">Configure how often and when to sync events.</string>
 
