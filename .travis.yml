@@ -2,15 +2,19 @@ language: android
 jdk: oraclejdk8
 env:
   global:
-    - ANDROID_TARGET=android-17
     - ANDROID_ABI=armeabi-v7a
+  matrix:
+    - ANDROID_TARGET=android-17
+    - ANDROID_TARGET=android-20
+    - ANRDOID_TARGET=android-21
+    - ANDROID_TARGET=android-27
 android:
   components:
     # The BuildTools used by us
     - build-tools-26.0.2
 
     # The SDK we build against
-    - android-27
+    - ${ANDROID_TARGET}
 
   licenses:
     - 'android-sdk-preview-license-.+'
@@ -22,7 +26,7 @@ before_install:
     - echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e\n8933bad161af4178b1185d1a37fbf41ea5269c55" >> "$ANDROID_HOME/licenses/android-sdk-license"
 
 script:
-
+  - ./gradlew lint
   - ./gradlew test
 
 cache:
