@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test>
+    <testcase name="full_location_input">
+        <input>
+            {
+                "place": {
+                    "name": "Brutal Assault official",
+                    "location": {
+                        "city": "Jaromer",
+                        "country": "Czech Republic",
+                        "latitude": 50.338327357727,
+                        "longitude": 15.935524994091,
+                        "street": "Zdeňka Němečka 178",
+                        "zip": "55102"
+                    }
+                }
+            }
+        </input>
+        <output>
+            Brutal Assault official, Zdeňka Němečka 178, Jaromer, 55102, Czech Republic
+        </output>
+    </testcase>
+
+    <testcase name="name_only_input">
+        <input>
+            {
+                "place": {
+                    "name": "Roxy Prague"
+                }
+            }
+        </input>
+        <output>
+            Roxy Prague
+        </output>
+    </testcase>
+
+    <testcase name="geo_only_input">
+        <input>
+            {
+                "place": {
+                    "name": "BIO | OKO",
+                    "location": {
+                        "latitude": 50.10005,
+                        "longitude": 14.43017
+                    }
+                }
+            }
+        </input>
+        <output>
+            BIO | OKO, 14.43017, 50.10005
+        </output>
+    </testcase>
+
+    <testcase name="incomplete_address_input">
+        <input>
+            {
+                "place": {
+                    "name": "Rock Klub Nová Chmelnice",
+                    "location": {
+                        "city": "Prague",
+                        "street": "Koněvova 2597/219"
+                    }
+                }
+            }
+        </input>
+        <output>
+            Rock Klub Nová Chmelnice, Koněvova 2597/219, Prague
+        </output>
+    </testcase>
+
+    <testcase name="empty_place_input">
+        <input>
+            {
+                "place": {
+                }
+            }
+        </input>
+        <output></output>
+    </testcase>
+
+    <testcase name="null_place_input">
+        <input>
+            {}
+        </input>
+        <output></output>
+    </testcase>
+</test>

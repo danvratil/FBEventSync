@@ -46,8 +46,6 @@ import biweekly.property.Description;
 import biweekly.property.Location;
 import biweekly.property.Organizer;
 import biweekly.property.RawProperty;
-import biweekly.property.Status;
-import biweekly.property.Url;
 import biweekly.util.ICalDate;
 
 public class FBEvent {
@@ -77,14 +75,15 @@ public class FBEvent {
         mValues.put(CalendarContract.Events.CALENDAR_ID, calendar.localId());
     }
 
-    private static String parsePlace(JSONObject event) throws org.json.JSONException {
-        List<String> locationStr = new ArrayList<>();
+    protected static String parsePlace(JSONObject event) throws org.json.JSONException {
+        List<String> placeStr = new ArrayList<>();
         if (event.has("place")) {
             JSONObject place = event.getJSONObject("place");
             if (place.has("name")) {
-                locationStr.add(place.getString("name"));
+                placeStr.add(place.getString("name"));
             }
             if (place.has("location")) {
+                List<String> locationStr = new ArrayList<>();
                 JSONObject location = place.getJSONObject("location");
                 String[] locs = {"street", "city", "zip", "country"};
                 for (String loc : locs) {
@@ -93,16 +92,17 @@ public class FBEvent {
                     }
                 }
                 if (locationStr.isEmpty()) {
-                    if (place.has("longitude")) {
-                        locationStr.add(String.valueOf(place.getDouble("longitude")));
+                    if (location.has("longitude")) {
+                        locationStr.add(String.valueOf(location.getDouble("longitude")));
                     }
-                    if (place.has("latitude")) {
-                        locationStr.add(String.valueOf(place.getDouble("latitude")));
+                    if (location.has("latitude")) {
+                        locationStr.add(String.valueOf(location.getDouble("latitude")));
                     }
                 }
+                placeStr.addAll(locationStr);
             }
         }
-        return StringUtils.join(locationStr, ", ");
+        return StringUtils.join(placeStr, ", ");
     }
 
     private static long parseDateTime(String dt) throws java.text.ParseException {
