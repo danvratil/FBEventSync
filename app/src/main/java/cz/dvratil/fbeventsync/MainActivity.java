@@ -48,13 +48,22 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onConfigureAccountClicked(View view) {
-        Intent intent = new Intent(Settings.ACTION_SYNC_SETTINGS);
-        Account accounts[] = AccountManager.get(this).getAccountsByType(getString(R.string.account_type));
-        if (accounts.length > 0) {
-            intent.putExtra(Settings.EXTRA_AUTHORITIES, new String[]{CalendarContract.AUTHORITY });
-            startActivity(intent);
-        }
+    public void onConfigureCalendarsClicked(View view) {
+        openSettings(SettingsActivity.CONFIGURE_CALENDARS);
+    }
+
+    public void onConfigureSyncClicked(View view) {
+        openSettings(SettingsActivity.CONFIGURE_SYNC_ACTION);
+    }
+
+    public void onConfigureMiscClicked(View view) {
+        openSettings(SettingsActivity.CONFIGURE_MISC_ACTION);
+    }
+
+    private void openSettings(String action) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        intent.setAction(action);
+        startActivity(intent);
     }
 
     public void onShowLogsClicked(View view) {
@@ -71,10 +80,14 @@ public class MainActivity extends AppCompatActivity {
     private void checkAccounts() {
         Account accounts[] = AccountManager.get(this).getAccountsByType(getString(R.string.account_type));
         if (accounts.length == 0) {
-            findViewById(R.id.account_details_btn).setVisibility(View.GONE);
+            findViewById(R.id.calendar_prefs_btn).setVisibility(View.GONE);
+            findViewById(R.id.sync_prefs_btn).setVisibility(View.GONE);
+            findViewById(R.id.misc_prefs_btn).setVisibility(View.GONE);
             findViewById(R.id.add_account_btn).setVisibility(View.VISIBLE);
         } else {
-            findViewById(R.id.account_details_btn).setVisibility(View.VISIBLE);
+            findViewById(R.id.calendar_prefs_btn).setVisibility(View.VISIBLE);
+            findViewById(R.id.sync_prefs_btn).setVisibility(View.VISIBLE);
+            findViewById(R.id.misc_prefs_btn).setVisibility(View.VISIBLE);
             findViewById(R.id.add_account_btn).setVisibility(View.GONE);
         }
     }

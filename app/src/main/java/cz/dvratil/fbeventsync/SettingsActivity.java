@@ -40,9 +40,9 @@ public class SettingsActivity extends PreferenceActivity {
     private boolean mShouldForceSync = false;
     private boolean mShouldRescheduleSync = false;
 
-    private static String CONFIGURE_CALENDARS = "cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS";
-    private static String CONFIGURE_SYNC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC";
-    private static String CONFIGURE_MISC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC";
+    public static String CONFIGURE_CALENDARS = "cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS";
+    public static String CONFIGURE_SYNC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC";
+    public static String CONFIGURE_MISC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,13 +126,13 @@ public class SettingsActivity extends PreferenceActivity {
             new AlertDialog.Builder(getActivity())
                     .setView(colorView)
                     .setTitle(getString(R.string.choose_color))
-                    .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getString(R.string.save_btn), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             ((ColorPreference) preference).setValue(lobsterPicker.getColor());
                         }
                     })
-                    .setNegativeButton("CLOSE", null)
+                    .setNegativeButton(getString(R.string.close_btn), null)
                     .show();
         }
 

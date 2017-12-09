@@ -83,11 +83,25 @@
             android:text="@string/add_account_btn" />
 
         <Button
-            android:id="@+id/account_details_btn"
+            android:id="@+id/calendar_prefs_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onConfigureAccountClicked"
-            android:text="@string/configure_account_btn" />
+            android:onClick="onConfigureCalendarsClicked"
+            android:text="@string/configure_calendars_btn" />
+
+        <Button
+            android:id="@+id/sync_prefs_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onConfigureSyncClicked"
+            android:text="@string/configure_sync_btn" />
+
+        <Button
+            android:id="@+id/misc_prefs_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onConfigureMiscClicked"
+            android:text="@string/configure_misc_btn" />
 
         <Button
             android:id="@+id/show_logs_btn"
