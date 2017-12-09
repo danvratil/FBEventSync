@@ -24,6 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.annotation.ElementType;
@@ -39,18 +40,25 @@ public class ExternalFileDataProvider {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public static @interface ExternalFile {
+    public @interface ExternalFile {
         String fileName();
     }
 
-    @DataProvider(format = "%p[0]")
+    @DataProvider(format = "%m:%p[0]")
     public static Object[] load(FrameworkMethod testMethod)
         throws org.xml.sax.SAXException,
                javax.xml.parsers.ParserConfigurationException,
                java.io.IOException
     {
         String testDataFile = testMethod.getAnnotation(ExternalFile.class).fileName();
-        InputStream stream = new FileInputStream("src/test/res/values/" + testDataFile);
+        InputStream stream = null;
+        // FIXME: I cannot be bothered to figure out what our relative path to root is and
+        // it's different when I run it in Android Studio and manually via gradle from terminal
+        try {
+            stream = new FileInputStream("src/test/res/values/" + testDataFile);
+        } catch (java.io.FileNotFoundException e) {
+            stream = new FileInputStream("app/src/test/res/values/" + testDataFile);
+        }
 
         LinkedList<Object[]> testCases = new LinkedList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -71,6 +79,7 @@ public class ExternalFileDataProvider {
             });
         }
 
-        return testCases.toArray(new Object[3][]);
+        Object[][] v = testCases.toArray(new Object[testCases.size()][3]);
+        return v;
     }
 }

@@ -105,15 +105,17 @@ public class FBEvent {
         return StringUtils.join(placeStr, ", ");
     }
 
-    private static long parseDateTime(String dt) throws java.text.ParseException {
+    protected static long parseDateTime(String dt) throws java.text.ParseException {
         SimpleDateFormat format;
+        Date date;
         if (dt.length() > 8) {
-            format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ", Locale.US);
+            format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
+            date = format.parse(dt);
         } else {
-            format = new SimpleDateFormat("yyyyMMdd", Locale.US);
+            format = new SimpleDateFormat("yyyyMMdd Z", Locale.US);
+            // HACK: Force SimpleDateFormat to treat the date as UTC
+            date = format.parse(dt + " +0000");
         }
-
-        Date date = format.parse(dt);
         return date.getTime();
     }
 
