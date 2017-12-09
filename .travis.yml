@@ -7,17 +7,16 @@ env:
     - ANDROID_ABI=armeabi-v7a
 android:
   components:
-    - tools
-    - platform-tools
-    # Duplicated on purpose!
-    - tools 
-
     # The BuildTools used by us
     - build-tools-26.0.2
 
     # The SDK we build against
     - android-27
-    - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
+
+ licenses:
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
+
 script:
   - ./gradlew test
 
