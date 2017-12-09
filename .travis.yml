@@ -13,7 +13,7 @@ android:
     # The SDK we build against
     - android-27
 
- licenses:
+  licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 
