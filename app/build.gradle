@@ -4,7 +4,7 @@ android {
     signingConfigs {
         debug {
             def props = new Properties()
-            propsFile = rootProject.file("debug.properties");
+            def propsFile = rootProject.file("debug.properties");
             if (propsFile.exists()) {
                 props.load(new FileInputStream(propsFile))
                 android.signingConfigs.debug.storeFile rootProject.file(props.keyStore)
@@ -16,7 +16,7 @@ android {
         }
         release {
             def props = new Properties()
-            propsFile = rootProject.file("release.properties");
+            def propsFile = rootProject.file("release.properties");
             if (propsFile.exists()) {
                 props.load(new FileInputStream(propsFile))
                 android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
