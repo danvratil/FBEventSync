@@ -20,3 +20,9 @@ android:
     - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
 script:
   - ./gradlew test
+
+cache:
+  directories:
+    - $HOME/.gradle/wrapper
+    - $HOME/.gradle/caches
+    - $HOME/.android/build-cache
