@@ -19,3 +19,5 @@ Report problems: https://github.com/danvratil/FBEventSync/issues
 Privacy policy: https://github.com/danvratil/FBEventSync/wiki/Privacy-Policy
 
 Source code: https://github.com/danvratil/FBEventSync/
+
+[![Build Status](https://travis-ci.org/danvratil/FBEventSync.png?branch=master)](https://travis-ci.org/danvratil/FBEventSync)
