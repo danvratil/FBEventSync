@@ -51,29 +51,18 @@
     <string name="pref_sync_frequency_summary">How often should we sync your Facebook events?</string>
     <string name="pref_sync_frequency_default">3600</string>
 
-
-    <string name="pref_attending_reminders">Attending Events reminders</string>
-    <string name="pref_attending_reminders_summary">Configure reminders for events you are attending.</string>
-
-    <string name="pref_maybe_reminders">Maybe Attending Events reminders</string>
-    <string name="pref_maybe_reminders_summary">Configure reminders for events you may be attending.</string>
-
-    <string name="pref_not_responded_reminders">Not Responded To Events reminders</string>
-    <string name="pref_not_responded_reminders_summary">Configure reminders for events you have not responded to.</string>
-
-    <string name="pref_declined_reminders">Declined Events reminders</string>
-    <string name="pref_declined_reminders_summary">Configure reminders for events you have declined.</string>
-
-    <string name="pref_birthday_reminders">Birthday reminders</string>
-    <string name="pref_birthday_reminders_summary">Configure reminders for friend\'s birthdays.</string>
+    <string name="pref_reminders">Reminders</string>
+    <string name="pref_enabled">Enabed</string>
+    <string name="pref_color">Color</string>
+    <string name="pref_color_default">3889560</string><!-- Facebook blue //-->
 
     <string name="pref_reminder_default">60</string>
-
 
     <string name="pref_misc_settings">Miscellaneous</string>
     <string name="report_bug">Report a bug</string>
     <string name="contact_developer">Contact the developer</string>
     <string name="rate">Rate the app</string>
 
+    <string name="choose_color">Choose Color</string>
 
 </resources>

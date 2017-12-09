@@ -345,8 +345,10 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 for (VEvent vevent : cal.getEvents()) {
                     FBEvent event = FBEvent.parse(vevent);
                     FBCalendar calendar = calendars.getCalendarForEvent(event);
-                    event.setCalendar(calendar);
-                    calendar.syncEvent(event);
+                    if (calendar.isEnabled()) {
+                        event.setCalendar(calendar);
+                        calendar.syncEvent(event);
+                    }
                 }
             }
 

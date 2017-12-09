@@ -20,6 +20,7 @@ package cz.dvratil.fbeventsync;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 
 public class SyncContext {
@@ -56,5 +57,10 @@ public class SyncContext {
 
     public SyncResult getSyncResult() {
         return mSyncResult;
+    }
+
+    public SharedPreferences getPreferences() {
+        return mContext.getSharedPreferences(
+                mContext.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE);
     }
 }

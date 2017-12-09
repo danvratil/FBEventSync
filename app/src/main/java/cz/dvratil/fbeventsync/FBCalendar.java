@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,6 +119,41 @@ public class FBCalendar {
         }
     }
 
+    private void updateLocalCalendar() throws android.os.RemoteException,
+                                              android.database.sqlite.SQLiteException {
+        String key;
+        switch (mType) {
+            case TYPE_ATTENDING:
+                key = "pref_attending_color";
+                break;
+            case TYPE_MAYBE:
+                key = "pref_maybe_color";
+                break;
+            case TYPE_NOT_REPLIED:
+                key = "pref_not_replied_color";
+                break;
+            case TYPE_DECLINED:
+                key = "pref_declined_color";
+                break;
+            case TYPE_BIRTHDAY:
+                key = "pref_birthday_color";
+                break;
+            default:
+                return;
+        }
+
+        String colorDefault = mContext.getContext().getString(R.string.pref_color_default);
+        int color = mContext.getPreferences().getInt(key, Integer.parseInt(colorDefault));
+
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Calendars.CALENDAR_COLOR, color);
+        mContext.getContentProviderClient().update(
+                CalendarContract.Calendars.CONTENT_URI,
+                values,
+                String.format("(%s = ?)", CalendarContract.Calendars._ID),
+                new String[] { String.valueOf(mLocalCalendarId) });
+    }
+
     private long findLocalCalendar() throws android.os.RemoteException,
                                             android.database.sqlite.SQLiteException {
         Cursor cur = mContext.getContentProviderClient().query(
@@ -142,6 +178,14 @@ public class FBCalendar {
             cur.close();
         }
         return result;
+    }
+
+    private void deleteLocalCalendar() throws android.os.RemoteException,
+                                              android.database.sqlite.SQLiteException {
+        mContext.getContentProviderClient().delete(
+                CalendarContract.Calendars.CONTENT_URI,
+                String.format("(%s = ?)", CalendarContract.Calendars._ID),
+                new String[] { String.valueOf(mLocalCalendarId) });
     }
 
     private HashMap<String /* FBID */, Long /* local ID */ > fetchLocalEvents()
@@ -176,17 +220,25 @@ public class FBCalendar {
         try {
             mLocalCalendarId = findLocalCalendar();
             if (mLocalCalendarId < 0) {
-                mLocalCalendarId = createLocalCalendar();
-                mLocalIds = new HashMap<>();
+                if (isEnabled()) {
+                    mLocalCalendarId = createLocalCalendar();
+                    mLocalIds = new HashMap<>();
+                }
             } else {
-                mLocalIds = fetchLocalEvents();
+                if (isEnabled()) {
+                    updateLocalCalendar();
+                    mLocalIds = fetchLocalEvents();
+                } else {
+                    deleteLocalCalendar();
+                    mLocalCalendarId = -1;
+                }
             }
         } catch (android.os.RemoteException e) {
-
+            Log.e("FBCalendar","RemoteException: " + e.getMessage());
         } catch (android.database.sqlite.SQLiteException e) {
-
+            Log.e("FBCalendar","SQLiteException: " + e.getMessage());
         } catch (NumberFormatException e) {
-
+            Log.e("FBCalendar","NumberFormatException: " + e.getMessage());
         }
     }
 
@@ -200,6 +252,31 @@ public class FBCalendar {
 
     public CalendarType type() {
         return mType;
+    }
+
+    public boolean isEnabled() {
+        String name;
+        switch (mType) {
+            case TYPE_ATTENDING:
+                name = "pref_attending_enabled";
+                break;
+            case TYPE_MAYBE:
+                name = "pref_tentative_enabled";
+                break;
+            case TYPE_DECLINED:
+                name = "pref_declined_enabled";
+                break;
+            case TYPE_NOT_REPLIED:
+                name = "pref_not_responded_enabled";
+                break;
+            case TYPE_BIRTHDAY:
+                name = "pref_birthday_enabled";
+                break;
+            default:
+                assert(false);
+                return true;
+        }
+        return mContext.getPreferences().getBoolean(name, true);
     }
 
     public String name() {
@@ -233,7 +310,7 @@ public class FBCalendar {
     }
 
     public java.util.Set<Integer> getReminderIntervals() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext.getContext());
+        SharedPreferences prefs = mContext.getPreferences();
         java.util.Set<String> defaultReminder = new HashSet<>();
         defaultReminder.add(mContext.getContext().getString(R.string.pref_reminder_default));
 
@@ -262,6 +339,10 @@ public class FBCalendar {
     }
 
     public void syncEvent(FBEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
+
         mEventsToSync.add(event);
         if (mEventsToSync.size() > 50) {
             sync();
@@ -270,6 +351,10 @@ public class FBCalendar {
     }
 
     private void sync() {
+        if (!isEnabled()) {
+            return;
+        }
+
         for (FBEvent event : mEventsToSync) {
             Long localId = mLocalIds.get(event.eventId());
             try {
@@ -288,6 +373,10 @@ public class FBCalendar {
     }
 
     public void finalizeSync() {
+        if (!isEnabled()) {
+            return;
+        }
+
         sync();
         for (HashMap.Entry<String, Long> localId : mLocalIds.entrySet()) {
             try {

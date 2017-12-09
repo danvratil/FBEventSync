@@ -6,11 +6,11 @@
         android:title="@string/pref_general_settings" />
 
     <PreferenceScreen
-        android:key="pref_reminder_settings"
-        android:title="@string/pref_reminder_settings"
-        android:summary="@string/pref_reminder_settings_summary">
+        android:key="pref_calendar_settings"
+        android:title="Calendars"
+        android:summary="Configure reminders and colors">
         <intent
-            android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_REMINDERS"
+            android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS"
             android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"
             android:targetPackage="cz.dvratil.fbeventsync" />
     </PreferenceScreen>
