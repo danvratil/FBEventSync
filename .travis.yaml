@@ -1,5 +1,6 @@
 language: android
 jdk: oraclejdk8
+branches:
 env:
   global:
     - ANDROID_TARGET=android-17
