@@ -38,6 +38,7 @@ import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
 public class SettingsActivity extends PreferenceActivity {
 
     private boolean mShouldForceSync = false;
+    private boolean mShouldRescheduleSync = false;
 
     private static String CONFIGURE_CALENDARS = "cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS";
     private static String CONFIGURE_SYNC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC";
@@ -64,6 +65,9 @@ public class SettingsActivity extends PreferenceActivity {
                 new SharedPreferences.OnSharedPreferenceChangeListener() {
                     public void onSharedPreferenceChanged(
                             SharedPreferences prefs, String key) {
+                        if (key.equals("pref_sync_frequency")) {
+                            mShouldRescheduleSync = true;
+                        }
                         mShouldForceSync = true;
                     }
                 });
@@ -74,8 +78,11 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (mShouldForceSync) {
+        if (mShouldRescheduleSync) {
             CalendarSyncAdapter.updateSync(this);
+        }
+        if (mShouldForceSync) {
+            CalendarSyncAdapter.requestSync(this);
         }
     }
 
