@@ -49,6 +49,9 @@ android {
     }
     productFlavors {
     }
+    lintOptions {
+        baseline file("lint-baseline.xml")
+    }
 }
 
 dependencies {
