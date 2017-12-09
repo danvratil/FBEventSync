@@ -4,19 +4,26 @@ android {
     signingConfigs {
         debug {
             def props = new Properties()
-            props.load(new FileInputStream(rootProject.file("debug.properties")))
-            android.signingConfigs.debug.storeFile rootProject.file(props.keyStore)
-            android.signingConfigs.debug.storePassword props.keyStorePassword
-            android.signingConfigs.debug.keyAlias props.keyAlias
-            android.signingConfigs.debug.keyPassword props.keyAliasPassword
+            propsFile = rootProject.file("debug.properties");
+            if (propsFile.exists()) {
+                props.load(new FileInputStream(propsFile))
+                android.signingConfigs.debug.storeFile rootProject.file(props.keyStore)
+                android.signingConfigs.debug.storePassword props.keyStorePassword
+                android.signingConfigs.debug.keyAlias props.keyAlias
+                android.signingConfigs.debug.keyPassword props.keyAliasPassword
+            }
+
         }
         release {
             def props = new Properties()
-            props.load(new FileInputStream(rootProject.file("release.properties")))
-            android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
-            android.signingConfigs.release.storePassword props.keyStorePassword
-            android.signingConfigs.release.keyAlias props.keyAlias
-            android.signingConfigs.release.keyPassword props.keyAliasPassword
+            propsFile = rootProject.file("release.properties");
+            if (propsFile.exists()) {
+                props.load(new FileInputStream(propsFile))
+                android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
+                android.signingConfigs.release.storePassword props.keyStorePassword
+                android.signingConfigs.release.keyAlias props.keyAlias
+                android.signingConfigs.release.keyPassword props.keyAliasPassword
+            }
         }
     }
 
