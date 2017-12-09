@@ -1,4 +1,9 @@
 language: android
+jdk: oraclejdk8
+env:
+  global:
+    - ANDROID_TARGET=android-17
+    - ANDROID_ABI=armeabi-v7a
 android:
   components:
     - tools
@@ -7,7 +12,10 @@ android:
     - tools 
 
     # The BuildTools used by us
-    - build-tools-25.0.0
+    - build-tools-26.0.2
 
     # The SDK we build against
-    - android-25
+    - android-27
+    - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
+script:
+  - ./gradlew test
