@@ -192,9 +192,23 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult);
 
         removeOldBirthdayCalendar(mSyncContext);
-
         FBCalendar.Set calendars = new FBCalendar.Set();
         calendars.initialize(mSyncContext);
+        if (prefs.getInt("lastVersion", 0) != BuildConfig.VERSION_CODE) {
+            logger.info("SYNC","New version detected: deleting all calendars")
+            for (FBCalendar cal : calendars.values()) {
+                try {
+                    cal.deleteLocalCalendar();
+                } catch (android.os.RemoteException e) {
+                    // FIXME: Handle exceptions
+                } catch (android.database.sqlite.SQLiteException e) {
+                    // FIXME: Handle exceptions
+                }
+            }
+            // We have to re-initialize calendars now so that they get re-created
+            calendars.release();
+            calendars.initialize(mSyncContext);
+        }
 
         // Sync via iCal only - not avoiding Graph calls, but it gives us access to private group
         // events which are otherwise missing from Graph
@@ -208,6 +222,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         mSyncContext = null;
 
         SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("lastVersion", BuildConfig.VERSION_CODE);
         editor.putLong("lastSync", Calendar.getInstance().getTimeInMillis());
         editor.putInt("syncsPerHour", syncsPerHour);
         editor.apply();

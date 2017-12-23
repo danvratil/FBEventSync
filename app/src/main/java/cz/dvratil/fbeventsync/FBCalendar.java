@@ -77,6 +77,7 @@ public class FBCalendar {
             for (Map.Entry<CalendarType, FBCalendar> entry : entrySet()) {
                 entry.getValue().finalizeSync();
             }
+            clear();
         }
     }
 
@@ -109,7 +110,7 @@ public class FBCalendar {
         Uri uri = CalendarContract.Calendars.CONTENT_URI.buildUpon()
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, mContext.getContext().getString(R.string.account_type))
                 .build();
 
         Uri calUri = mContext.getContentProviderClient().insert(uri, values);
@@ -181,8 +182,8 @@ public class FBCalendar {
         return result;
     }
 
-    private void deleteLocalCalendar() throws android.os.RemoteException,
-                                              android.database.sqlite.SQLiteException {
+    public void deleteLocalCalendar() throws android.os.RemoteException,
+                                             android.database.sqlite.SQLiteException {
         mContext.getContentProviderClient().delete(
                 CalendarContract.Calendars.CONTENT_URI,
                 String.format("(%s = ?)", CalendarContract.Calendars._ID),
@@ -362,12 +363,12 @@ public class FBCalendar {
                 if (localId == null) {
                     event.create(mContext);
                 } else {
-                    event.update(mContext, localId);
+                    event.update(mContext, localId.longValue());
                 }
             } catch (android.os.RemoteException e) {
-
+                // FIXME: Handle exception
             } catch (android.database.sqlite.SQLiteException e) {
-
+                // FIXME: Handle exception
             }
             mLocalIds.remove(event.eventId());
         }
@@ -379,13 +380,13 @@ public class FBCalendar {
         }
 
         sync();
-        for (HashMap.Entry<String, Long> localId : mLocalIds.entrySet()) {
+        for (Long localId : mLocalIds.values()) {
             try {
-                FBEvent.remove(mContext, localId.getValue());
+                FBEvent.remove(mContext, localId.longValue());
             } catch (android.os.RemoteException e) {
-
+                // FIXME: Handle exception
             } catch (android.database.sqlite.SQLiteException e) {
-
+                // FIXME: Handle exception
             }
         }
         mLocalIds.clear();
