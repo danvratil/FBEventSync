@@ -17,6 +17,8 @@
 
 package cz.dvratil.fbeventsync;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -247,7 +249,12 @@ public class FBEvent {
                android.database.sqlite.SQLiteException
     {
         Uri uri = context.getContentProviderClient().insert(
-                CalendarContract.Events.CONTENT_URI, mValues);
+                CalendarContract.Events.CONTENT_URI.buildUpon()
+                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_TYPE, context.getContext().getString(R.string.account_type))
+                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_NAME, context.getAccount().name)
+                        .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                        .build(),
+                mValues);
         if (uri != null) {
             long eventId = Long.parseLong(uri.getLastPathSegment());
             Set<Integer> reminders = mCalendar.getReminderIntervals();
@@ -321,9 +328,14 @@ public class FBEvent {
         ContentValues values = new ContentValues(mValues);
         values.remove(CalendarContract.Events._ID);
         values.remove(CalendarContract.Events.UID_2445);
+        values.remove(CalendarContract.Events.CALENDAR_ID);
 
         context.getContentProviderClient().update(
-                CalendarContract.Events.CONTENT_URI,
+                CalendarContract.Events.CONTENT_URI.buildUpon()
+                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_TYPE, context.getContext().getString(R.string.account_type))
+                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_NAME, context.getAccount().name)
+                        .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                        .build(),
                 values,
                 String.format("(%s = ?)", CalendarContract.Events._ID),
                 new String[] { String.valueOf(localEventId) });
