@@ -22,9 +22,7 @@ import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public class FBCalendar {
 
@@ -236,11 +233,11 @@ public class FBCalendar {
                 }
             }
         } catch (android.os.RemoteException e) {
-            Log.e("FBCalendar","RemoteException: " + e.getMessage());
+            mContext.getLogger().error("FBCalendar","Remote exception on creation: %s", e.getMessage());
         } catch (android.database.sqlite.SQLiteException e) {
-            Log.e("FBCalendar","SQLiteException: " + e.getMessage());
+            mContext.getLogger().error("FBCalendar","SQL exception on creation: %s", e.getMessage());
         } catch (NumberFormatException e) {
-            Log.e("FBCalendar","NumberFormatException: " + e.getMessage());
+            mContext.getLogger().error("FBCalendar","Number exception on creation: %s", e.getMessage());
         }
     }
 
@@ -275,7 +272,7 @@ public class FBCalendar {
                 name = "pref_birthday_enabled";
                 break;
             default:
-                Log.wtf("FBCalendar","Unhandled calendar type");
+                mContext.getLogger().error("FBCalendar", "Unhandled calendar type");
                 return true;
         }
         return mContext.getPreferences().getBoolean(name, true);
@@ -366,9 +363,11 @@ public class FBCalendar {
                     event.update(mContext, localId.longValue());
                 }
             } catch (android.os.RemoteException e) {
-                // FIXME: Handle exception
+                mContext.getLogger().error("FBCalendar","Remote exception during FBCalendar sync: %s", e.getMessage());
+                // continue with remaining events
             } catch (android.database.sqlite.SQLiteException e) {
-                // FIXME: Handle exception
+                mContext.getLogger().error("FBCalendar","SQL exception during FBCalendar sync: %s", e.getMessage());
+                // continue with remaining events
             }
             mLocalIds.remove(event.eventId());
         }
@@ -384,9 +383,11 @@ public class FBCalendar {
             try {
                 FBEvent.remove(mContext, localId.longValue());
             } catch (android.os.RemoteException e) {
-                // FIXME: Handle exception
+                mContext.getLogger().error("FBCalendar","Remote exception during FBCalendar finalizeSync: %s", e.getMessage());
+                // continue with remaining events
             } catch (android.database.sqlite.SQLiteException e) {
-                // FIXME: Handle exception
+                mContext.getLogger().error("FBCalendar","SQL exception during FBCalendar fynalize sync: %s", e.getMessage());
+                // continue with remaining events
             }
         }
         mLocalIds.clear();

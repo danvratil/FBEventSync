@@ -29,14 +29,16 @@ public class SyncContext {
     private String mAccessToken = null;
     private ContentProviderClient mProviderClient = null;
     private SyncResult mSyncResult = null;
+    private Logger mLogger = null;
 
     public SyncContext(Context context, Account account, String accessToken,
-                       ContentProviderClient providerClient, SyncResult syncResult) {
+                       ContentProviderClient providerClient, SyncResult syncResult, Logger logger) {
         mContext = context;
         mAccount = account;
         mAccessToken = accessToken;
         mProviderClient = providerClient;
         mSyncResult = syncResult;
+        mLogger = logger;
     }
 
     public Context getContext() {
@@ -62,5 +64,9 @@ public class SyncContext {
     public SharedPreferences getPreferences() {
         return mContext.getSharedPreferences(
                 mContext.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE);
+    }
+
+    public Logger getLogger() {
+        return mLogger;
     }
 }

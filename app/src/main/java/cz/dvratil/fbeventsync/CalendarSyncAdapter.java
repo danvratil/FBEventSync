@@ -189,20 +189,25 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
 
-        mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult);
+        mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult, logger);
 
         removeOldBirthdayCalendar(mSyncContext);
         FBCalendar.Set calendars = new FBCalendar.Set();
         calendars.initialize(mSyncContext);
         if (prefs.getInt("lastVersion", 0) != BuildConfig.VERSION_CODE) {
-            logger.info("SYNC","New version detected: deleting all calendars")
+            logger.info("SYNC","New version detected: deleting all calendars");
             for (FBCalendar cal : calendars.values()) {
                 try {
                     cal.deleteLocalCalendar();
                 } catch (android.os.RemoteException e) {
                     // FIXME: Handle exceptions
+                    logger.error("SYNC","Failed to cleanup calendars: %s", e.getMessage());
+                    syncResult.stats.numIoExceptions++;
+                    return;
                 } catch (android.database.sqlite.SQLiteException e) {
-                    // FIXME: Handle exceptions
+                    logger.error("SYNC","Failed to cleanup calendars: %s", e.getMessage());
+                    syncResult.stats.numIoExceptions++;
+                    return;
                 }
             }
             // We have to re-initialize calendars now so that they get re-created
@@ -336,6 +341,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         uri = uri.replace("/b.php", "/u.php");
+        logger.debug("SYNC","Syncing event iCal");
         syncICalCalendar(calendars, uri);
     }
 
@@ -344,6 +350,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         if (uri == null) {
             return;
         }
+        logger.debug("SYNC","Syncing birthday iCal");
         syncICalCalendar(calendars, uri);
     }
 
@@ -365,6 +372,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                         calendar.syncEvent(event);
                     }
                 }
+                logger.debug("SYNC", "iCal sync done");
             }
 
             @Override
@@ -382,6 +390,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void removeOldBirthdayCalendar(SyncContext context) {
         // remove old "birthday" calendar
+        logger.debug("SYNC","Removing legacy birthday calendar");
         try {
             context.getContentProviderClient().delete(
                     CalendarContract.Calendars.CONTENT_URI,

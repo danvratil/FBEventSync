@@ -19,7 +19,7 @@ package cz.dvratil.fbeventsync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
+
 
 import com.loopj.android.http.*;
 
@@ -97,7 +97,6 @@ public class Graph {
         SyncHttpClient client = new SyncHttpClient();
         // Pretend we are cURL, so that Facebook does not redirect us to facebook.com/unsupportedbrowser
         client.setUserAgent("curl/7.55.1");
-        Log.d("GRAPH", "fetchBirthdayICal: " + birthdayICalUri);
         return client.get(birthdayICalUri, handler);
     }
 }

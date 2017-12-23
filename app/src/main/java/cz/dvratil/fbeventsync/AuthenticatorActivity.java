@@ -31,14 +31,11 @@ import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -69,8 +66,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private ProgressBar mProgressBar = null;
     private TextView mProgressLabel = null;
 
+    private Logger mLogger = null;
+
     protected void onBirthdayLinkExtracted(String s) {
-        Log.d("BDAY","Found bday URL: " + s);
+        mLogger.debug("AUTH","Found bday URL");
 
         if (s.isEmpty()) {
             Toast.makeText(this, "Authentication error: failed to retrieve birthday calendar", Toast.LENGTH_LONG)
@@ -93,6 +92,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         final AccountAuthenticatorActivity activity = this;
 
+        mLogger = Logger.getInstance(this);
         mProgressBar = findViewById(R.id.authProgressBar);
         mProgressLabel = findViewById(R.id.authProgressString);
         mWebView = findViewById(R.id.webview);
@@ -118,12 +118,13 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 Uri uri = Uri.parse(url);
 
                 if (uri.getPath().contains("/login.php")) {
+                    mLogger.debug("AUTH", "Reached login.php");
                     mWebView.setVisibility(View.VISIBLE);
                     mProgressBar.setVisibility(View.GONE);
                     mProgressLabel.setVisibility(View.GONE);
                 } else if (uri.getPath().equals("/connect/login_success.html")) {
                     // TODO: Check if all privileges were granted
-
+                    mLogger.debug("AUTH", "Reached login_success with token");
                     mWebView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(View.VISIBLE);
                     mProgressLabel.setVisibility(View.VISIBLE);
@@ -136,6 +137,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     mWebView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0");
                     mWebView.loadUrl("https://www.facebook.com/events");
                 } else if (uri.getPath().equals("/events/")) {
+                    mLogger.debug("AUTH","Reached /events/ page, extracting iCal link");
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                         class JSObject {
                             @JavascriptInterface
@@ -197,7 +199,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     .appendQueryParameter("response_type", "token")
                     .appendQueryParameter("scopes", TOKEN_SCOPE)
                     .build();
-        Log.d("AUTH", uri.toString());
         mWebView.loadUrl(uri.toString());
     }
 
@@ -210,7 +211,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     String accountName = response.getString("name");
                     createAccount(accessToken, accountName);
                 } catch (org.json.JSONException e) {
-                    Log.e("AUTH", "fetchUserInfo JSONException: " + e.getMessage());
+                    mLogger.error("AUTH","JSON exception: %s", e.getMessage());
                     Toast.makeText(activity, getString(R.string.toast_account_creation_error),
                             Toast.LENGTH_SHORT)
                             .show();
@@ -225,7 +226,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                         JSONObject err = errorResponse.getJSONObject("error");
                         int errCode = err.getInt("code");
                         if (errCode == 4) {
-                            Log.e("AUTH","fetchUserInfo: rate limiting error!");
+                            mLogger.error("AUTH", "FetchUserInfo: rate limiting error");
                             Toast.makeText(activity, getString(R.string.toast_auth_rate_limiting_error), Toast.LENGTH_SHORT)
                                     .show();
                             activity.finish();
@@ -234,9 +235,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     } catch (org.json.JSONException e) {
                         // pass
                     }
-                    Log.e("AUTH", "fetchUserInfo failure: " + errorResponse.toString());
+                    mLogger.error("AUTH","FetchUserInfo failure: %s", errorResponse.toString());
                 } else {
-                    Log.e("AUTH","fetchUserInfo failure: unknown error");
+                    mLogger.error("AUTH","FetchUserInfo failure: unknown error");
                 }
                 Toast.makeText(activity, getString(R.string.toast_account_creation_error), Toast.LENGTH_SHORT)
                         .show();
@@ -246,7 +247,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     private void createAccount(String accessToken, String accountName) {
-        Log.d("AUTH", "Creating account " + accountName);
+        mLogger.debug("AUTH", "Creating account %s", accountName);
         Intent intent = getIntent();
         Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
         if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
