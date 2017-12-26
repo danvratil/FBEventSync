@@ -50,7 +50,9 @@ public class Logger {
         DEBUG(Log.DEBUG, "D"),
         INFO(Log.INFO, "I"),
         WARNING(Log.WARN, "W"),
-        ERROR(Log.ERROR, "E");
+        ERROR(Log.ERROR, "E"),
+
+        NO_LOG(1000, "N");
 
         private int val = -1;
         private String lvlChar = null;
@@ -68,7 +70,7 @@ public class Logger {
             return lvlChar;
         }
     }
-    private LogLevel mMinLogCatLvl = LogLevel.INFO;
+    private LogLevel mMinLogCatLvl = BuildConfig.DEBUG ? LogLevel.DEBUG : LogLevel.NO_LOG;
 
     protected Logger() {
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
