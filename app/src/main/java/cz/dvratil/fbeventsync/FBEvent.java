@@ -200,7 +200,11 @@ public class FBEvent {
         if (isBirthday) {
             ICalDate date = vevent.getDateStart().getValue();
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            calendar.set(date.getYear() + 1900, date.getMonth(), date.getDate(), 0, 0, 0);
+            // HACK: Facebook only lists the "next" birthdays, which means birthdays disappear from
+            // the listing the day after it they pass. Many users dislike that (and I understand why)
+            // so we hack around by always setting the year as current year - 1 and setting yearly
+            // recurrence so that they don't disappear from the calendar
+            calendar.set(calendar.get(Calendar.YEAR) - 1, date.getMonth(), date.getDate(), 0, 0, 0);
             calendar.set(Calendar.MILLISECOND, 0);
             values.put(CalendarContract.Events.DTSTART, calendar.getTimeInMillis());
             // Those are identical for all birthdays, so we hardcode them

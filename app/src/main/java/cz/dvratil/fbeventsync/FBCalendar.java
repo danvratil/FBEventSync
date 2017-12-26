@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.provider.CalendarContract;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -193,13 +194,19 @@ public class FBCalendar {
     {
         HashMap<String, Long> localIds = new HashMap<>();
 
+        // HACK: Only select future events: Facebook will remove the events from the listing once
+        // they pass, but it's desirable that we keep them in the calendar. The only way to achieve
+        // so is to ignore them
         Cursor cur = mContext.getContentProviderClient().query(
                 CalendarContract.Events.CONTENT_URI,
                 new String[]{
                         CalendarContract.Events.UID_2445,
                         CalendarContract.Events._ID },
-                String.format("(%s = ?)", CalendarContract.Events.CALENDAR_ID),
-                new String[] { String.valueOf(mLocalCalendarId) },
+                String.format("((%s = ?) AND (%s >= ?))", CalendarContract.Events.CALENDAR_ID, CalendarContract.Events.DTSTART),
+                new String[] {
+                        String.valueOf(mLocalCalendarId),
+                        String.valueOf(Calendar.getInstance().getTimeInMillis())
+                },
                 null);
         if (cur != null) {
             while (cur.moveToNext()) {
