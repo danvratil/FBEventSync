@@ -379,8 +379,13 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String err = responseBody == null ? "Unknown error" : new String(responseBody);
                 logger.error("SYNC", "Error retrieving iCal file: %d, %s", statusCode, err);
-                for (Header header : headers) {
-                    logger.error("SYNC","    %s: %s", header.getName(), header.getValue());
+                if (headers != null) {
+                    for (Header header : headers) {
+                        logger.error("SYNC", "    %s: %s", header.getName(), header.getValue());
+                    }
+                }
+                if (error != null) {
+                    logger.error("SYNC", "Throwable: %s", error.toString());
                 }
             }
 
