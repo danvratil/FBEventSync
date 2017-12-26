@@ -311,7 +311,9 @@ public class FBCalendar {
     public java.util.Set<Integer> getReminderIntervals() {
         SharedPreferences prefs = mContext.getPreferences();
         java.util.Set<String> defaultReminder = new HashSet<>();
-        defaultReminder.add(mContext.getContext().getString(R.string.pref_reminder_default));
+        for (String reminder : mContext.getContext().getResources().getStringArray(R.array.pref_reminder_default)) {
+            defaultReminder.add(reminder);
+        }
 
         java.util.Set<String> as = null;
         switch (mType) {
