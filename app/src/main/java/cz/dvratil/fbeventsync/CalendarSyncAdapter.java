@@ -359,7 +359,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 if (responseBody == null) {
-                    logger.error("SYNC.ICAL", "Response body is empty!!!!!");
+                    logger.error("SYNC", "Response body is empty!!!!!");
                     return;
                 }
 
@@ -378,7 +378,10 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String err = responseBody == null ? "Unknown error" : new String(responseBody);
-                logger.error("SYNC.BDAY", "Error retrieving birthday iCal file: %s", err);
+                logger.error("SYNC", "Error retrieving iCal file: %d, %s", statusCode, err);
+                for (Header header : headers) {
+                    logger.error("SYNC","    %s: %s", header.getName(), header.getValue());
+                }
             }
 
             @Override
