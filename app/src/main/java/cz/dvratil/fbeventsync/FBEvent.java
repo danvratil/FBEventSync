@@ -306,8 +306,14 @@ public class FBEvent {
             reminderValues.add(values);
         }
 
+        Uri uri = CalendarContract.Reminders.CONTENT_URI.buildUpon()
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, context.getAccount().name)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, context.getContext().getString(R.string.account_type))
+                .build();
+
         context.getContentProviderClient().bulkInsert(
-                CalendarContract.Reminders.CONTENT_URI,
+                uri,
                 reminderValues.toArray(new ContentValues[0]));
     }
 

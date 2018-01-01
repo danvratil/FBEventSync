@@ -105,6 +105,8 @@ public class FBCalendar {
                         CalendarContract.Events.AVAILABILITY_TENTATIVE));
         values.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
                 String.valueOf(CalendarContract.Attendees.TYPE_NONE));
+        // +2 allows for up to 2 custom reminders set by the user
+        values.put(CalendarContract.Calendars.MAX_REMINDERS, getReminderIntervals().size() + 2);
 
         Uri uri = CalendarContract.Calendars.CONTENT_URI.buildUpon()
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
