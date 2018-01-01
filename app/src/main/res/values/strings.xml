@@ -51,7 +51,7 @@
     <string name="pref_sync_frequency_default">3600</string>
 
     <string name="pref_reminders">Reminders</string>
-    <string name="pref_enabled">Enabed</string>
+    <string name="pref_enabled">Enabled</string>
     <string name="pref_color">Color</string>
     <string name="pref_color_default">3889560</string><!-- Facebook blue //-->
 
