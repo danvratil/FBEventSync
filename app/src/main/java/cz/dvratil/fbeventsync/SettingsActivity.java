@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -116,9 +117,9 @@ public class SettingsActivity extends PreferenceActivity {
             View colorView = inflater.inflate(R.layout.color_dialog, null);
 
             int color = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                    .getInt(key, Integer.parseInt(getString(R.string.pref_color_default)));
-            final LobsterPicker lobsterPicker = (LobsterPicker) colorView.findViewById(R.id.colordialog_lobsterpicker);
-            LobsterShadeSlider shadeSlider = (LobsterShadeSlider) colorView.findViewById(R.id.colordialog_shadeslider);
+                    .getInt(key, getResources().getColor(R.color.colorFBBlue));
+            final LobsterPicker lobsterPicker = colorView.findViewById(R.id.colordialog_lobsterpicker);
+            LobsterShadeSlider shadeSlider = colorView.findViewById(R.id.colordialog_shadeslider);
 
             lobsterPicker.addDecorator(shadeSlider);
             lobsterPicker.setColorHistoryEnabled(true);

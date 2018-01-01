@@ -21,6 +21,7 @@ import android.accounts.Account;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.provider.CalendarContract;
 
@@ -80,6 +81,32 @@ public class FBCalendar {
         }
     }
 
+    private int getCalendarColor() {
+        int defaultColor = mContext.getContext().getResources().getColor(R.color.colorFBBlue);
+        String key;
+        switch (mType) {
+            case TYPE_ATTENDING:
+                key = "pref_attending_color";
+                break;
+            case TYPE_MAYBE:
+                key = "pref_maybe_color";
+                break;
+            case TYPE_NOT_REPLIED:
+                key = "pref_not_replied_color";
+                break;
+            case TYPE_DECLINED:
+                key = "pref_declined_color";
+                break;
+            case TYPE_BIRTHDAY:
+                key = "pref_birthday_color";
+                break;
+            default:
+                return defaultColor;
+        }
+
+        return mContext.getPreferences().getInt(key, defaultColor);
+    }
+
     private long createLocalCalendar() throws android.os.RemoteException,
                                               android.database.sqlite.SQLiteException,
                                               NumberFormatException {
@@ -89,7 +116,7 @@ public class FBCalendar {
         values.put(CalendarContract.Calendars.ACCOUNT_TYPE, mContext.getContext().getString(R.string.account_type));
         values.put(CalendarContract.Calendars.NAME, id());
         values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, name());
-        values.put(CalendarContract.Calendars.CALENDAR_COLOR, 0x3b5998 /* Facebook blue */);
+        values.put(CalendarContract.Calendars.CALENDAR_COLOR, getCalendarColor());
         values.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
                 CalendarContract.Calendars.CAL_ACCESS_READ);
         values.put(CalendarContract.Calendars.OWNER_ACCOUNT, account.name);
@@ -124,32 +151,8 @@ public class FBCalendar {
 
     private void updateLocalCalendar() throws android.os.RemoteException,
                                               android.database.sqlite.SQLiteException {
-        String key;
-        switch (mType) {
-            case TYPE_ATTENDING:
-                key = "pref_attending_color";
-                break;
-            case TYPE_MAYBE:
-                key = "pref_maybe_color";
-                break;
-            case TYPE_NOT_REPLIED:
-                key = "pref_not_replied_color";
-                break;
-            case TYPE_DECLINED:
-                key = "pref_declined_color";
-                break;
-            case TYPE_BIRTHDAY:
-                key = "pref_birthday_color";
-                break;
-            default:
-                return;
-        }
-
-        String colorDefault = mContext.getContext().getString(R.string.pref_color_default);
-        int color = mContext.getPreferences().getInt(key, Integer.parseInt(colorDefault));
-
         ContentValues values = new ContentValues();
-        values.put(CalendarContract.Calendars.CALENDAR_COLOR, color);
+        values.put(CalendarContract.Calendars.CALENDAR_COLOR, getCalendarColor());
         mContext.getContentProviderClient().update(
                 CalendarContract.Calendars.CONTENT_URI,
                 values,

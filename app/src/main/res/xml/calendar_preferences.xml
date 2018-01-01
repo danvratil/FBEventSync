@@ -17,7 +17,7 @@
         <com.kizitonwose.colorpreference.ColorPreference
             android:key="pref_attending_color"
             android:title="@string/pref_color"
-            android:defaultValue="@string/pref_color_default"
+            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
@@ -35,7 +35,7 @@
         <com.kizitonwose.colorpreference.ColorPreference
             android:key="pref_maybe_color"
             android:title="@string/pref_color"
-            android:defaultValue="@string/pref_color_default"
+            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
@@ -53,7 +53,7 @@
         <com.kizitonwose.colorpreference.ColorPreference
             android:key="pref_not_responded_color"
             android:title="@string/pref_color"
-            android:defaultValue="@string/pref_color_default"
+            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
@@ -71,7 +71,7 @@
         <com.kizitonwose.colorpreference.ColorPreference
             android:key="pref_declined_color"
             android:title="@string/pref_color"
-            android:defaultValue="@string/pref_color_default"
+            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
@@ -89,7 +89,7 @@
         <com.kizitonwose.colorpreference.ColorPreference
             android:key="pref_birthday_color"
             android:title="@string/pref_color"
-            android:defaultValue="@string/pref_color_default"
+            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 </PreferenceScreen>
