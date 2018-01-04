@@ -88,10 +88,12 @@ public class LogViewActivity extends AppCompatActivity {
                         Intent.EXTRA_TEXT,
                         String.format(
                                 Locale.US,
-                                "App ID: %s\n" +
+                                "%s\n\n\n" +
+                                        "App ID: %s\n" +
                                         "App version: %d (%s)\n" +
                                         "App build: %s\n" +
                                         "OS: %s (API %d)\n",
+                                getString(R.string.email_describe_your_problem),
                                 BuildConfig.APPLICATION_ID,
                                 BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME,
                                 BuildConfig.BUILD_TYPE,

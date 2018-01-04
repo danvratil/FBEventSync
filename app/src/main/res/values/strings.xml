@@ -18,6 +18,7 @@
     <string name="action_clear_log">Clear Log</string>
     <string name="action_send_log_to_dev">Send to Developer</string>
     <string name="intent_send_email">Send Email&#8230;</string>
+    <string name="email_describe_your_problem">[Describe your problem here]</string>
 
     <string name="toast_error_sending_log">Failed to send logs: cannot read the log file</string>
     <string name="toast_account_creation_error">Error during authentication</string>
