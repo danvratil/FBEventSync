@@ -30,6 +30,8 @@ import android.os.Bundle;
 
 public class Authenticator extends AbstractAccountAuthenticator {
 
+    private static String TAG = "AUTH";
+
     public static final String DATA_BDAY_URI = "bday_uri";
 
     private final Context mContext;
@@ -57,7 +59,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
                                String authTokenType, Bundle options) throws NetworkErrorException {
-        Log.d("AUTH","GetAuthToken: " + authTokenType);
+        Log.d(TAG,"GetAuthToken: " + authTokenType);
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mContext.getString(R.string.account_type));
@@ -73,34 +75,34 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        Log.d("AUTH", "GetAuthTokenLabel: " + authTokenType);
+        Log.d(TAG, "GetAuthTokenLabel: " + authTokenType);
         return null;
     }
 
     @Override
     public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account,
                                      Bundle options) throws NetworkErrorException {
-        Log.d("AUTH", "Confirm credentials");
+        Log.d(TAG, "Confirm credentials");
         return null;
     }
 
     @Override
     public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account,
                                     String authTokenType, Bundle options) throws NetworkErrorException {
-        Log.d("AUTH", "Update crendentials");
+        Log.d(TAG, "Update crendentials");
         return null;
     }
 
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account,
                               String[] features) throws NetworkErrorException {
-        Log.d("AUTH", "Has features" + features);
+        Log.d(TAG, "Has features" + features);
         return null;
     }
 
     @Override
     public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
-        Log.d("AUTH", "Edit properties");
+        Log.d(TAG, "Edit properties");
         return null;
     }
 }

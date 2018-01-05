@@ -57,12 +57,12 @@
         </activity>
         <activity
             android:name=".AuthenticatorActivity"
-            android:label="@string/title_activity_authenticator"
+            android:label="@string/auth_activity_title"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/settings"
+            android:label="@string/pref_activity_title"
             android:theme="@style/SettingsTheme">
             <intent-filter>
                 <action android:name="cz.dvratil.fbeventsync.Settings.CONFIGURE_REMINDERS" />
@@ -72,12 +72,12 @@
         </activity>
         <activity
             android:name=".PermissionRequestActivity"
-            android:label="@string/title_activity_permission_request"
+            android:label="@string/perms_activity_title"
             android:theme="@style/TranslucentTheme">
         </activity>
         <activity
             android:name=".LogViewActivity"
-            android:label="@string/title_activity_log_view"
+            android:label="@string/log_activity_title"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName="cz.dvratil.fbeventsync.MainActivity">
             <meta-data
@@ -88,7 +88,7 @@
         <!-- Providers //-->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="cz.dvratil.fbeventsync.FileProvider"
+            android:authorities="@string/fileprovider_authority"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

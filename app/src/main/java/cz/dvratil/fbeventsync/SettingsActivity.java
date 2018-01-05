@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.XmlResourceParser;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -75,8 +74,7 @@ public class SettingsActivity extends PreferenceActivity {
                 new SharedPreferences.OnSharedPreferenceChangeListener() {
                     public void onSharedPreferenceChanged(
                             SharedPreferences prefs, String key) {
-                        Log.d("PREFS", "Settings changed!");
-                        if (key.equals("pref_sync_frequency")) {
+                        if (key.equals(getString(R.string.pref_sync_frequency))) {
                             mShouldRescheduleSync = true;
                         }
                         mShouldForceSync = true;
@@ -115,14 +113,15 @@ public class SettingsActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.calendar_preferences);
 
-            installColorDialogHandler("pref_attending_color");
-            installColorDialogHandler("pref_maybe_color");
-            installColorDialogHandler("pref_declined_color");
-            installColorDialogHandler("pref_not_responded_color");
-            installColorDialogHandler("pref_birthday_color");
+            installColorDialogHandler(R.string.pref_calendar_attending_color);
+            installColorDialogHandler(R.string.pref_calendar_tentative_color);
+            installColorDialogHandler(R.string.pref_calendar_declined_color);
+            installColorDialogHandler(R.string.pref_calendar_not_responded_color);
+            installColorDialogHandler(R.string.pref_calendar_birthday_color);
         }
 
-        private void installColorDialogHandler(final String key) {
+        private void installColorDialogHandler(int keyId) {
+            final String key = getString(keyId);
             findPreference(key).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -149,14 +148,14 @@ public class SettingsActivity extends PreferenceActivity {
 
             new AlertDialog.Builder(getActivity())
                     .setView(colorView)
-                    .setTitle(getString(R.string.choose_color))
-                    .setPositiveButton(getString(R.string.save_btn), new DialogInterface.OnClickListener() {
+                    .setTitle(getString(R.string.color_dlg_title))
+                    .setPositiveButton(getString(R.string.color_dlg_save_btn_title), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             ((ColorPreference) preference).setValue(lobsterPicker.getColor());
                         }
                     })
-                    .setNegativeButton(getString(R.string.close_btn), null)
+                    .setNegativeButton(getString(R.string.color_dlg_close_btn_title), null)
                     .show();
         }
 
@@ -168,10 +167,10 @@ public class SettingsActivity extends PreferenceActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.sync_preferences);
-            ListPreference pref = (ListPreference) findPreference("pref_language");
+            ListPreference pref = (ListPreference) findPreference(getString(R.string.pref_language));
             XmlResourceParser parser = getResources().getXml(R.xml.fb_languages);
             List<CharSequence> entryValues = new ArrayList<>();
-            entryValues.add(getString(R.string.pref_language_default));
+            entryValues.add(getString(R.string.pref_language_default_value));
             List<CharSequence> entries = new ArrayList<>();
             entries.add(getString(R.string.pref_language_default_entry));
             try {

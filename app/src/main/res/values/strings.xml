@@ -1,131 +1,193 @@
 <resources>
-    <string name="cfg_prefs_version" translatable="false">prefs_version</string>
-
-
+    <!-- GLOBAL STRINGS //-->
     <string name="app_name">FB Event Sync</string>
     <string name="full_app_name">Event Sync for Facebook</string>
-    <string name="account_type">cz.dvratil.fbeventsync</string>
-    <string name="cz_dvratil_fbeventsync_preferences">cz.dvratil.fbeventsync_preferences</string>
+    <string name="account_type" translatable="false">cz.dvratil.fbeventsync</string>
+    <string name="cz_dvratil_fbeventsync_preferences" translatable="false">cz.dvratil.fbeventsync_preferences</string>
+    <string name="fileprovider_authority" translatable="false">cz.dvratil.fbeventsync.FileProvider</string>
+    <string name="facebook_app_id" translatable="false">1775235912769870</string>
+    <string name="cfg_prefs_version" translatable="false">prefs_version</string>
 
-    <string name="version_label">Version: %s</string>
+    <!-- MAIN ACTIVITY //-->
+    <string name="main_version_label">Version: %s</string>
     <string name="main_tagline">Now with birthday sync. Aaawww yeah!</string>
-    <string name="add_account_btn">Add Account</string>
-    <string name="show_logs_btn">Show Logs</string>
-    <string name="configure_calendars_btn">Configure Calendars</string>
-    <string name="configure_sync_btn">Configure Sync Preferences</string>
-    <string name="configure_misc_btn">Configure Miscellaneous</string>
+    <string name="main_add_account_btn">Add Account</string>
+    <string name="main_show_logs_btn">Show Logs</string>
+    <string name="main_configure_calendars_btn">Configure Calendars</string>
+    <string name="main_configure_sync_btn">Configure Sync Preferences</string>
+    <string name="main_configure_misc_btn">Configure Miscellaneous</string>
 
-    <string name="title_activity_permission_request">Permissions Request</string>
-    <string name="title_activity_log_view">Log View</string>
+    <!-- PERMISSIONS ACTIVITY //-->
+    <string name="perms_activity_title">Permissions Request</string>
 
-    <string name="action_clear_log">Clear Log</string>
-    <string name="action_send_log_to_dev">Send to Developer</string>
-    <string name="intent_send_email">Send Email&#8230;</string>
-    <string name="email_describe_your_problem">[Describe your problem here]</string>
+    <!-- LOGVIEW ACTIVITY //-->
+    <string name="log_activity_title">Log View</string>
+    <string name="log_clear_log_action">Clear Log</string>
+    <string name="log_send_to_dev_action">Send to Developer</string>
+    <string name="log_send_email_action">Send Email&#8230;</string>
+    <string name="log_email_template">[Please, describe your problem here, preferably in English]</string>
+    <string name="log_error_sending_log_toast">Failed to send logs: cannot read the log file</string>
 
-    <string name="toast_error_sending_log">Failed to send logs: cannot read the log file</string>
-    <string name="toast_account_creation_error">Error during authentication</string>
-    <string name="toast_account_creation_success">Account successfully added</string>
-    <string name="toast_auth_rate_limiting_error">Facebook API is currently experiencing problems. Please try again later.</string>
-
-    <string name="facebook_app_id">1775235912769870</string>
-    <string name="title_activity_authenticator">Authenticate with Facebook</string>
-
+    <!-- AUTHENTICATION ACTIVITY //-->
+    <string name="auth_activity_title">Authenticate with Facebook</string>
+    <string name="auth_account_creation_error_toast">Error during authentication</string>
+    <string name="auth_account_creation_success_toast">Account successfully added</string>
+    <string name="auth_rate_limiting_toast">Facebook API is currently experiencing problems. Please try again later.</string>
     <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook&#8230;</string>
-    <string name="auth_progress_retrieving_birthday">Retrieving friend\'s birthday list&#8230;</string>
+    <string name="auth_progress_retrieving_calendars">Retrieving calendars&#8230;</string>
     <string name="auth_progress_retrieving_userinfo">Retrieving user info&#8230;</string>
 
-    <string name="settings">Settings</string>
+    <!-- CALENDAR SYNC //-->
+    <string name="calendar_not_responded_title">Events I have not Responded To</string>
+    <string name="calendar_declined_title">Events I\'m not Attending</string>
+    <string name="calendar_tentative_title">Events I May Be Attending</string>
+    <string name="calendar_attending_title">Events I\'m Attending</string>
+    <string name="calendar_birthday_title">Friends\' Birthdays</string>
 
-    <string name="cz_dvratil_fbeventsync_not_responded_calendar">Events I have not Responded To</string>
-    <string name="cz_dvratil_fbeventsync_declined_calendar">Events I\'m not Attending</string>
-    <string name="cz_dvratil_fbeventsync_tentative_calendar">Events I May Be Attending</string>
-    <string name="cz_dvratil_fbeventsync_attending_calendar">Events I\'m Attending</string>
-    <string name="cz_dvratil_fbeventsync_birthday_calendar">Friends\' Birthdays</string>
+    <!-- PREFERENCES //-->
+    <string name="pref_activity_title">Settings</string>
 
-    <string name="pref_general_settings">General Settings</string>
-    <string name="pref_sync_settings">Sync Settings</string>
+    <string name="pref_general_settings_title">General Settings</string>
+    <string name="pref_sync_settings_title">Sync Settings</string>
     <string name="pref_sync_settings_summary">Configure how often and when to sync events.</string>
 
-    <string name="pref_sync_over_cellular">Sync over cellular data</string>
-    <string name="pref_sync_over_cellular_summary">Allow syncing when only connected via cellular data.</string>
-
-    <string name="pref_sync_frequency">Sync Frequency</string>
+    <string name="pref_sync_frequency" translatable="false">pref_sync_frequency</string>
+    <string name="pref_sync_frequency_title">Sync Frequency</string>
     <string name="pref_sync_frequency_summary">How often should we sync your Facebook events?</string>
-    <string name="pref_sync_frequency_default">3600</string>
+    <string name="pref_sync_frequency_default_value" translatable="false">@string/pref_sync_frequency_1hour_value</string>
 
-    <string name="pref_language">Language</string>
+    <string name="pref_language">pref_language</string>
+    <string name="pref_language_title">Language</string>
     <string name="pref_language_summary">Language for birthdays and events</string>
-    <string name="pref_language_default">device</string>
+    <string name="pref_language_default_value" translatable="false">device</string>
     <string name="pref_language_default_entry">Device language</string>
     <string-array name="pref_language_entries">
-        <item>Device Language</item>
+        <item>@string/pref_language_default_entry</item>
     </string-array>
     <string-array name="pref_language_values">
-        <item>device</item>
+        <item>@string/pref_language_default_value</item>
     </string-array>
 
-    <string name="pref_reminders">Reminders</string>
-    <string name="pref_enabled">Enabled</string>
-    <string name="pref_color">Color</string>
+    <string name="pref_calendar_attending_enabled" translatable="false">pref_attending_enabled</string>
+    <string name="pref_calendar_attending_reminders" translatable="false">pref_attending_reminders</string>
+    <string name="pref_calendar_attending_color" translatable="false">pref_attending_color</string>
+    <string name="pref_calendar_tentative_enabled" translatable="false">pref_tentative_enabled</string>
+    <string name="pref_calendar_tentative_reminders" translatable="false">pref_maybe_reminders</string>
+    <string name="pref_calendar_tentative_color" translatable="false">pref_maybe_color</string>
+    <string name="pref_calendar_not_responded_enabled" translatable="false">pref_not_responded_enabled</string>
+    <string name="pref_calendar_not_responded_reminders" translatable="false">pref_not_responded_reminders</string>
+    <string name="pref_calendar_not_responded_color" translatable="false">pref_not_responded_color</string>
+    <string name="pref_calendar_declined_enabled" translatable="false">pref_declined_enabled</string>
+    <string name="pref_calendar_declined_reminders" translatable="false">pref_declined_reminders</string>
+    <string name="pref_calendar_declined_color" translatable="false">pref_declined_color</string>
+    <string name="pref_calendar_birthday_enabled" translatable="false">pref_birthday_enabled</string>
+    <string name="pref_calendar_birthday_reminders" translatable="false">pref_birthday_reminders</string>
+    <string name="pref_calendar_birthday_color" translatable="false">pref_birthday_color</string>
+
+    <string name="pref_calendar_enabled_title">Enabled</string>
+    <string name="pref_calendar_reminders_title">Reminders</string>
+    <string name="pref_calendar_color_title">Color</string>
 
     <string name="pref_misc_settings">Miscellaneous</string>
-    <string name="report_bug">Report a bug</string>
-    <string name="contact_developer">Contact the developer</string>
-    <string name="rate">Rate the app</string>
+    <string name="action_report_bug">Report a bug</string>
+    <string name="action_contact_developer">Contact the developer</string>
+    <string name="action_rate_app">Rate the app</string>
 
-    <string name="choose_color">Choose Color</string>
-    <string name="save_btn">Save</string>
-    <string name="close_btn">Close</string>
+    <string name="color_dlg_title">Choose Color</string>
+    <string name="color_dlg_save_btn_title">Save</string>
+    <string name="color_dlg_close_btn_title">Close</string>
 
-    <string-array name="pref_reminder_entries">
-        <item>0 minutes</item>
-        <item>5 minutes</item>
-        <item>10 minutes</item>
-        <item>15 minutes</item>
-        <item>20 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>2 hours</item>
-        <item>12 hours</item>
-        <item>24 hours</item>
-        <item>2 days</item>
-        <item>1 week</item>
+    <string name="cfg_last_sync" translatable="false">lastSync</string>
+    <string name="cfg_syncs_per_hour" translatable="false">syncPerHour</string>
+    <string name="cfg_last_version" translatable="false">lastVersion</string>
+
+    <string name="pref_reminder_0minutes_entry">0 minutes</string>
+    <string name="pref_reminder_0minutes_value" translatable="false">0</string>
+    <string name="pref_reminder_5minutes_entry">5 minutes</string>
+    <string name="pref_reminder_5minutes_value" translatable="false">5</string>
+    <string name="pref_reminder_10minutes_entry">10 minutes</string>
+    <string name="pref_reminder_10minutes_value" translatable="false">10</string>
+    <string name="pref_reminder_15minutes_entry">15 minutes</string>
+    <string name="pref_reminder_15minutes_value" translatable="false">15</string>
+    <string name="pref_reminder_20minutes_entry">20 minutes</string>
+    <string name="pref_reminder_20minutes_value" translatable="false">20</string>
+    <string name="pref_reminder_30minutes_entry">30 minutes</string>
+    <string name="pref_reminder_30minutes_value" translatable="false">30</string>
+    <string name="pref_reminder_1hour_entry">1 hour</string>
+    <string name="pref_reminder_1hour_value" translatable="false">60</string>
+    <string name="pref_reminder_2hours_entry">2 hours</string>
+    <string name="pref_reminder_2hours_value" translatable="false">120</string>
+    <string name="pref_reminder_12hours_entry">12 hours</string>
+    <string name="pref_reminder_12hours_value" translatable="false">720</string>
+    <string name="pref_reminder_24hours_entry">24 hours</string>
+    <string name="pref_reminder_24hours_value" translatable="false">1440</string>
+    <string name="pref_reminder_2days_entry">2 days</string>
+    <string name="pref_reminder_2days_value" translatable="false">2880</string>
+    <string name="pref_reminder_1week_entry">1 week</string>
+    <string name="pref_reminder_1week_value" translatable="false">10080</string>
+
+    <string-array name="pref_reminders_entries">
+        <item>@string/pref_reminder_0minutes_entry</item>
+        <item>@string/pref_reminder_5minutes_entry</item>
+        <item>@string/pref_reminder_10minutes_entry</item>
+        <item>@string/pref_reminder_15minutes_entry</item>
+        <item>@string/pref_reminder_20minutes_entry</item>
+        <item>@string/pref_reminder_30minutes_entry</item>
+        <item>@string/pref_reminder_1hour_entry</item>
+        <item>@string/pref_reminder_2hours_entry</item>
+        <item>@string/pref_reminder_12hours_entry</item>
+        <item>@string/pref_reminder_24hours_entry</item>
+        <item>@string/pref_reminder_2days_entry</item>
+        <item>@string/pref_reminder_1week_entry</item>
     </string-array>
-    <string-array name="pref_reminder_values">
-        <item>0</item>
-        <item>5</item>
-        <item>10</item>
-        <item>15</item>
-        <item>20</item>
-        <item>30</item>
-        <item>60</item>
-        <item>120</item>
-        <item>720</item>
-        <item>1440</item>
-        <item>2880</item>
-        <item>10080</item>
+    <string-array name="pref_reminders_values">
+        <item>@string/pref_reminder_0minutes_value</item>
+        <item>@string/pref_reminder_5minutes_value</item>
+        <item>@string/pref_reminder_10minutes_value</item>
+        <item>@string/pref_reminder_15minutes_value</item>
+        <item>@string/pref_reminder_20minutes_value</item>
+        <item>@string/pref_reminder_30minutes_value</item>
+        <item>@string/pref_reminder_1hour_value</item>
+        <item>@string/pref_reminder_2hours_value</item>
+        <item>@string/pref_reminder_12hours_value</item>
+        <item>@string/pref_reminder_24hours_value</item>
+        <item>@string/pref_reminder_2days_value</item>
+        <item>@string/pref_reminder_1week_value</item>
     </string-array>
-    <string-array name="pref_reminder_default">
-        <item>60</item>
+    <string-array name="pref_reminders_default_value">
+        <item>@string/pref_reminder_1hour_value</item>
     </string-array>
 
+    <string name="pref_sync_frequency_never_entry">Never</string>
+    <string name="pref_sync_frequency_never_value" translatable="false">0</string>
+    <string name="pref_sync_frequency_1hour_entry">1 hour</string>
+    <string name="pref_sync_frequency_1hour_value" translatable="false">3600</string>
+    <string name="pref_sync_frequency_2hours_entry">2 hours</string>
+    <string name="pref_sync_frequency_2hours_value" translatable="false">7200</string>
+    <string name="pref_sync_frequency_4hours_entry">4 hours</string>
+    <string name="pref_sync_frequency_4hours_value" translatable="false">14400</string>
+    <string name="pref_sync_frequency_8hours_entry">8 hours</string>
+    <string name="pref_sync_frequency_8hours_value" translatable="false">28800</string>
+    <string name="pref_sync_frequency_12hours_entry">12 hours</string>
+    <string name="pref_sync_frequency_12hours_value" translatable="false">43200</string>
+    <string name="pref_sync_frequency_24hours_entry">24 hours</string>
+    <string name="pref_sync_frequency_24hours_value" translatable="false">86400</string>
     <string-array name="pref_sync_frequency_entries">
-        <item>Never</item>
-        <item>1 hour</item>
-        <item>2 hours</item>
-        <item>4 hours</item>
-        <item>8 hours</item>
-        <item>12 hours</item>
-        <item>24 hours</item>
+        <item>@string/pref_sync_frequency_never_entry</item>
+        <item>@string/pref_sync_frequency_1hour_entry</item>
+        <item>@string/pref_sync_frequency_2hours_entry</item>
+        <item>@string/pref_sync_frequency_4hours_entry</item>
+        <item>@string/pref_sync_frequency_8hours_entry</item>
+        <item>@string/pref_sync_frequency_12hours_entry</item>
+        <item>@string/pref_sync_frequency_24hours_entry</item>
     </string-array>
     <string-array name="pref_sync_frequency_values">
-        <item>0</item>
-        <item>3600</item>
-        <item>7200</item>
-        <item>14400</item>
-        <item>28800</item>
-        <item>43200</item>
-        <item>86400</item>
+        <item>@string/pref_sync_frequency_never_value</item>
+        <item>@string/pref_sync_frequency_1hour_value</item>
+        <item>@string/pref_sync_frequency_2hours_value</item>
+        <item>@string/pref_sync_frequency_4hours_value</item>
+        <item>@string/pref_sync_frequency_8hours_value</item>
+        <item>@string/pref_sync_frequency_12hours_value</item>
+        <item>@string/pref_sync_frequency_24hours_value</item>
     </string-array>
 </resources>

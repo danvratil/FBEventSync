@@ -40,6 +40,8 @@ import java.util.Locale;
 
 public class LogViewActivity extends AppCompatActivity {
 
+    private static final String TAG = "LOGVIEW";
+
     TextView mTextView = null;
     ScrollView mScrollView = null;
 
@@ -93,7 +95,7 @@ public class LogViewActivity extends AppCompatActivity {
                                         "App version: %d (%s)\n" +
                                         "App build: %s\n" +
                                         "OS: %s (API %d)\n",
-                                getString(R.string.email_describe_your_problem),
+                                getString(R.string.log_email_template),
                                 BuildConfig.APPLICATION_ID,
                                 BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME,
                                 BuildConfig.BUILD_TYPE,
@@ -101,14 +103,14 @@ public class LogViewActivity extends AppCompatActivity {
 
                 File logFile = new File(getFilesDir(), Logger.LOG_FILE);
                 if (!logFile.exists() || !logFile.canRead()) {
-                    Toast.makeText(this, R.string.toast_error_sending_log, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.log_error_sending_log_toast, Toast.LENGTH_SHORT).show();
                     return false;
                 }
 
                 Uri contentUri = FileProvider.getUriForFile(
-                        this, "cz.dvratil.fbeventsync.FileProvider", logFile);
+                        this, getString(R.string.fileprovider_authority), logFile);
                 intent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                startActivity(Intent.createChooser(intent, getResources().getString(R.string.intent_send_email)));
+                startActivity(Intent.createChooser(intent, getResources().getString(R.string.log_send_email_action)));
                 return true;
 
             default:
@@ -128,10 +130,10 @@ public class LogViewActivity extends AppCompatActivity {
                     builder.append('\n');
                 }
             } catch (Exception e) {
-                Log.e("LOGVIEW", "Exception when reading log: " + e.getMessage());
+                Log.e(TAG, "Exception when reading log: " + e.getMessage());
             }
         } catch (Exception e) {
-            Log.e("LOGVIEW", "Exception when opening log: " + e.getMessage());
+            Log.e(TAG, "Exception when opening log: " + e.getMessage());
         }
 
         mTextView.setText(builder.toString());

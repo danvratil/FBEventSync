@@ -33,6 +33,8 @@ import java.util.Locale;
 
 public class Logger {
 
+    private static String TAG = "LOG";
+
     public static String LOG_FILE = "logs/sync.log";
 
     private static int MAX_LOG_SIZE  = 512 * 1024; // 512KB
@@ -101,7 +103,7 @@ public class Logger {
 
                 mLogWriter = new FileWriter(mLogFile, true);
             } catch (IOException e) {
-                Log.e("LOG","IOException when truncating log file: " + e.getMessage());
+                Log.e(TAG,"IOException when truncating log file: " + e.getMessage());
             }
         }
     }
@@ -130,7 +132,7 @@ public class Logger {
 
                 mLogWriter = new FileWriter(mLogFile, true);
             } catch (IOException e) {
-                Log.e("LOG","IOException when shrinking log file:" + e.getMessage());
+                Log.e(TAG,"IOException when shrinking log file:" + e.getMessage());
             }
         }
     }
@@ -143,7 +145,7 @@ public class Logger {
         File logDir = new File(context.getFilesDir(), "logs");
         if (!logDir.exists()) {
             if (!logDir.mkdir()) {
-                Log.e("LOG","Failed to create logs directory");
+                Log.e(TAG,"Failed to create logs directory");
                 return;
             }
         }
@@ -151,7 +153,7 @@ public class Logger {
         try {
             mLogWriter = new FileWriter(mLogFile, true);
         }  catch (IOException e) {
-            Log.e("LOG", "Failed to open log: " + e.getMessage());
+            Log.e(TAG, "Failed to open log: " + e.getMessage());
             mLogWriter = null;
             mLogFile = null;
         }
@@ -181,7 +183,7 @@ public class Logger {
                     mLogWriter.write(logMsg);
                     mLogWriter.flush();
                 } catch (IOException e) {
-                    Log.e("LOG", "Log IOException: " + e.getMessage());
+                    Log.e(TAG, "Log IOException: " + e.getMessage());
                 }
             }
 

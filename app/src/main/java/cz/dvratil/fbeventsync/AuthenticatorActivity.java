@@ -128,7 +128,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     mWebView.setVisibility(View.GONE);
                     mProgressBar.setVisibility(View.VISIBLE);
                     mProgressLabel.setVisibility(View.VISIBLE);
-                    mProgressLabel.setText(getString(R.string.auth_progress_retrieving_birthday));
+                    mProgressLabel.setText(getString(R.string.auth_progress_retrieving_calendars));
 
                     mAccessToken = Uri.parse("http://localhost/?" + uri.getFragment()).getQueryParameter("access_token");
 
@@ -212,7 +212,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                     createAccount(accessToken, accountName);
                 } catch (org.json.JSONException e) {
                     mLogger.error("AUTH","JSON exception: %s", e.getMessage());
-                    Toast.makeText(activity, getString(R.string.toast_account_creation_error),
+                    Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast),
                             Toast.LENGTH_SHORT)
                             .show();
                     activity.finish();
@@ -227,7 +227,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                         int errCode = err.getInt("code");
                         if (errCode == 4) {
                             mLogger.error("AUTH", "FetchUserInfo: rate limiting error");
-                            Toast.makeText(activity, getString(R.string.toast_auth_rate_limiting_error), Toast.LENGTH_SHORT)
+                            Toast.makeText(activity, getString(R.string.auth_rate_limiting_toast), Toast.LENGTH_SHORT)
                                     .show();
                             activity.finish();
                             return;
@@ -239,7 +239,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                 } else {
                     mLogger.error("AUTH","FetchUserInfo failure: unknown error");
                 }
-                Toast.makeText(activity, getString(R.string.toast_account_creation_error), Toast.LENGTH_SHORT)
+                Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
                         .show();
                 activity.finish();
             }
@@ -266,7 +266,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         CalendarSyncAdapter.updateSync(this);
 
-        Toast.makeText(this, R.string.toast_account_creation_success, Toast.LENGTH_SHORT)
+        Toast.makeText(this, R.string.auth_account_creation_success_toast, Toast.LENGTH_SHORT)
                 .show();
         finish();
     }

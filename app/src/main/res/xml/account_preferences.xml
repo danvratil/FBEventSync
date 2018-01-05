@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/pref_general_settings" />
+        android:title="@string/pref_general_settings_title" />
 
     <PreferenceScreen
         android:key="pref_calendar_settings"
@@ -17,7 +17,7 @@
 
     <PreferenceScreen
         android:key="pref_sync_settings"
-        android:title="@string/pref_sync_settings"
+        android:title="@string/pref_sync_settings_title"
         android:summary="@string/pref_sync_settings_summary">
         <intent
             android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC"

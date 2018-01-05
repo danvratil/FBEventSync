@@ -33,6 +33,8 @@ public class PermissionRequestActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_ID = 0;
 
+    private static final String TAG = "PERMS";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +53,9 @@ public class PermissionRequestActivity extends AppCompatActivity {
         switch (requestCode) {
             case PERMISSION_REQUEST_ID:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("PERMS", "Permissions granted by user");
+                    Log.d(TAG, "Permissions granted by user");
                 } else {
-                    Log.d("PERMS","Permissions denied by user!");
+                    Log.d(TAG,"Permissions denied by user!");
                 }
                 break;
         }

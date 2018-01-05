@@ -28,6 +28,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class GraphResponseHandler extends JsonHttpResponseHandler {
 
+    private static String TAG = "GRAPH";
+
     private Logger mLogger = null;
     private Context mContext = null;
 
@@ -69,7 +71,7 @@ public class GraphResponseHandler extends JsonHttpResponseHandler {
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
         Graph.AppUsage appUsage = getAppUsage(headers);
         if (appUsage != null) {
-            mLogger.warning("GRAPH", "Reaching app usage limits: Call: %d%%, Time: %d%%, CPU: %d%%",
+            mLogger.warning(TAG, "Reaching app usage limits: Call: %d%%, Time: %d%%, CPU: %d%%",
                     appUsage.callCount, appUsage.totalTime, appUsage.totalCPUTime);
 
             appUsage.store(mContext);
@@ -85,7 +87,7 @@ public class GraphResponseHandler extends JsonHttpResponseHandler {
     @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
         if (errorResponse == null) {
-            mLogger.error("GRAPH","Graph error: failure and empty response (code %d)", statusCode);
+            mLogger.error(TAG,"Graph error: failure and empty response (code %d)", statusCode);
             return;
         }
         try {
@@ -95,13 +97,13 @@ public class GraphResponseHandler extends JsonHttpResponseHandler {
                 requestTokenRefresh();
                 return;
             } else if (errorResponse.has("message")) {
-                mLogger.error("GRAPH", "Graph error:" + errorResponse.getString("message"));
+                mLogger.error(TAG, "Graph error:" + errorResponse.getString("message"));
             } else {
-                mLogger.error("GRAPH", "Graph error:" + errorResponse.toString());
+                mLogger.error(TAG, "Graph error:" + errorResponse.toString());
             }
             mResponse = errorResponse;
         } catch (org.json.JSONException e) {
-            mLogger.error("GRAPH", "JSONException: %s", e.getMessage());
+            mLogger.error(TAG, "JSONException: %s", e.getMessage());
         }
     }
 

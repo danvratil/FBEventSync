@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="@string/version_label"
+                android:text="@string/main_version_label"
                 app:layout_constraintBottom_toBottomOf="@+id/textView"
                 app:layout_constraintEnd_toEndOf="parent" />
         </android.support.constraint.ConstraintLayout>
@@ -81,35 +81,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onAddAccountClicked"
-            android:text="@string/add_account_btn" />
+            android:text="@string/main_add_account_btn" />
 
         <Button
             android:id="@+id/calendar_prefs_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onConfigureCalendarsClicked"
-            android:text="@string/configure_calendars_btn" />
+            android:text="@string/main_configure_calendars_btn" />
 
         <Button
             android:id="@+id/sync_prefs_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onConfigureSyncClicked"
-            android:text="@string/configure_sync_btn" />
+            android:text="@string/main_configure_sync_btn" />
 
         <Button
             android:id="@+id/misc_prefs_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onConfigureMiscClicked"
-            android:text="@string/configure_misc_btn" />
+            android:text="@string/main_configure_misc_btn" />
 
         <Button
             android:id="@+id/show_logs_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="onShowLogsClicked"
-            android:text="@string/show_logs_btn" />
+            android:text="@string/main_show_logs_btn" />
 
     </LinearLayout>
 

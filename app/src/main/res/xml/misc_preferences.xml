@@ -3,7 +3,7 @@
 
     <Preference
         android:key="report_bug"
-        android:title="@string/report_bug">
+        android:title="@string/action_report_bug">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://github.com/danvratil/FBEventSync/issues" />
@@ -11,7 +11,7 @@
 
     <Preference
         android:key="contact_developer"
-        android:title="@string/contact_developer">
+        android:title="@string/action_contact_developer">
         <intent
             android:action="android.intent.action.SENDTO"
             android:data="mailto:me@dvratil.cz" />
@@ -19,7 +19,7 @@
 
     <Preference
         android:key="rate_app"
-        android:title="@string/rate">
+        android:title="@string/action_rate_app">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://play.google.com/store/apps/details?id=cz.dvratil.fbeventsync" />

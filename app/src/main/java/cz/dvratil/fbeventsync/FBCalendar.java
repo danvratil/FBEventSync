@@ -21,7 +21,6 @@ import android.accounts.Account;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.provider.CalendarContract;
 
@@ -34,6 +33,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public class FBCalendar {
+
+    private static String TAG = "FBCalendar";
 
     public enum CalendarType {
         TYPE_ATTENDING("fb_attending_calendar"),
@@ -83,28 +84,29 @@ public class FBCalendar {
 
     private int getCalendarColor() {
         int defaultColor = mContext.getContext().getResources().getColor(R.color.colorFBBlue);
-        String key;
+        int key;
         switch (mType) {
             case TYPE_ATTENDING:
-                key = "pref_attending_color";
+                key = R.string.pref_calendar_attending_color;
                 break;
             case TYPE_MAYBE:
-                key = "pref_maybe_color";
+                key = R.string.pref_calendar_tentative_color;
                 break;
             case TYPE_NOT_REPLIED:
-                key = "pref_not_replied_color";
+                key = R.string.pref_calendar_not_responded_color;
                 break;
             case TYPE_DECLINED:
-                key = "pref_declined_color";
+                key =R.string.pref_calendar_declined_color;
                 break;
             case TYPE_BIRTHDAY:
-                key = "pref_birthday_color";
+                key = R.string.pref_calendar_birthday_color;
                 break;
             default:
+                mContext.getLogger().error(TAG, "Unhandled calendar type");
                 return defaultColor;
         }
 
-        return mContext.getPreferences().getInt(key, defaultColor);
+        return mContext.getPreferences().getInt(mContext.getContext().getString(key), defaultColor);
     }
 
     private long createLocalCalendar() throws android.os.RemoteException,
@@ -270,11 +272,11 @@ public class FBCalendar {
                 }
             }
         } catch (android.os.RemoteException e) {
-            mContext.getLogger().error("FBCalendar","Remote exception on creation: %s", e.getMessage());
+            mContext.getLogger().error(TAG,"Remote exception on creation: %s", e.getMessage());
         } catch (android.database.sqlite.SQLiteException e) {
-            mContext.getLogger().error("FBCalendar","SQL exception on creation: %s", e.getMessage());
+            mContext.getLogger().error(TAG,"SQL exception on creation: %s", e.getMessage());
         } catch (NumberFormatException e) {
-            mContext.getLogger().error("FBCalendar","Number exception on creation: %s", e.getMessage());
+            mContext.getLogger().error(TAG,"Number exception on creation: %s", e.getMessage());
         }
     }
 
@@ -291,42 +293,42 @@ public class FBCalendar {
     }
 
     public boolean isEnabled() {
-        String name;
+        int key;
         switch (mType) {
             case TYPE_ATTENDING:
-                name = "pref_attending_enabled";
+                key = R.string.pref_calendar_attending_enabled;
                 break;
             case TYPE_MAYBE:
-                name = "pref_tentative_enabled";
+                key = R.string.pref_calendar_tentative_enabled;
                 break;
             case TYPE_DECLINED:
-                name = "pref_declined_enabled";
+                key = R.string.pref_calendar_declined_enabled;
                 break;
             case TYPE_NOT_REPLIED:
-                name = "pref_not_responded_enabled";
+                key = R.string.pref_calendar_not_responded_enabled;
                 break;
             case TYPE_BIRTHDAY:
-                name = "pref_birthday_enabled";
+                key = R.string.pref_calendar_birthday_enabled;
                 break;
             default:
-                mContext.getLogger().error("FBCalendar", "Unhandled calendar type");
+                mContext.getLogger().error(TAG, "Unhandled calendar type");
                 return true;
         }
-        return mContext.getPreferences().getBoolean(name, true);
+        return mContext.getPreferences().getBoolean(mContext.getContext().getString(key), true);
     }
 
     public String name() {
         switch (mType) {
             case TYPE_ATTENDING:
-                return mContext.getContext().getString(R.string.cz_dvratil_fbeventsync_attending_calendar);
+                return mContext.getContext().getString(R.string.calendar_attending_title);
             case TYPE_MAYBE:
-                return mContext.getContext().getString(R.string.cz_dvratil_fbeventsync_tentative_calendar);
+                return mContext.getContext().getString(R.string.calendar_tentative_title);
             case TYPE_DECLINED:
-                return mContext.getContext().getString(R.string.cz_dvratil_fbeventsync_declined_calendar);
+                return mContext.getContext().getString(R.string.calendar_declined_title);
             case TYPE_NOT_REPLIED:
-                return mContext.getContext().getString(R.string.cz_dvratil_fbeventsync_not_responded_calendar);
+                return mContext.getContext().getString(R.string.calendar_not_responded_title);
             case TYPE_BIRTHDAY:
-                return mContext.getContext().getString(R.string.cz_dvratil_fbeventsync_birthday_calendar);
+                return mContext.getContext().getString(R.string.calendar_birthday_title);
         }
         return null;
     }
@@ -348,30 +350,36 @@ public class FBCalendar {
     public java.util.Set<Integer> getReminderIntervals() {
         SharedPreferences prefs = mContext.getPreferences();
         java.util.Set<String> defaultReminder = new HashSet<>();
-        for (String reminder : mContext.getContext().getResources().getStringArray(R.array.pref_reminder_default)) {
+        for (String reminder : mContext.getContext().getResources().getStringArray(R.array.pref_reminders_default_value)) {
             defaultReminder.add(reminder);
         }
 
-        java.util.Set<String> as = null;
+        int key;
         switch (mType) {
             case TYPE_NOT_REPLIED:
-                as = prefs.getStringSet("pref_not_responded_reminders", defaultReminder);
+                key = R.string.pref_calendar_not_responded_reminders;
                 break;
             case TYPE_DECLINED:
-                as = prefs.getStringSet("pref_declined_reminders", defaultReminder);
+                key = R.string.pref_calendar_declined_reminders;
                 break;
             case TYPE_MAYBE:
-                as = prefs.getStringSet("pref_maybe_reminders", defaultReminder);
+                key = R.string.pref_calendar_tentative_reminders;
                 break;
             case TYPE_ATTENDING:
-                as = prefs.getStringSet("pref_attending_reminders", defaultReminder);
+                key = R.string.pref_calendar_attending_reminders;
                 break;
             case TYPE_BIRTHDAY:
-                as = prefs.getStringSet("pref_birthday_reminders", defaultReminder);
+                key = R.string.pref_calendar_birthday_reminders;
+                break;
+            default:
+                mContext.getLogger().error(TAG,"Unhandled calendar type");
+                return new HashSet<>();
         }
+
+        java.util.Set<String> configuredReminders = prefs.getStringSet(mContext.getContext().getString(key), defaultReminder);
         java.util.Set<Integer> rv = new HashSet<>();
-        for (String s : as) {
-            rv.add(Integer.parseInt(s));
+        for (String reminder : configuredReminders) {
+            rv.add(Integer.parseInt(reminder));
         }
         return rv;
     }
@@ -405,10 +413,10 @@ public class FBCalendar {
                     event.update(mContext, localId.longValue());
                 }
             } catch (android.os.RemoteException e) {
-                mContext.getLogger().error("FBCalendar","Remote exception during FBCalendar sync: %s", e.getMessage());
+                mContext.getLogger().error(TAG,"Remote exception during FBCalendar sync: %s", e.getMessage());
                 // continue with remaining events
             } catch (android.database.sqlite.SQLiteException e) {
-                mContext.getLogger().error("FBCalendar","SQL exception during FBCalendar sync: %s", e.getMessage());
+                mContext.getLogger().error(TAG,"SQL exception during FBCalendar sync: %s", e.getMessage());
                 // continue with remaining events
             }
             mFutureLocalIds.remove(event.eventId());
@@ -426,10 +434,10 @@ public class FBCalendar {
             try {
                 FBEvent.remove(mContext, localId.longValue());
             } catch (android.os.RemoteException e) {
-                mContext.getLogger().error("FBCalendar","Remote exception during FBCalendar finalizeSync: %s", e.getMessage());
+                mContext.getLogger().error(TAG,"Remote exception during FBCalendar finalizeSync: %s", e.getMessage());
                 // continue with remaining events
             } catch (android.database.sqlite.SQLiteException e) {
-                mContext.getLogger().error("FBCalendar","SQL exception during FBCalendar fynalize sync: %s", e.getMessage());
+                mContext.getLogger().error(TAG,"SQL exception during FBCalendar fynalize sync: %s", e.getMessage());
                 // continue with remaining events
             }
         }

@@ -69,17 +69,18 @@ public class Graph {
     public static final String LIMIT_PARAM = "limit";
     public static final String TYPE_PARAM = "type";
     public static final String AFTER_PARAM = "after";
+    public static final String ACCESS_TOKEN_PARAM = "access_token";
 
     public static RequestHandle me(String accessToken, AsyncHttpResponseHandler handler) {
         RequestParams params = new RequestParams();
-        params.add("access_token", accessToken);
+        params.add(ACCESS_TOKEN_PARAM, accessToken);
         params.add(FIELDS_PARAM, "name");
         return new AsyncHttpClient().get(BASE_URL+ "/me", params, handler);
     }
 
     public static RequestHandle events(String accessToken, RequestParams params, AsyncHttpResponseHandler handler) {
         SyncHttpClient client = new SyncHttpClient();
-        params.add("access_token", accessToken);
+        params.add(ACCESS_TOKEN_PARAM, accessToken);
         return client.get(BASE_URL + "/me/events", params, handler);
     }
 

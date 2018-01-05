@@ -24,13 +24,15 @@ import android.util.Log;
 
 public class CalendarSyncService extends Service {
 
+    private static final String TAG = "SYNC";
+
     private CalendarSyncAdapter mAdapter;
     private static final Object sAdapterLock  = new Object();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("SYNC", "Sync service created");
+        Log.d(TAG, "Sync service created");
 
         synchronized (sAdapterLock) {
             if (mAdapter == null) {
@@ -41,7 +43,7 @@ public class CalendarSyncService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d("SYNC", "Sync service binded");
+        Log.d(TAG, "Sync service binded");
         return mAdapter.getSyncAdapterBinder();
     }
 }

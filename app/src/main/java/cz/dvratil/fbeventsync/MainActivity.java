@@ -21,11 +21,9 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Build;
-import android.provider.CalendarContract;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
@@ -37,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         TextView view = findViewById(R.id.versionLabel);
-        view.setText(String.format(getString(R.string.version_label), BuildConfig.VERSION_NAME));
+        view.setText(String.format(getString(R.string.main_version_label), BuildConfig.VERSION_NAME));
 
         checkAccounts();
     }

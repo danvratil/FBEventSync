@@ -29,7 +29,6 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -90,8 +89,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         String accountType = context.getResources().getString(R.string.account_type);
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        String syncFreq = pref.getString("pref_sync_frequency",
-                                         context.getResources().getString(R.string.pref_sync_frequency_default));
+        String syncFreq = pref.getString(context.getResources().getString(R.string.pref_sync_frequency),
+                                         context.getResources().getString(R.string.pref_sync_frequency_default_value));
         assert(syncFreq != null);
         int syncInterval = Integer.parseInt(syncFreq);
 
@@ -144,7 +143,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Don't sync more often than every minute
         Calendar calendar = Calendar.getInstance();
-        long lastSync = prefs.getLong("lastSync", 0);
+        long lastSync = prefs.getLong(getContext().getString(R.string.cfg_last_sync), 0);
         if (!BuildConfig.DEBUG) {
             if (calendar.getTimeInMillis() - lastSync < 60 * 1000) {
                 logger.info("SYNC", "Skipping sync, last sync was only %d seconds ago",
@@ -154,7 +153,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
             // Allow up to 5 syncs per hour
-        int syncsPerHour = prefs.getInt("syncsPerHour", 0);
+        int syncsPerHour = prefs.getInt(getContext().getString(R.string.cfg_syncs_per_hour), 0);
         if (!BuildConfig.DEBUG) {
             if (calendar.getTimeInMillis() - lastSync < 3600 * 1000) {
                 int hour = calendar.get(Calendar.HOUR);
@@ -200,7 +199,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         removeOldBirthdayCalendar(mSyncContext);
         FBCalendar.Set calendars = new FBCalendar.Set();
         calendars.initialize(mSyncContext);
-        if (prefs.getInt("lastVersion", 0) != BuildConfig.VERSION_CODE) {
+        if (prefs.getInt(getContext().getString(R.string.cfg_last_version), 0) != BuildConfig.VERSION_CODE) {
             logger.info("SYNC","New version detected: deleting all calendars");
             for (FBCalendar cal : calendars.values()) {
                 try {
@@ -233,9 +232,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         mSyncContext = null;
 
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("lastVersion", BuildConfig.VERSION_CODE);
-        editor.putLong("lastSync", Calendar.getInstance().getTimeInMillis());
-        editor.putInt("syncsPerHour", syncsPerHour);
+        editor.putInt(getContext().getString(R.string.cfg_last_version), BuildConfig.VERSION_CODE);
+        editor.putLong(getContext().getString(R.string.cfg_last_sync), Calendar.getInstance().getTimeInMillis());
+        editor.putInt(getContext().getString(R.string.cfg_syncs_per_hour), syncsPerHour);
         editor.apply();
 
         logger.info("SYNC", "Sync for %s done", account.name);
@@ -335,8 +334,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return null;
         }
 
-        String userLocale = mSyncContext.getPreferences().getString("pref_language", null);
-        if (userLocale == null || userLocale.equals(mSyncContext.getContext().getString(R.string.pref_language_default))) {
+        String userLocale = mSyncContext.getPreferences().getString(getContext().getString(R.string.pref_language), null);
+        if (userLocale == null || userLocale.equals(mSyncContext.getContext().getString(R.string.pref_language_default_value))) {
             Locale locale = Locale.getDefault();
             userLocale = String.format("%s_%s", locale.getLanguage(), locale.getCountry());
         }

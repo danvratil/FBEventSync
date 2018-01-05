@@ -3,12 +3,12 @@
     <item
         android:id="@+id/action_clear_log"
         android:icon="@android:drawable/ic_notification_clear_all"
-        android:title="@string/action_clear_log"
+        android:title="@string/log_clear_log_action"
         app:showAsAction="never"/>
 
     <item android:id="@+id/action_send_to_develop"
         android:icon="@android:drawable/ic_menu_send"
-        android:title="@string/action_send_log_to_dev"
+        android:title="@string/log_send_to_dev_action"
         app:showAsAction="never"/>
 
 </menu>
