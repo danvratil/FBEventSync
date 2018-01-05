@@ -67,6 +67,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     public CalendarSyncAdapter(Context context, boolean autoInitialize) {
         super(context,  autoInitialize);
 
+        PreferencesMigrator.migrate(context);
+
         logger = Logger.getInstance(context);
 
         checkPermissions();

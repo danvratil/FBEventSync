@@ -1,4 +1,7 @@
 <resources>
+    <string name="cfg_prefs_version" translatable="false">prefs_version</string>
+
+
     <string name="app_name">FB Event Sync</string>
     <string name="full_app_name">Event Sync for Facebook</string>
     <string name="account_type">cz.dvratil.fbeventsync</string>

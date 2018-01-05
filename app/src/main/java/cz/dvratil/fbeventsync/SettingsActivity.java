@@ -56,6 +56,8 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        PreferencesMigrator.migrate(this);
+
         PreferenceFragment fragment = null;
         String action = getIntent().getAction();
         if (action == CONFIGURE_CALENDARS) {
