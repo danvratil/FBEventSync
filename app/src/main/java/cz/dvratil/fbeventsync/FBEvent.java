@@ -208,7 +208,7 @@ public class FBEvent {
             calendar.set(Calendar.MILLISECOND, 0);
             values.put(CalendarContract.Events.DTSTART, calendar.getTimeInMillis());
             // Those are identical for all birthdays, so we hardcode them
-            values.put(CalendarContract.Events.ALL_DAY, true);
+            values.put(CalendarContract.Events.ALL_DAY, 1);
             values.put(CalendarContract.Events.RRULE, "FREQ=YEARLY");
             values.put(CalendarContract.Events.DURATION, "P1D");
 

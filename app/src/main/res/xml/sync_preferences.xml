@@ -16,4 +16,12 @@
         android:entryValues="@array/pref_sync_frequency_values"
         android:defaultValue="@string/pref_sync_frequency_default"/>
 
+    <ListPreference
+        android:key="pref_language"
+        android:title="@string/pref_language"
+        android:summary="@string/pref_language_summary"
+        android:entries="@array/pref_language_entries"
+        android:entryValues="@array/pref_language_values"
+        android:defaultValue="@string/pref_language_default"/>
+
 </PreferenceScreen>

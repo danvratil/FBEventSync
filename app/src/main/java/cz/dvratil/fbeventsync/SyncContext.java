@@ -63,7 +63,7 @@ public class SyncContext {
 
     public SharedPreferences getPreferences() {
         return mContext.getSharedPreferences(
-                mContext.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE);
+                mContext.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS);
     }
 
     public Logger getLogger() {

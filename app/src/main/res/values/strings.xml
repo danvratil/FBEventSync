@@ -51,6 +51,17 @@
     <string name="pref_sync_frequency_summary">How often should we sync your Facebook events?</string>
     <string name="pref_sync_frequency_default">3600</string>
 
+    <string name="pref_language">Language</string>
+    <string name="pref_language_summary">Language for birthdays and events</string>
+    <string name="pref_language_default">device</string>
+    <string name="pref_language_default_entry">Device language</string>
+    <string-array name="pref_language_entries">
+        <item>Device Language</item>
+    </string-array>
+    <string-array name="pref_language_values">
+        <item>device</item>
+    </string-array>
+
     <string name="pref_reminders">Reminders</string>
     <string name="pref_enabled">Enabled</string>
     <string name="pref_color">Color</string>

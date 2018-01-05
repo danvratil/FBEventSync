@@ -22,8 +22,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
@@ -36,6 +38,10 @@ import android.view.View;
 import com.kizitonwose.colorpreference.ColorPreference;
 import com.larswerkman.lobsterpicker.LobsterPicker;
 import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -62,11 +68,12 @@ public class SettingsActivity extends PreferenceActivity {
 
         // API 21
         //String preferencesName = PreferenceManager.getDefaultSharedPreferencesName(this);
-        SharedPreferences prefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS);
         prefs.registerOnSharedPreferenceChangeListener(
                 new SharedPreferences.OnSharedPreferenceChangeListener() {
                     public void onSharedPreferenceChanged(
                             SharedPreferences prefs, String key) {
+                        Log.d("PREFS", "Settings changed!");
                         if (key.equals("pref_sync_frequency")) {
                             mShouldRescheduleSync = true;
                         }
@@ -77,15 +84,27 @@ public class SettingsActivity extends PreferenceActivity {
         getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+    private void maybeSync() {
         if (mShouldRescheduleSync) {
             CalendarSyncAdapter.updateSync(this);
+            mShouldRescheduleSync = false;
         }
         if (mShouldForceSync) {
             CalendarSyncAdapter.requestSync(this);
+            mShouldForceSync = false;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        maybeSync();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        maybeSync();
     }
 
     public static class CalendarPreferenceFragment extends PreferenceFragment {
@@ -147,6 +166,41 @@ public class SettingsActivity extends PreferenceActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.sync_preferences);
+            ListPreference pref = (ListPreference) findPreference("pref_language");
+            XmlResourceParser parser = getResources().getXml(R.xml.fb_languages);
+            List<CharSequence> entryValues = new ArrayList<>();
+            entryValues.add(getString(R.string.pref_language_default));
+            List<CharSequence> entries = new ArrayList<>();
+            entries.add(getString(R.string.pref_language_default_entry));
+            try {
+                int ev = parser.getEventType();
+                while (ev != XmlResourceParser.END_DOCUMENT) {
+                    if (ev == XmlResourceParser.START_TAG && parser.getName().equals("language")) {
+                        String code = parser.getAttributeValue(null,"code");
+                        String lang = code.substring(0, 2);
+                        Locale locale = new Locale(lang, code.substring(3, 5));
+                        String name;
+                        if (locale.getDisplayLanguage().equals(lang)) {
+                            name = String.format(Locale.getDefault(), "%s (%s)",
+                                    parser.getAttributeValue(null, "name"),
+                                    locale.getDisplayCountry());
+                        } else {
+                            name = locale.getDisplayName();
+                        }
+                        entries.add(name);
+                        entryValues.add(code);
+                    }
+                    ev = parser.next();
+                }
+            } catch (org.xmlpull.v1.XmlPullParserException e) {
+                e.printStackTrace();
+                Log.e("PREFS","Language XML parsing exception: " + e.getMessage());
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+                Log.e("PREFS", "Language XML IO exception:" + e.getMessage());
+            }
+            pref.setEntries(entries.toArray(new CharSequence[0]));
+            pref.setEntryValues(entryValues.toArray(new CharSequence[0]));
         }
     }
 

@@ -44,7 +44,7 @@ public class Graph {
         public void store(Context context) {
             SharedPreferences prefs = context.getSharedPreferences(
                     context.getString(R.string.cz_dvratil_fbeventsync_preferences),
-                    Context.MODE_PRIVATE);
+                    Context.MODE_MULTI_PROCESS);
             SharedPreferences.Editor edit = prefs.edit();
             edit.putInt(PREFS_CALLCOUNT, this.callCount);
             edit.putInt(PREFS_TOTALTIME, this.totalTime);
@@ -55,7 +55,7 @@ public class Graph {
         static AppUsage load(Context context) {
             SharedPreferences prefs = context.getSharedPreferences(
                     context.getString(R.string.cz_dvratil_fbeventsync_preferences),
-                    Context.MODE_PRIVATE);
+                    Context.MODE_MULTI_PROCESS);
             return new AppUsage(
                     prefs.getInt(PREFS_CALLCOUNT, 0),
                     prefs.getInt(PREFS_TOTALTIME, 0),

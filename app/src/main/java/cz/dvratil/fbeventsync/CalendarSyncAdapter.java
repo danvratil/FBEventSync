@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -47,12 +48,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
+import cz.msebera.android.httpclient.NameValuePair;
+import cz.msebera.android.httpclient.client.utils.URIBuilder;
 
 public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -134,7 +138,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         SharedPreferences prefs = getContext().getSharedPreferences(
-                getContext().getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE);
+                getContext().getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS);
 
         // Don't sync more often than every minute
         Calendar calendar = Calendar.getInstance();
@@ -316,10 +320,10 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private String getICalSyncURI() {
+    private URIBuilder getICalSyncURI() {
         AccountManager accManager = AccountManager.get(mSyncContext.getContext());
-        String uri = accManager.getUserData(mSyncContext.getAccount(), Authenticator.DATA_BDAY_URI);
-        if (uri == null || uri.isEmpty()) {
+        String uriStr = accManager.getUserData(mSyncContext.getAccount(), Authenticator.DATA_BDAY_URI);
+        if (uriStr == null || uriStr.isEmpty()) {
             // We don't have the URI, possibly we did not migrate from the old authentication system
             // yet, let's schedule it now
             logger.info("SYNC.BDAY","Birthday iCal URL not set, forcing re-authentication");
@@ -328,33 +332,62 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                     mSyncContext.getAccessToken());
             return null;
         }
-        uri = uri.replace("webcal", "https");
-        Locale locale = Locale.getDefault();
-        uri += String.format("&locale=%s_%s", locale.getLanguage(), locale.getCountry());
-        return uri;
+
+        String userLocale = mSyncContext.getPreferences().getString("pref_language", null);
+        if (userLocale == null || userLocale.equals(mSyncContext.getContext().getString(R.string.pref_language_default))) {
+            Locale locale = Locale.getDefault();
+            userLocale = String.format("%s_%s", locale.getLanguage(), locale.getCountry());
+        }
+
+        try {
+            return new URIBuilder(uriStr)
+                    .setScheme("https")
+                    .addParameter("locale", userLocale);
+        } catch (java.net.URISyntaxException e) {
+            logger.error("SYNC", "URI parsing error");
+            return null;
+        }
+    }
+
+    private String sanitizeICalUri(URIBuilder builder) {
+        try {
+            URIBuilder b = new URIBuilder(builder.toString());
+            List<NameValuePair> params = b.getQueryParams();
+            b.clearParameters();
+            for (NameValuePair param : params) {
+                if (param.getName().equals("uid") || param.getName().equals("key")) {
+                    b.addParameter(param.getName(), "hidden");
+                } else {
+                    b.addParameter(param.getName(), param.getValue());
+                }
+            }
+            return b.toString();
+        } catch (java.net.URISyntaxException e) {
+            return "<URI parsing error>";
+        }
     }
 
     private void syncEventsViaICal(FBCalendar.Set calendars) {
-        String uri = getICalSyncURI();
+        URIBuilder uri = getICalSyncURI();
         if (uri == null) {
             return;
         }
 
-        uri = uri.replace("/b.php", "/u.php");
-        logger.debug("SYNC","Syncing event iCal");
-        syncICalCalendar(calendars, uri);
+        uri.setPath("/ical/u.php");
+        logger.debug("SYNC","Syncing event iCal from %s", sanitizeICalUri(uri));
+        syncICalCalendar(calendars, uri.toString());
     }
 
     private void syncBirthdayCalendar(FBCalendar.Set calendars) {
-        String uri = getICalSyncURI();
+        URIBuilder uri = getICalSyncURI();
         if (uri == null) {
             return;
         }
-        logger.debug("SYNC","Syncing birthday iCal");
-        syncICalCalendar(calendars, uri);
+        logger.debug("SYNC","Syncing birthday iCal from %s", sanitizeICalUri(uri));
+        syncICalCalendar(calendars, uri.toString());
     }
 
-    private void syncICalCalendar(final FBCalendar.Set calendars, String uri) {
+    private void syncICalCalendar(final FBCalendar.Set calendars, final String uri) {
         Graph.fetchBirthdayICal(uri, new DataAsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -379,6 +412,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String err = responseBody == null ? "Unknown error" : new String(responseBody);
                 logger.error("SYNC", "Error retrieving iCal file: %d, %s", statusCode, err);
+                logger.error("SYNC","URI: %s", uri);
                 if (headers != null) {
                     for (Header header : headers) {
                         logger.error("SYNC", "    %s: %s", header.getName(), header.getValue());
