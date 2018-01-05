@@ -401,7 +401,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         logger.debug("SYNC","Removing legacy birthday calendar");
         try {
             context.getContentProviderClient().delete(
-                    CalendarContract.Calendars.CONTENT_URI,
+                    CalendarContract.Calendars.CONTENT_URI.buildUpon()
+                            .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_TYPE, context.getContext().getString(R.string.account_type))
+                            .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_NAME, context.getAccount().name)
+                            .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                            .build(),
                     String.format("((%s = ?) AND (%s = ?) AND (%s = ?))",
                             CalendarContract.Calendars.NAME,
                             CalendarContract.Calendars.ACCOUNT_NAME,
