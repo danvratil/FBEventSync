@@ -6,9 +6,9 @@
         android:title="@string/pref_general_settings_title" />
 
     <PreferenceScreen
-        android:key="pref_calendar_settings"
-        android:title="Calendars"
-        android:summary="Configure reminders and colors">
+        android:key="@string/pref_calendar_settings"
+        android:title="@string/pref_calendar_settings_title"
+        android:summary="@string/pref_calendar_settings_summary">
         <intent
             android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS"
             android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"
@@ -16,7 +16,7 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:key="pref_sync_settings"
+        android:key="@string/pref_sync_settings"
         android:title="@string/pref_sync_settings_title"
         android:summary="@string/pref_sync_settings_summary">
         <intent
@@ -26,8 +26,8 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:key="pref_misc_settings"
-        android:title="@string/pref_misc_settings">
+        android:key="@string/pref_misc_settings"
+        android:title="@string/pref_misc_settings_title">
         <intent
             android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC"
             android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"

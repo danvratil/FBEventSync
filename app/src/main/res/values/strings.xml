@@ -47,7 +47,8 @@
     <!-- PREFERENCES //-->
     <string name="pref_activity_title">Settings</string>
 
-    <string name="pref_general_settings_title">General Settings</string>
+    <!-- Sync settings //-->
+    <string name="pref_sync_settings" translatable="false">pref_sync_settings</string>
     <string name="pref_sync_settings_title">Sync Settings</string>
     <string name="pref_sync_settings_summary">Configure how often and when to sync events.</string>
 
@@ -56,7 +57,7 @@
     <string name="pref_sync_frequency_summary">How often should we sync your Facebook events?</string>
     <string name="pref_sync_frequency_default_value" translatable="false">@string/pref_sync_frequency_1hour_value</string>
 
-    <string name="pref_language">pref_language</string>
+    <string name="pref_language" translatable="false">pref_language</string>
     <string name="pref_language_title">Language</string>
     <string name="pref_language_summary">Language for birthdays and events</string>
     <string name="pref_language_default_value" translatable="false">device</string>
@@ -67,6 +68,23 @@
     <string-array name="pref_language_values">
         <item>@string/pref_language_default_value</item>
     </string-array>
+
+
+    <!-- Misc settings //-->
+    <string name="pref_misc_settings" translatable="false">pref_misc_settings</string>
+    <string name="pref_misc_settings_title">Miscellaneous</string>
+    <string name="pref_misc_report_bug" translatable="false">pref_misc_report_bug</string>
+    <string name="pref_misc_report_bug_title">Report a bug</string>
+    <string name="pref_misc_contact_developer" translatable="false">pref_misc_contact_developer</string>
+    <string name="pref_misc_contact_developer_title">Contact the developer</string>
+    <string name="pref_misc_rate_app" translatable="false">pref_misc_rate_app</string>
+    <string name="pref_misc_rate_app_title">Rate the app</string>
+
+
+    <!-- Calendar settings //-->
+    <string name="pref_calendar_settings" translatable="false">pref_calendar_settings</string>
+    <string name="pref_calendar_settings_title">Calendars</string>
+    <string name="pref_calendar_settings_summary">Set calendars, colors and reminders</string>
 
     <string name="pref_calendar_attending_enabled" translatable="false">pref_attending_enabled</string>
     <string name="pref_calendar_attending_reminders" translatable="false">pref_attending_reminders</string>
@@ -87,11 +105,6 @@
     <string name="pref_calendar_enabled_title">Enabled</string>
     <string name="pref_calendar_reminders_title">Reminders</string>
     <string name="pref_calendar_color_title">Color</string>
-
-    <string name="pref_misc_settings">Miscellaneous</string>
-    <string name="action_report_bug">Report a bug</string>
-    <string name="action_contact_developer">Contact the developer</string>
-    <string name="action_rate_app">Rate the app</string>
 
     <string name="color_dlg_title">Choose Color</string>
     <string name="color_dlg_save_btn_title">Save</string>
@@ -190,4 +203,5 @@
         <item>@string/pref_sync_frequency_12hours_value</item>
         <item>@string/pref_sync_frequency_24hours_value</item>
     </string-array>
+    <string name="pref_general_settings_title">General</string>
 </resources>

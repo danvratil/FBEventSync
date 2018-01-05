@@ -1,0 +1,92 @@
+<resources>
+    <!-- GLOBAL STRINGS //-->
+    <string name="app_name">FB Event Sync</string>
+    <string name="full_app_name">Synchronizace Facebookových událostí</string>
+
+    <!-- MAIN ACTIVITY //-->
+    <string name="main_version_label">Verze: %s</string>
+    <string name="main_tagline">Nyní se synchronizací narozenin. Ou jéééé!</string>
+    <string name="main_add_account_btn">Přidat účet</string>
+    <string name="main_show_logs_btn">Zobrazit logy</string>
+    <string name="main_configure_calendars_btn">Nastavení kalendářů</string>
+    <string name="main_configure_sync_btn">Nastavení synchronizace</string>
+    <string name="main_configure_misc_btn">Další nastavení</string>
+
+    <!-- PERMISSIONS ACTIVITY //-->
+    <string name="perms_activity_title">Žádost o oprávnění</string>
+
+    <!-- LOGVIEW ACTIVITY //-->
+    <string name="log_activity_title">Logy</string>
+    <string name="log_clear_log_action">Vymazat logy</string>
+    <string name="log_send_to_dev_action">Poslat vývojáři</string>
+    <string name="log_send_email_action">Poslat email&#8230;</string>
+    <string name="log_email_template">[Zde prosím popište svůj problém, můžete i česky]</string>
+    <string name="log_error_sending_log_toast">Poslání logů selhalo: nelze otevřít soubor s logy</string>
+
+    <!-- AUTHENTICATION ACTIVITY //-->
+    <string name="auth_activity_title">Přihlášení k Facebooku</string>
+    <string name="auth_account_creation_error_toast">Přihlašování selhalo</string>
+    <string name="auth_account_creation_success_toast">Příhlášení úspěšné</string>
+    <string name="auth_rate_limiting_toast">Facebook je dočasně nedostupný, zkuste prosím později</string>
+    <string name="auth_progress_authenticating_with_fb">Přihlašování k Facebooku&#8230;</string>
+    <string name="auth_progress_retrieving_calendars">Stahování kalendářů&#8230;</string>
+    <string name="auth_progress_retrieving_userinfo">Stahování jména uživatele&#8230;</string>
+
+    <!-- CALENDAR SYNC //-->
+    <string name="calendar_not_responded_title">Události bez odpovědi</string>
+    <string name="calendar_declined_title">Události, kterých se zúčastním</string>
+    <string name="calendar_tentative_title">Události, které mě zajímají</string>
+    <string name="calendar_attending_title">Události, kterých se nezúčastním</string>
+    <string name="calendar_birthday_title">Narozeniny přátel</string>
+
+    <!-- PREFERENCES //-->
+    <string name="pref_activity_title">Nastavení</string>
+
+    <string name="pref_general_settings_title">Hlavní nastavení</string>
+    <string name="pref_sync_settings_title">Nastavení synchronizace</string>
+    <string name="pref_sync_settings_summary">Nastavte, jak často synchronizovat události</string>
+
+    <string name="pref_sync_frequency_title">Frekvence synchronizace</string>
+    <string name="pref_sync_frequency_summary">Jak často máme synchronizovat vaše události?</string>
+
+    <string name="pref_language_title">Jazyk</string>
+    <string name="pref_language_summary">Jazyk narozenin a událostí</string>
+    <string name="pref_language_default_entry">Jazyk zařízení</string>
+
+    <string name="pref_calendar_settings_title">Kalendáře</string>
+    <string name="pref_calendar_settings_summary">Nastavení kalendářů, upomínek a barev</string>
+
+    <string name="pref_calendar_enabled_title">Zapnuto</string>
+    <string name="pref_calendar_reminders_title">Upomínky</string>
+    <string name="pref_calendar_color_title">Barva</string>
+
+    <string name="pref_misc_report_bug_title">Nahlásit chybu</string>
+    <string name="pref_misc_contact_developer_title">Kontaktovat vývojáře</string>
+    <string name="pref_misc_rate_app_title">Ohodnotit aplikaci</string>
+
+    <string name="color_dlg_title">Zvolte barvu</string>
+    <string name="color_dlg_save_btn_title">Uložit</string>
+    <string name="color_dlg_close_btn_title">Zavřít</string>
+
+    <string name="pref_reminder_0minutes_entry">0 minut</string>
+    <string name="pref_reminder_5minutes_entry">5 minut</string>
+    <string name="pref_reminder_10minutes_entry">10 minut</string>
+    <string name="pref_reminder_15minutes_entry">15 minut</string>
+    <string name="pref_reminder_20minutes_entry">20 minut</string>
+    <string name="pref_reminder_30minutes_entry">30 minut</string>
+    <string name="pref_reminder_1hour_entry">1 hodina</string>
+    <string name="pref_reminder_2hours_entry">2 hodiny</string>
+    <string name="pref_reminder_12hours_entry">12 hodin</string>
+    <string name="pref_reminder_24hours_entry">24 hodin</string>
+    <string name="pref_reminder_2days_entry">2 dny</string>
+    <string name="pref_reminder_1week_entry">1 týden</string>
+
+    <string name="pref_sync_frequency_never_entry">Nikdy</string>
+    <string name="pref_sync_frequency_1hour_entry">1 hodina</string>
+    <string name="pref_sync_frequency_2hours_entry">2 hodiny</string>
+    <string name="pref_sync_frequency_4hours_entry">4 hodiny</string>
+    <string name="pref_sync_frequency_8hours_entry">8 hodin</string>
+    <string name="pref_sync_frequency_12hours_entry">12 hodin</string>
+    <string name="pref_sync_frequency_24hours_entry">24 hodin</string>
+    <string name="pref_misc_settings_title">Různé</string>
+</resources>

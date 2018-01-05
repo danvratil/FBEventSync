@@ -2,24 +2,24 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        android:key="report_bug"
-        android:title="@string/action_report_bug">
+        android:key="@string/pref_misc_report_bug"
+        android:title="@string/pref_misc_report_bug_title">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://github.com/danvratil/FBEventSync/issues" />
     </Preference>
 
     <Preference
-        android:key="contact_developer"
-        android:title="@string/action_contact_developer">
+        android:key="@string/pref_misc_contact_developer"
+        android:title="@string/pref_misc_contact_developer_title">
         <intent
             android:action="android.intent.action.SENDTO"
             android:data="mailto:me@dvratil.cz" />
     </Preference>
 
     <Preference
-        android:key="rate_app"
-        android:title="@string/action_rate_app">
+        android:key="@string/pref_misc_rate_app"
+        android:title="@string/pref_misc_rate_app_title">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://play.google.com/store/apps/details?id=cz.dvratil.fbeventsync" />
