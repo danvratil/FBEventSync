@@ -18,11 +18,11 @@
 package cz.dvratil.fbeventsync;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 
 

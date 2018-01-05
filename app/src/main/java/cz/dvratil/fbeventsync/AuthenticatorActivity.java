@@ -18,8 +18,8 @@
 package cz.dvratil.fbeventsync;
 
 import android.Manifest;
-import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Intent;

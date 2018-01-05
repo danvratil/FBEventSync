@@ -19,13 +19,13 @@ package cz.dvratil.fbeventsync;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.os.Bundle;
+import android.util.Log;
 
 
 public class Authenticator extends AbstractAccountAuthenticator {

@@ -20,8 +20,11 @@ package cz.dvratil.fbeventsync;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-
-import com.loopj.android.http.*;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 public class Graph {
 

@@ -40,8 +40,6 @@ import com.loopj.android.http.DataAsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.RequestParams;
 
-import cz.msebera.android.httpclient.Header;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -54,6 +52,7 @@ import java.util.TimeZone;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
+import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.NameValuePair;
 import cz.msebera.android.httpclient.client.utils.URIBuilder;
 
