@@ -50,7 +50,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
-    public static String ARG_AUTH_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AuthType";
+    public static String ARG_AUTH_TOKEN_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AuthType";
     public static String ARG_IS_ADDING_NEW_ACCOUNT = "cz.dvratil.fbeventsync.AuthenticatorActivity.IsAddingNewAccount";
 
     public static final String TOKEN_SCOPE = "me,user_events";
@@ -58,7 +58,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private static final int PERMISSION_REQUEST_INTERNET = 1;
 
     private AccountManager mAccountManager = null;
-    private String mAuthType = null;
+    private String mAuthTokenType = null;
     private String mAccessToken = null;
     private String mBDayCalendar = null;
 
@@ -182,7 +182,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         });
 
         mAccountManager = AccountManager.get(getBaseContext());
-        mAuthType = getIntent().getStringExtra(ARG_AUTH_TYPE);
+        mAuthTokenType = getIntent().getStringExtra(ARG_AUTH_TOKEN_TYPE);
 
         // Once the check is finished it will call startLogin()
         checkInternetPermission();
@@ -257,12 +257,35 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true);
         }
 
-        mAccountManager.setAuthToken(account, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE),
-                accessToken);
-        mAccountManager.setUserData(account, Authenticator.DATA_BDAY_URI, mBDayCalendar);
+        Uri icalUri = Uri.parse(mBDayCalendar);
+        String key = icalUri.getQueryParameter("key");
+        String uid = icalUri.getQueryParameter("uid");
+        if (key == null || key.isEmpty() || uid == null || uid.isEmpty()) {
+            mLogger.error("AUTH", "Failed to retrieve iCal URL! The raw URL was " + mBDayCalendar);
+            Toast.makeText(this, getString(R.string.auth_calendar_uri_error_toast), Toast.LENGTH_SHORT)
+                    .show();
+            finish();
+            return;
+        }
+        mAccountManager.setUserData(account, Authenticator.DATA_BDAY_URI, null); // clear the legacy storage
+        mAccountManager.setAuthToken(account, Authenticator.FB_OAUTH_TOKEN, accessToken);
+        mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, key);
+        mAccountManager.setAuthToken(account, Authenticator.FB_UID_TOKEN, uid);
 
-        setAccountAuthenticatorResult(intent.getExtras());
-        setResult(RESULT_OK, intent);
+        Intent result = new Intent();
+        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountName);
+        result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+        String authTokenType = intent.getStringExtra(AuthenticatorActivity.ARG_AUTH_TOKEN_TYPE);
+        if (authTokenType != null && authTokenType.equals(Authenticator.FB_KEY_TOKEN)) {
+            result.putExtra(AccountManager.KEY_AUTHTOKEN, key);
+        } else if (authTokenType != null && authTokenType.equals(Authenticator.FB_UID_TOKEN)) {
+            result.putExtra(AccountManager.KEY_AUTHTOKEN, uid);
+        } else {
+            result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken);
+        }
+
+        setAccountAuthenticatorResult(result.getExtras());
+        setResult(RESULT_OK, result);
 
         CalendarSyncAdapter.updateSync(this);
 

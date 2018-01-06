@@ -32,6 +32,12 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     private static String TAG = "AUTH";
 
+    public static final String FB_OAUTH_TOKEN = "fb_oauth";
+    public static final String FB_UID_TOKEN = "fb_uid";
+    public static final String FB_KEY_TOKEN = "fb_key";
+
+    // DON'T USE! Preserved for legacy reason so that we can clear the data when migrating to the
+    // new tokens
     public static final String DATA_BDAY_URI = "bday_uri";
 
     private final Context mContext;
@@ -47,7 +53,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-        intent.putExtra(AuthenticatorActivity.ARG_AUTH_TYPE, authTokenType);
+        intent.putExtra(AuthenticatorActivity.ARG_AUTH_TOKEN_TYPE, authTokenType);
         intent.putExtra(AuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, true);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 
@@ -59,18 +65,27 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
                                String authTokenType, Bundle options) throws NetworkErrorException {
-        Log.d(TAG,"GetAuthToken: " + authTokenType);
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, mContext.getString(R.string.account_type));
-        intent.putExtra(AuthenticatorActivity.ARG_AUTH_TYPE, authTokenType);
-        intent.putExtra(AuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, false);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        mContext.startActivity(intent);
 
-        final Bundle bundle = new Bundle();
-        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
-        return bundle;
+        AccountManager accMgr = AccountManager.get(mContext);
+        String token = accMgr.peekAuthToken(account, authTokenType);
+        if (token == null || token.isEmpty()) {
+            final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+            intent.putExtra(AuthenticatorActivity.ARG_AUTH_TOKEN_TYPE, authTokenType);
+            intent.putExtra(AuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, false);
+            intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+
+            final Bundle bundle = new Bundle();
+            bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+            return bundle;
+        } else {
+            final Bundle bundle = new Bundle();
+            bundle.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
+            bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
+            bundle.putString(AccountManager.KEY_AUTHTOKEN, token);
+            return bundle;
+        }
     }
 
     @Override
@@ -96,8 +111,9 @@ public class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account,
                               String[] features) throws NetworkErrorException {
-        Log.d(TAG, "Has features" + features);
-        return null;
+        final Bundle result = new Bundle();
+        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false);
+        return result;
     }
 
     @Override

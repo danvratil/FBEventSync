@@ -20,6 +20,7 @@ package cz.dvratil.fbeventsync;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -29,6 +30,7 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -175,9 +177,16 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
         Context ctx = getContext();
         AccountManager mgr = AccountManager.get(ctx);
-        String accessToken = null;
+        String accessToken;
         try {
-            accessToken = mgr.blockingGetAuthToken(account, ctx.getString(R.string.account_type), false);
+            Bundle result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, true, null, null).getResult();
+            accessToken = result.getString(AccountManager.KEY_AUTHTOKEN);
+            if (accessToken == null) {
+                logger.debug("SYNC","Needs to reauthenticate, will wait for user");
+                return;
+            } else {
+                logger.debug("SYNC", "Access token received");
+            }
         } catch (android.accounts.OperationCanceledException e) {
             logger.error("SYNC", "Failed to obtain auth token: %s", e.getMessage());
             syncResult.stats.numAuthExceptions++;
@@ -191,7 +200,6 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             syncResult.stats.numAuthExceptions++;
             return;
         }
-
 
         mSyncContext = new SyncContext(getContext(), account, accessToken, provider, syncResult, logger);
 
@@ -320,16 +328,33 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private URIBuilder getICalSyncURI() {
+    private enum ICalURIType {
+        EVENTS,
+        BIRTHDAYS
+    };
+    private Uri getICalSyncURI(ICalURIType uriType) {
         AccountManager accManager = AccountManager.get(mSyncContext.getContext());
-        String uriStr = accManager.getUserData(mSyncContext.getAccount(), Authenticator.DATA_BDAY_URI);
-        if (uriStr == null || uriStr.isEmpty()) {
-            // We don't have the URI, possibly we did not migrate from the old authentication system
-            // yet, let's schedule it now
-            logger.info("SYNC.BDAY","Birthday iCal URL not set, forcing re-authentication");
-            accManager.invalidateAuthToken(
-                    mSyncContext.getContext().getString(R.string.account_type),
-                    mSyncContext.getAccessToken());
+        String uid, key;
+        try {
+            // This block will automatically trigger authentication if the tokens are missing, so
+            // no explicit migration from the old bday_uri is needed
+            uid = accManager.blockingGetAuthToken(mSyncContext.getAccount(), Authenticator.FB_UID_TOKEN, false);
+            key = accManager.blockingGetAuthToken(mSyncContext.getAccount(), Authenticator.FB_KEY_TOKEN, false);
+        } catch (android.accounts.OperationCanceledException e) {
+            logger.error("SYNC", "User cancelled obtaining UID/KEY token: %s", e.getMessage());
+            return null;
+        } catch (java.io.IOException e) {
+            logger.error("SYNC","IO Exception while obtaining UID/KEY token: %s", e.getMessage());
+            return null;
+        } catch (android.accounts.AuthenticatorException e) {
+            logger.error("SYNC","Authenticator exception while obtaining UID/KEY token: %s", e.getMessage());
+            return null;
+        }
+
+        if (uid == null || key == null || uid.isEmpty() || key.isEmpty()) {
+            logger.error("SYNC", "Failed to obtain UID/KEY tokens from account manager");
+            // We only need to invalidate one token to force re-sync
+            accManager.invalidateAuthToken(mSyncContext.getContext().getString(R.string.account_type), mSyncContext.getAccessToken());
             return null;
         }
 
@@ -339,19 +364,17 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             userLocale = String.format("%s_%s", locale.getLanguage(), locale.getCountry());
         }
 
-        try {
-            return new URIBuilder(uriStr)
-                    .setScheme("https")
-                    .addParameter("locale", userLocale);
-        } catch (java.net.URISyntaxException e) {
-            logger.error("SYNC", "URI parsing error");
-            return null;
-        }
+        return Uri.parse("https://www.facebook.com").buildUpon()
+                .path(uriType == ICalURIType.EVENTS ? "/ical/u.php" : "/ical/b.php")
+                .appendQueryParameter("uid", uid)
+                .appendQueryParameter("key", key)
+                .appendQueryParameter("locale", userLocale)
+                .build();
     }
 
-    private String sanitizeICalUri(URIBuilder builder) {
+    private String sanitizeICalUri(Uri uri) {
         try {
-            URIBuilder b = new URIBuilder(builder.toString());
+            URIBuilder b = new URIBuilder(uri.toString());
             List<NameValuePair> params = b.getQueryParams();
             b.clearParameters();
             for (NameValuePair param : params) {
@@ -368,21 +391,21 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void syncEventsViaICal(FBCalendar.Set calendars) {
-        URIBuilder uri = getICalSyncURI();
+        Uri uri = getICalSyncURI(ICalURIType.EVENTS);
         if (uri == null) {
             return;
         }
 
-        uri.setPath("/ical/u.php");
         logger.debug("SYNC","Syncing event iCal from %s", sanitizeICalUri(uri));
         syncICalCalendar(calendars, uri.toString());
     }
 
     private void syncBirthdayCalendar(FBCalendar.Set calendars) {
-        URIBuilder uri = getICalSyncURI();
+        Uri uri = getICalSyncURI(ICalURIType.BIRTHDAYS);
         if (uri == null) {
             return;
         }
+
         logger.debug("SYNC","Syncing birthday iCal from %s", sanitizeICalUri(uri));
         syncICalCalendar(calendars, uri.toString());
     }

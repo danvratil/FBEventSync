@@ -36,6 +36,7 @@
     <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook&#8230;</string>
     <string name="auth_progress_retrieving_calendars">Retrieving calendars&#8230;</string>
     <string name="auth_progress_retrieving_userinfo">Retrieving user info&#8230;</string>
+    <string name="auth_calendar_uri_error_toast">Failed to retrieve calendar URI</string>
 
     <!-- CALENDAR SYNC //-->
     <string name="calendar_not_responded_title">Events I have not Responded To</string>
