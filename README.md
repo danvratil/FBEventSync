@@ -4,7 +4,7 @@
 
 Sync your Facebook Events into your Android calendar.
 
-Event Sync for Facebook is a free open-source app that will sync your Facebook events to your Android calendar. It will create four new calendars:
+Event Sync for Facebook is a free open-source app that will sync your Facebook events to your Android calendar. It will create five new calendars:
 
 * Events I'm Attending - for events that you marked yourself that you are 'Going' on Facebook
 * Events I May Be Attending - for events that you marked yourself as 'Maybe' on Facebook
