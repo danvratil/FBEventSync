@@ -62,7 +62,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private Logger logger = null;
 
-    SyncContext mSyncContext = null;
+    private SyncContext mSyncContext = null;
 
     public CalendarSyncAdapter(Context context, boolean autoInitialize) {
         super(context,  autoInitialize);
@@ -134,8 +134,13 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider, SyncResult syncResult) {
         logger.info("SYNC", "performSync request for account %s, authority %s", account.name, authority);
 
+        if (mSyncContext != null) {
+            logger.warning("SYNC", "SyncContext not null, another sync already running? Aborting this one");
+            return;
+        }
+
         if (!checkPermissions()) {
-            logger.info("SYNC","Skipping sync, missing permissions");
+            logger.info("SYNC", "Skipping sync, missing permissions");
             return;
         }
 
@@ -153,7 +158,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
 
-            // Allow up to 5 syncs per hour
+        // Allow up to 5 syncs per hour
         int syncsPerHour = prefs.getInt(getContext().getString(R.string.cfg_syncs_per_hour), 0);
         if (!BuildConfig.DEBUG) {
             if (calendar.getTimeInMillis() - lastSync < 3600 * 1000) {
@@ -182,7 +187,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             Bundle result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, true, null, null).getResult();
             accessToken = result.getString(AccountManager.KEY_AUTHTOKEN);
             if (accessToken == null) {
-                logger.debug("SYNC","Needs to reauthenticate, will wait for user");
+                logger.debug("SYNC", "Needs to reauthenticate, will wait for user");
                 return;
             } else {
                 logger.debug("SYNC", "Access token received");
@@ -207,17 +212,17 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         FBCalendar.Set calendars = new FBCalendar.Set();
         calendars.initialize(mSyncContext);
         if (prefs.getInt(getContext().getString(R.string.cfg_last_version), 0) != BuildConfig.VERSION_CODE) {
-            logger.info("SYNC","New version detected: deleting all calendars");
+            logger.info("SYNC", "New version detected: deleting all calendars");
             for (FBCalendar cal : calendars.values()) {
                 try {
                     cal.deleteLocalCalendar();
                 } catch (android.os.RemoteException e) {
                     // FIXME: Handle exceptions
-                    logger.error("SYNC","Failed to cleanup calendars: %s", e.getMessage());
+                    logger.error("SYNC", "Failed to cleanup calendars: %s", e.getMessage());
                     syncResult.stats.numIoExceptions++;
                     return;
                 } catch (android.database.sqlite.SQLiteException e) {
-                    logger.error("SYNC","Failed to cleanup calendars: %s", e.getMessage());
+                    logger.error("SYNC", "Failed to cleanup calendars: %s", e.getMessage());
                     syncResult.stats.numIoExceptions++;
                     return;
                 }
