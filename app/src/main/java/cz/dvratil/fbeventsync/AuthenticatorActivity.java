@@ -53,6 +53,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     public static String ARG_AUTH_TOKEN_TYPE = "cz.dvratil.fbeventsync.AuthenticatorActivity.AuthType";
     public static String ARG_IS_ADDING_NEW_ACCOUNT = "cz.dvratil.fbeventsync.AuthenticatorActivity.IsAddingNewAccount";
 
+    public static int AUTH_NOTIFICATION_ID = 1;
+    public static String AUTH_NOTIFICATION_CHANNEL_ID = "FBEventSync_Auth_NtfChannel";
+
     public static final String TOKEN_SCOPE = "me,user_events";
 
     private static final int PERMISSION_REQUEST_INTERNET = 1;

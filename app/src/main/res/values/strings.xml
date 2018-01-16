@@ -44,6 +44,8 @@
     <string name="calendar_tentative_title">Events I May Be Attending</string>
     <string name="calendar_attending_title">Events I\'m Attending</string>
     <string name="calendar_birthday_title">Friends\' Birthdays</string>
+    <string name="sync_ntf_needs_reauthentication_title">Event Sync for Facebook needs to log in</string>
+    <string name="sync_ntf_needs_reauthentication_description">Tap here to re-authenticate with Facebook</string>
 
     <!-- PREFERENCES //-->
     <string name="pref_activity_title">Settings</string>

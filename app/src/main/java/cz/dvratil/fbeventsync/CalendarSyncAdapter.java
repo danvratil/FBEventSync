@@ -21,6 +21,10 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerFuture;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
@@ -36,6 +40,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.loopj.android.http.DataAsyncHttpResponseHandler;
@@ -184,10 +189,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         AccountManager mgr = AccountManager.get(ctx);
         String accessToken;
         try {
-            Bundle result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, true, null, null).getResult();
+            Bundle result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, false, null, null).getResult();
             accessToken = result.getString(AccountManager.KEY_AUTHTOKEN);
             if (accessToken == null) {
                 logger.debug(TAG, "Needs to reauthenticate, will wait for user");
+                createAuthNotification();
                 return;
             } else {
                 logger.debug(TAG, "Access token received");
@@ -511,5 +517,30 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return false;
         }
         return true;
+    }
+
+    private void createAuthNotification()
+    {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(getContext(), AuthenticatorActivity.AUTH_NOTIFICATION_CHANNEL_ID)
+                    .setContentTitle(getContext().getString(R.string.sync_ntf_needs_reauthentication_title))
+                    .setContentText(getContext().getString(R.string.sync_ntf_needs_reauthentication_description))
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setAutoCancel(true);
+
+        Intent intent = new Intent(getContext(), AuthenticatorActivity.class);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, getContext().getString(R.string.account_type));
+        intent.putExtra(AuthenticatorActivity.ARG_AUTH_TOKEN_TYPE, AuthenticatorActivity.ARG_AUTH_TOKEN_TYPE);
+        intent.putExtra(AuthenticatorActivity.ARG_IS_ADDING_NEW_ACCOUNT, false);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getContext());
+        stackBuilder.addParentStack(AuthenticatorActivity.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(resultPendingIntent);
+
+        NotificationManager ntfMgr =
+                (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        ntfMgr.notify(AuthenticatorActivity.AUTH_NOTIFICATION_ID, builder.build());
     }
 }
