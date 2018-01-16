@@ -60,6 +60,7 @@ public class FBCalendar {
     private HashMap<String /* FBID */, Long /* local ID */ > mPastLocalIds = null;
     private HashMap<String /* FBID */, Long /* local ID */ > mFutureLocalIds = null;
     private long mLocalCalendarId = -1;
+    private boolean mIsEnabled = false;
 
     public static class Set extends HashMap<CalendarType, FBCalendar> {
         public void initialize(SyncContext ctx) {
@@ -253,16 +254,43 @@ public class FBCalendar {
         mContext = context;
         mEventsToSync = new ArrayList<>();
 
+        int key = -1;
+        switch (mType) {
+            case TYPE_ATTENDING:
+                key = R.string.pref_calendar_attending_enabled;
+                break;
+            case TYPE_MAYBE:
+                key = R.string.pref_calendar_tentative_enabled;
+                break;
+            case TYPE_DECLINED:
+                key = R.string.pref_calendar_declined_enabled;
+                break;
+            case TYPE_NOT_REPLIED:
+                key = R.string.pref_calendar_not_responded_enabled;
+                break;
+            case TYPE_BIRTHDAY:
+                key = R.string.pref_calendar_birthday_enabled;
+                break;
+            default:
+                mContext.getLogger().error(TAG, "Unhandled calendar type");
+                mIsEnabled = false;
+        }
+        if (key > -1) {
+            mIsEnabled = mContext.getPreferences().getBoolean(mContext.getContext().getString(key), true);
+        } else {
+            mIsEnabled = false;
+        }
+
         try {
             mLocalCalendarId = findLocalCalendar();
             if (mLocalCalendarId < 0) {
-                if (isEnabled()) {
+                if (mIsEnabled) {
                     mLocalCalendarId = createLocalCalendar();
                     mPastLocalIds = new HashMap<>();
                     mFutureLocalIds = new HashMap<>();
                 }
             } else {
-                if (isEnabled()) {
+                if (mIsEnabled) {
                     updateLocalCalendar();
                     mPastLocalIds = fetchLocalPastEvents();
                     mFutureLocalIds = fetchLocalFutureEvents();
@@ -293,28 +321,7 @@ public class FBCalendar {
     }
 
     public boolean isEnabled() {
-        int key;
-        switch (mType) {
-            case TYPE_ATTENDING:
-                key = R.string.pref_calendar_attending_enabled;
-                break;
-            case TYPE_MAYBE:
-                key = R.string.pref_calendar_tentative_enabled;
-                break;
-            case TYPE_DECLINED:
-                key = R.string.pref_calendar_declined_enabled;
-                break;
-            case TYPE_NOT_REPLIED:
-                key = R.string.pref_calendar_not_responded_enabled;
-                break;
-            case TYPE_BIRTHDAY:
-                key = R.string.pref_calendar_birthday_enabled;
-                break;
-            default:
-                mContext.getLogger().error(TAG, "Unhandled calendar type");
-                return true;
-        }
-        return mContext.getPreferences().getBoolean(mContext.getContext().getString(key), true);
+        return mIsEnabled;
     }
 
     public String name() {
@@ -385,7 +392,7 @@ public class FBCalendar {
     }
 
     public void syncEvent(FBEvent event) {
-        if (!isEnabled()) {
+        if (!mIsEnabled) {
             return;
         }
 
@@ -397,7 +404,7 @@ public class FBCalendar {
     }
 
     private void sync() {
-        if (!isEnabled()) {
+        if (!mIsEnabled) {
             return;
         }
 
@@ -424,7 +431,7 @@ public class FBCalendar {
     }
 
     public void finalizeSync() {
-        if (!isEnabled()) {
+        if (!mIsEnabled) {
             return;
         }
 
