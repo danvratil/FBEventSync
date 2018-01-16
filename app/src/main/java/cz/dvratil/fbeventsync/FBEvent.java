@@ -71,6 +71,7 @@ public class FBEvent {
     public void setCalendar(FBCalendar calendar) {
         mCalendar = calendar;
         mValues.put(CalendarContract.Events.CALENDAR_ID, calendar.localId());
+        mValues.put(CalendarContract.Events.AVAILABILITY, calendar.availability());
     }
 
     protected static String parsePlace(JSONObject event) throws org.json.JSONException {
