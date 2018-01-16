@@ -90,4 +90,6 @@
     <string name="pref_sync_frequency_24hours_entry">24 hodin</string>
     <string name="pref_misc_settings_title">Různé</string>
     <string name="auth_calendar_uri_error_toast">Stahování kalendářů selhalo</string>
+    <string name="sync_ntf_needs_reauthentication_title">Události z Facebooku vyžadují příhlášení</string>
+    <string name="sync_ntf_needs_reauthentication_description">Tapněte na notifikaci pro přihlášení k Facebooku</string>
 </resources>
