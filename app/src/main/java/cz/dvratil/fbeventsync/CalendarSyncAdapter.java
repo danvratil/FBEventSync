@@ -64,6 +64,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private SyncContext mSyncContext = null;
 
+    private static String TAG = "SYNC";
+
     public CalendarSyncAdapter(Context context, boolean autoInitialize) {
         super(context,  autoInitialize);
 
@@ -82,7 +84,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
             extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
             ContentResolver.requestSync(account, CalendarContract.AUTHORITY, extras);
-            logger.info("SYNC", "Explicitly requested sync for account %s", account.name);
+            logger.info(TAG, "Explicitly requested sync for account %s", account.name);
         }
     }
 
@@ -115,13 +117,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                         .setSyncAdapter(account, CalendarContract.AUTHORITY)
                         .setExtras(new Bundle()).build();
                 ContentResolver.requestSync(request);
-                logger.info("SYNC.SCHED",
-                            "Scheduled periodic sync for account %s using requestSync, interval: %d",
+                logger.info(TAG, "Scheduled periodic sync for account %s using requestSync, interval: %d",
                             account.name, syncInterval);
             } else {
                 ContentResolver.addPeriodicSync(account, CalendarContract.AUTHORITY, new Bundle(), syncInterval);
-                logger.info("SYNC.SCHED",
-                            "Scheduled periodic sync for account %s using addPeriodicSync, interval: %d",
+                logger.info(TAG, "Scheduled periodic sync for account %s using addPeriodicSync, interval: %d",
                             account.name, syncInterval);
             }
         }
@@ -132,15 +132,15 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle bundle, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        logger.info("SYNC", "performSync request for account %s, authority %s", account.name, authority);
+        logger.info(TAG, "performSync request for account %s, authority %s", account.name, authority);
 
         if (mSyncContext != null) {
-            logger.warning("SYNC", "SyncContext not null, another sync already running? Aborting this one");
+            logger.warning(TAG, "SyncContext not null, another sync already running? Aborting this one");
             return;
         }
 
         if (!checkPermissions()) {
-            logger.info("SYNC", "Skipping sync, missing permissions");
+            logger.info(TAG, "Skipping sync, missing permissions");
             return;
         }
 
@@ -152,7 +152,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         long lastSync = prefs.getLong(getContext().getString(R.string.cfg_last_sync), 0);
         if (!BuildConfig.DEBUG) {
             if (calendar.getTimeInMillis() - lastSync < 60 * 1000) {
-                logger.info("SYNC", "Skipping sync, last sync was only %d seconds ago",
+                logger.info(TAG, "Skipping sync, last sync was only %d seconds ago",
                         (calendar.getTimeInMillis() - lastSync) / 1000);
                 return;
             }
@@ -164,14 +164,14 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             if (calendar.getTimeInMillis() - lastSync < 3600 * 1000) {
                 int hour = calendar.get(Calendar.HOUR);
                 calendar.setTimeInMillis(lastSync);
-                logger.debug("SYNC", "Lasy sync hour: %d, now sync hour: %d", calendar.get(Calendar.HOUR), hour);
+                logger.debug(TAG, "Lasy sync hour: %d, now sync hour: %d", calendar.get(Calendar.HOUR), hour);
                 if (calendar.get(Calendar.HOUR) != hour) {
                     syncsPerHour = 1;
                 } else {
                     syncsPerHour++;
                 }
                 if (syncsPerHour > 5) {
-                    logger.info("SYNC", "Skipping sync, too many syncs per hour");
+                    logger.info(TAG, "Skipping sync, too many syncs per hour");
                     return;
                 }
             } else {
@@ -187,21 +187,21 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             Bundle result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, true, null, null).getResult();
             accessToken = result.getString(AccountManager.KEY_AUTHTOKEN);
             if (accessToken == null) {
-                logger.debug("SYNC", "Needs to reauthenticate, will wait for user");
+                logger.debug(TAG, "Needs to reauthenticate, will wait for user");
                 return;
             } else {
-                logger.debug("SYNC", "Access token received");
+                logger.debug(TAG, "Access token received");
             }
         } catch (android.accounts.OperationCanceledException e) {
-            logger.error("SYNC", "Failed to obtain auth token: %s", e.getMessage());
+            logger.error(TAG, "Failed to obtain auth token: %s", e.getMessage());
             syncResult.stats.numAuthExceptions++;
             return;
         } catch (android.accounts.AuthenticatorException e) {
-            logger.error("SYNC", "Failed to obtain auth token: %s", e.getMessage());
+            logger.error(TAG, "Failed to obtain auth token: %s", e.getMessage());
             syncResult.stats.numAuthExceptions++;
             return;
         } catch (java.io.IOException e) {
-            logger.error("SYNC", "Failed to obtain auth token: %s", e.getMessage());
+            logger.error(TAG, "Failed to obtain auth token: %s", e.getMessage());
             syncResult.stats.numAuthExceptions++;
             return;
         }
@@ -212,17 +212,17 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         FBCalendar.Set calendars = new FBCalendar.Set();
         calendars.initialize(mSyncContext);
         if (prefs.getInt(getContext().getString(R.string.cfg_last_version), 0) != BuildConfig.VERSION_CODE) {
-            logger.info("SYNC", "New version detected: deleting all calendars");
+            logger.info(TAG, "New version detected: deleting all calendars");
             for (FBCalendar cal : calendars.values()) {
                 try {
                     cal.deleteLocalCalendar();
                 } catch (android.os.RemoteException e) {
                     // FIXME: Handle exceptions
-                    logger.error("SYNC", "Failed to cleanup calendars: %s", e.getMessage());
+                    logger.error(TAG, "Failed to cleanup calendars: %s", e.getMessage());
                     syncResult.stats.numIoExceptions++;
                     return;
                 } catch (android.database.sqlite.SQLiteException e) {
-                    logger.error("SYNC", "Failed to cleanup calendars: %s", e.getMessage());
+                    logger.error(TAG, "Failed to cleanup calendars: %s", e.getMessage());
                     syncResult.stats.numIoExceptions++;
                     return;
                 }
@@ -249,7 +249,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         editor.putInt(getContext().getString(R.string.cfg_syncs_per_hour), syncsPerHour);
         editor.apply();
 
-        logger.info("SYNC", "Sync for %s done", account.name);
+        logger.info(TAG, "Sync for %s done", account.name);
     }
 
     private void syncEventsViaGraph(FBCalendar.Set calendars) {
@@ -266,7 +266,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                         if (event != null) {
                             FBCalendar calendar = calendars.getCalendarForEvent(event);
                             if (calendar == null) {
-                                logger.error("SYNC", "Failed to find calendar for event!");
+                                logger.error(TAG, "Failed to find calendar for event!");
                                 continue;
                             }
                             event.setCalendar(calendar);
@@ -289,11 +289,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 cursor = getNextCursor(response);
             } catch (java.text.ParseException e) {
                 cursor = null;
-                logger.error("SYNC", "Text parse exception: %s", e.getMessage());
+                logger.error(TAG, "Text parse exception: %s", e.getMessage());
                 mSyncContext.getSyncResult().stats.numParseExceptions++;
             } catch (org.json.JSONException e) {
                 cursor = null;
-                logger.error("SYNC", "JSON exception in main loop: %s", e.getMessage());
+                logger.error(TAG, "JSON exception in main loop: %s", e.getMessage());
                 mSyncContext.getSyncResult().stats.numParseExceptions++;
             }
         } while (cursor != null);
@@ -309,9 +309,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
         GraphResponseHandler handler = new GraphResponseHandler(mSyncContext.getContext());
 
-        logger.debug("SYNC.EVENTS","Sending Graph request...");
-        RequestHandle handle = Graph.events(mSyncContext.getAccessToken(), params, handler);
-        logger.debug("SYNC.EVENTS","Graph response received");
+        logger.debug(TAG, "Sending Graph request...");
+        Graph.events(mSyncContext.getAccessToken(), params, handler);
+        logger.debug(TAG, "Graph response received");
 
         return handler.getResponse();
     }
@@ -346,18 +346,18 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             uid = accManager.blockingGetAuthToken(mSyncContext.getAccount(), Authenticator.FB_UID_TOKEN, false);
             key = accManager.blockingGetAuthToken(mSyncContext.getAccount(), Authenticator.FB_KEY_TOKEN, false);
         } catch (android.accounts.OperationCanceledException e) {
-            logger.error("SYNC", "User cancelled obtaining UID/KEY token: %s", e.getMessage());
+            logger.error(TAG, "User cancelled obtaining UID/KEY token: %s", e.getMessage());
             return null;
         } catch (java.io.IOException e) {
-            logger.error("SYNC","IO Exception while obtaining UID/KEY token: %s", e.getMessage());
+            logger.error(TAG, "IO Exception while obtaining UID/KEY token: %s", e.getMessage());
             return null;
         } catch (android.accounts.AuthenticatorException e) {
-            logger.error("SYNC","Authenticator exception while obtaining UID/KEY token: %s", e.getMessage());
+            logger.error(TAG, "Authenticator exception while obtaining UID/KEY token: %s", e.getMessage());
             return null;
         }
 
         if (uid == null || key == null || uid.isEmpty() || key.isEmpty()) {
-            logger.error("SYNC", "Failed to obtain UID/KEY tokens from account manager");
+            logger.error(TAG, "Failed to obtain UID/KEY tokens from account manager");
             // We only need to invalidate one token to force re-sync
             accManager.invalidateAuthToken(mSyncContext.getContext().getString(R.string.account_type), mSyncContext.getAccessToken());
             return null;
@@ -401,7 +401,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return;
         }
 
-        logger.debug("SYNC","Syncing event iCal from %s", sanitizeICalUri(uri));
+        logger.debug(TAG, "Syncing event iCal from %s", sanitizeICalUri(uri));
         syncICalCalendar(calendars, uri.toString());
     }
 
@@ -411,7 +411,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return;
         }
 
-        logger.debug("SYNC","Syncing birthday iCal from %s", sanitizeICalUri(uri));
+        logger.debug(TAG, "Syncing birthday iCal from %s", sanitizeICalUri(uri));
         syncICalCalendar(calendars, uri.toString());
     }
 
@@ -420,7 +420,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 if (responseBody == null) {
-                    logger.error("SYNC", "Response body is empty!!!!!");
+                    logger.error(TAG, "Response body is empty!!!!!");
                     return;
                 }
 
@@ -433,21 +433,21 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                         calendar.syncEvent(event);
                     }
                 }
-                logger.debug("SYNC", "iCal sync done");
+                logger.debug(TAG, "iCal sync done");
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String err = responseBody == null ? "Unknown error" : new String(responseBody);
-                logger.error("SYNC", "Error retrieving iCal file: %d, %s", statusCode, err);
-                logger.error("SYNC","URI: %s", uri);
+                logger.error(TAG, "Error retrieving iCal file: %d, %s", statusCode, err);
+                logger.error(TAG, "URI: %s", uri);
                 if (headers != null) {
                     for (Header header : headers) {
-                        logger.error("SYNC", "    %s: %s", header.getName(), header.getValue());
+                        logger.error(TAG, "    %s: %s", header.getName(), header.getValue());
                     }
                 }
                 if (error != null) {
-                    logger.error("SYNC", "Throwable: %s", error.toString());
+                    logger.error(TAG, "Throwable: %s", error.toString());
                 }
             }
 
@@ -460,7 +460,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void removeOldBirthdayCalendar(SyncContext context) {
         // remove old "birthday" calendar
-        logger.debug("SYNC","Removing legacy birthday calendar");
+        logger.debug(TAG, "Removing legacy birthday calendar");
         try {
             context.getContentProviderClient().delete(
                     CalendarContract.Calendars.CONTENT_URI.buildUpon()
@@ -478,9 +478,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                             context.getAccount().type
                     });
         } catch (android.os.RemoteException e) {
-            logger.error("SYNC", "RemoteException when removing legacy calendar: %s", e.getMessage());
+            logger.error(TAG, "RemoteException when removing legacy calendar: %s", e.getMessage());
         } catch (android.database.sqlite.SQLiteException e) {
-            logger.error("SYNC","SQLiteException when removing legacy calendar: %s", e.getMessage());
+            logger.error(TAG, "SQLiteException when removing legacy calendar: %s", e.getMessage());
         }
     }
 
