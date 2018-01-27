@@ -34,9 +34,9 @@
 
     <!-- CALENDAR SYNC //-->
     <string name="calendar_not_responded_title">Události bez odpovědi</string>
-    <string name="calendar_declined_title">Události, kterých se zúčastním</string>
+    <string name="calendar_declined_title">Události, kterých se nezúčastním</string>
     <string name="calendar_tentative_title">Události, které mě zajímají</string>
-    <string name="calendar_attending_title">Události, kterých se nezúčastním</string>
+    <string name="calendar_attending_title">Události, kterých se zúčastním</string>
     <string name="calendar_birthday_title">Narozeniny přátel</string>
 
     <!-- PREFERENCES //-->
