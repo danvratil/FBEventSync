@@ -62,6 +62,13 @@ public class FBCalendar {
     private long mLocalCalendarId = -1;
     private boolean mIsEnabled = false;
 
+    private class SyncStats {
+        int added = 0 ;
+        int removed = 0;
+        int modified = 0;
+    }
+    private SyncStats mSyncStats = new SyncStats();
+
     public static class Set extends HashMap<CalendarType, FBCalendar> {
         public void initialize(SyncContext ctx) {
             put(CalendarType.TYPE_ATTENDING, new FBCalendar(ctx, CalendarType.TYPE_ATTENDING));
@@ -416,8 +423,10 @@ public class FBCalendar {
             try {
                 if (localId == null) {
                     event.create(mContext);
+                    mSyncStats.added += 1;
                 } else {
                     event.update(mContext, localId.longValue());
+                    mSyncStats.modified += 1;
                 }
             } catch (android.os.RemoteException e) {
                 mContext.getLogger().error(TAG,"Remote exception during FBCalendar sync: %s", e.getMessage());
@@ -437,18 +446,25 @@ public class FBCalendar {
 
         sync();
         // Only delete from future events, we want to keep past events at any cost
+        Logger log = mContext.getLogger();
         for (Long localId : mFutureLocalIds.values()) {
             try {
                 FBEvent.remove(mContext, localId.longValue());
+                mSyncStats.removed += 1;
             } catch (android.os.RemoteException e) {
-                mContext.getLogger().error(TAG,"Remote exception during FBCalendar finalizeSync: %s", e.getMessage());
+                log.error(TAG,"Remote exception during FBCalendar finalizeSync: %s", e.getMessage());
                 // continue with remaining events
             } catch (android.database.sqlite.SQLiteException e) {
-                mContext.getLogger().error(TAG,"SQL exception during FBCalendar fynalize sync: %s", e.getMessage());
+                log.error(TAG,"SQL exception during FBCalendar fynalize sync: %s", e.getMessage());
                 // continue with remaining events
             }
         }
         mFutureLocalIds.clear();
         mPastLocalIds.clear();
+
+        log.info(TAG, "Sync stats for %s", name());
+        log.info(TAG, "    Events added: %d", mSyncStats.added);
+        log.info(TAG, "    Events modified: %d", mSyncStats.modified);
+        log.info(TAG, "    Events removed: %d", mSyncStats.removed);
     }
 }
