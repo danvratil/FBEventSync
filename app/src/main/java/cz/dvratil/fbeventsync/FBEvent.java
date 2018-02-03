@@ -176,6 +176,7 @@ public class FBEvent {
         ContentValues values = fbEvent.mValues;
 
         String uid = vevent.getUid().getValue();
+        String id = uid.substring(1, uid.indexOf("@"));
         boolean isBirthday = true;
         if (uid.startsWith("e")) { // events
             uid = uid.substring(1, uid.indexOf("@"));
@@ -184,10 +185,6 @@ public class FBEvent {
 
         values.put(CalendarContract.Events.UID_2445, uid);
         values.put(CalendarContract.Events.TITLE, vevent.getSummary().getValue());
-        Description desc = vevent.getDescription();
-        if (desc != null) {
-            values.put(CalendarContract.Events.DESCRIPTION, desc.getValue());
-        }
         Organizer organizer = vevent.getOrganizer();
         if (organizer != null) {
             values.put(CalendarContract.Events.ORGANIZER, organizer.getCommonName());
@@ -199,6 +196,7 @@ public class FBEvent {
         values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
 
         if (isBirthday) {
+            values.put(CalendarContract.Events.DESCRIPTION, "https://www.facebook.com/" + id);
             ICalDate date = vevent.getDateStart().getValue();
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             // HACK: Facebook only lists the "next" birthdays, which means birthdays disappear from
@@ -214,7 +212,13 @@ public class FBEvent {
             values.put(CalendarContract.Events.DURATION, "P1D");
 
             fbEvent.mRSVP = FBCalendar.CalendarType.TYPE_BIRTHDAY;
+            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://user?id=" + id);
         } else {
+            Description desc = vevent.getDescription();
+            if (desc != null) {
+                values.put(CalendarContract.Events.DESCRIPTION, desc.getValue());
+            }
+
             DateStart start = vevent.getDateStart();
             values.put(CalendarContract.Events.DTSTART, start.getValue().getTime());
             DateEnd end = vevent.getDateEnd();
@@ -239,6 +243,8 @@ public class FBEvent {
                         break;
                 }
             }
+
+            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=" + id);
         }
 
         return fbEvent;
