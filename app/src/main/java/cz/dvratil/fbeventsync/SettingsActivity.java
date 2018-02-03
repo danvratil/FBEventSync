@@ -30,6 +30,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,17 +55,22 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
 
         PreferencesMigrator.migrate(this);
 
         PreferenceFragment fragment = null;
         String action = getIntent().getAction();
+        int fragmentTitleId = 0;
         if (action == CONFIGURE_CALENDARS) {
             fragment = new CalendarPreferenceFragment();
+            fragmentTitleId = R.string.pref_calendar_settings_title;
         } else if (action == CONFIGURE_SYNC_ACTION) {
             fragment = new SyncPreferenceFragment();
+            fragmentTitleId = R.string.pref_sync_settings_title;
         } else if (action == CONFIGURE_MISC_ACTION) {
             fragment = new MiscPreferenceFragment();
+            fragmentTitleId = R.string.pref_misc_settings_title;
         }
 
         // API 21
@@ -81,7 +87,24 @@ public class SettingsActivity extends PreferenceActivity {
                     }
                 });
 
-        getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.settings_content, fragment).commit();
+        Toolbar toolbar = findViewById(R.id.settings_toolbar);
+        toolbar.setTitle(fragmentTitleId);
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        Toolbar toolbar = findViewById(R.id.settings_toolbar);
+        toolbar.setNavigationOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        finish();
+                    }
+                }
+        );
     }
 
     private void maybeSync() {
