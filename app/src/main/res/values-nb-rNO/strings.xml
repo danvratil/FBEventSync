@@ -1,2 +1,81 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><string name="app_name">FB-hendelsessynkronisering</string>
+    <string name="full_app_name">Hendelsessynkronisering for Facebook</string>
+    <string name="main_version_label">Versjon: %s</string>
+    <string name="main_tagline">Nå med geburtsdagssynkronisering. Å jaaa.</string>
+    <string name="main_add_account_btn">Legg til konto</string>
+    <string name="main_show_logs_btn">Vis logg</string>
+    <string name="main_configure_calendars_btn">Sett opp kalendere</string>
+    <string name="main_configure_sync_btn">Sett opp synkroniseringsinnstillinger</string>
+    <string name="main_configure_misc_btn">Sett opp ymse andre ting</string>
+
+    <string name="perms_activity_title">Tilgangsforespørsel</string>
+
+    <string name="log_activity_title">Loggvisning</string>
+    <string name="log_clear_log_action">Tøm logg</string>
+    <string name="log_send_to_dev_action">Send til utvikler</string>
+    <string name="log_send_email_action">Send e-post…</string>
+    <string name="log_email_template">[Beskriv problemet ditt her, fortrinnsvis på Engelsk]</string>
+    <string name="log_error_sending_log_toast">Klarte ikke å sende logger: Kan ikke lese loggfil</string>
+
+    <string name="auth_activity_title">Autentiser med Facebook</string>
+    <string name="auth_account_creation_error_toast">Feil under autentisering</string>
+    <string name="auth_account_creation_success_toast">Konto lagt til</string>
+    <string name="auth_progress_authenticating_with_fb">Autentiserer med Facebook…</string>
+    <string name="auth_progress_retrieving_calendars">Henter kalendere…</string>
+    <string name="auth_progress_retrieving_userinfo">Henter brukerinfo…</string>
+    <string name="auth_calendar_uri_error_toast">Klarte ikke å hente kalender-URI</string>
+
+    <string name="calendar_not_responded_title">Hendelser jeg ikke har besvart</string>
+    <string name="calendar_declined_title">Hendelser jeg ikke deltar i</string>
+    <string name="calendar_tentative_title">Hendelser jeg kanskje deltar i</string>
+    <string name="calendar_attending_title">Hendelser jeg deltar i</string>
+    <string name="calendar_birthday_title">Venners geburtsdager</string>
+    <string name="pref_activity_title">Innstillinger</string>
+
+    <string name="pref_sync_settings_title">Synkroniseringsinnstillinger</string>
+    <string name="pref_sync_settings_summary">Sett opp hvor ofte og når hendelser skal synkroniseres.</string>
+
+    <string name="pref_sync_frequency_title">Synkroniseringsfrekvens</string>
+    <string name="pref_sync_frequency_summary">Hvor ofte skal dine Facebook-hendelser synkroniseres?</string>
+    <string name="pref_language_title">Språk</string>
+    <string name="pref_language_summary">Språk for geburtsdager og hendelser</string>
+    <string name="pref_language_default_entry">Enhetsspråk</string>
+    <string name="pref_misc_settings_title">Ymse</string>
+    <string name="pref_misc_report_bug_title">Innrapporter en feil</string>
+    <string name="pref_misc_contact_developer_title">Kontakt utvikleren</string>
+    <string name="pref_misc_rate_app_title">Vurder programmet</string>
+
+
+    <string name="pref_calendar_settings_title">Kalendere</string>
+    <string name="pref_calendar_settings_summary">Sett kalendere, farger og påminnelser</string>
+
+    <string name="pref_calendar_enabled_title">Påskrudd</string>
+    <string name="pref_calendar_reminders_title">Påminnelser</string>
+    <string name="pref_calendar_color_title">Farge</string>
+
+    <string name="color_dlg_title">Velg farge</string>
+    <string name="color_dlg_save_btn_title">Lagre</string>
+    <string name="color_dlg_close_btn_title">Lukk</string>
+
+    <string name="pref_reminder_0minutes_entry">0 minutter</string>
+    <string name="pref_reminder_5minutes_entry">fem minutter</string>
+    <string name="pref_reminder_10minutes_entry">ti minutter</string>
+    <string name="pref_reminder_15minutes_entry">et kvarter</string>
+    <string name="pref_reminder_20minutes_entry">20 minutter</string>
+    <string name="pref_reminder_30minutes_entry">en halvtime</string>
+    <string name="pref_reminder_1hour_entry">én time</string>
+    <string name="pref_reminder_2hours_entry">to timer</string>
+    <string name="pref_reminder_12hours_entry">12 timer</string>
+    <string name="pref_reminder_24hours_entry">ett døgn</string>
+    <string name="pref_reminder_2days_entry">to dager</string>
+    <string name="pref_reminder_1week_entry">én uke</string>
+    <string name="pref_sync_frequency_never_entry">Aldri</string>
+    <string name="pref_sync_frequency_1hour_entry">én time</string>
+    <string name="pref_sync_frequency_2hours_entry">to timer</string>
+    <string name="pref_sync_frequency_4hours_entry">fire timer</string>
+    <string name="pref_sync_frequency_8hours_entry">åtte timer</string>
+    <string name="pref_sync_frequency_12hours_entry">12 timer</string>
+    <string name="pref_sync_frequency_24hours_entry">ett døgn</string>
+    <string name="pref_general_settings_title">Hovedinnstillinger</string>
+</resources>
