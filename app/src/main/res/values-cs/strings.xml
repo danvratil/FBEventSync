@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <!-- GLOBAL STRINGS //-->
     <string name="app_name">FB Event Sync</string>
@@ -19,7 +20,7 @@
     <string name="log_activity_title">Logy</string>
     <string name="log_clear_log_action">Vymazat logy</string>
     <string name="log_send_to_dev_action">Poslat vývojáři</string>
-    <string name="log_send_email_action">Poslat email&#8230;</string>
+    <string name="log_send_email_action">Poslat email…</string>
     <string name="log_email_template">[Zde prosím popište svůj problém, můžete i česky]</string>
     <string name="log_error_sending_log_toast">Poslání logů selhalo: nelze otevřít soubor s logy</string>
 
@@ -27,10 +28,10 @@
     <string name="auth_activity_title">Přihlášení k Facebooku</string>
     <string name="auth_account_creation_error_toast">Přihlašování selhalo</string>
     <string name="auth_account_creation_success_toast">Příhlášení úspěšné</string>
-    <string name="auth_rate_limiting_toast">Facebook je dočasně nedostupný, zkuste prosím později</string>
-    <string name="auth_progress_authenticating_with_fb">Přihlašování k Facebooku&#8230;</string>
-    <string name="auth_progress_retrieving_calendars">Stahování kalendářů&#8230;</string>
-    <string name="auth_progress_retrieving_userinfo">Stahování jména uživatele&#8230;</string>
+    <string name="auth_rate_limiting_toast">Facebook je dočasně nedostupný, zkuste prosím později.</string>
+    <string name="auth_progress_authenticating_with_fb">Přihlašování k Facebooku…</string>
+    <string name="auth_progress_retrieving_calendars">Stahování kalendářů…</string>
+    <string name="auth_progress_retrieving_userinfo">Stahování jména uživatele…</string>
 
     <!-- CALENDAR SYNC //-->
     <string name="calendar_not_responded_title">Události bez odpovědi</string>
@@ -44,7 +45,7 @@
 
     <string name="pref_general_settings_title">Hlavní nastavení</string>
     <string name="pref_sync_settings_title">Nastavení synchronizace</string>
-    <string name="pref_sync_settings_summary">Nastavte, jak často synchronizovat události</string>
+    <string name="pref_sync_settings_summary">Nastavte, jak často chcete synchronizovat události</string>
 
     <string name="pref_sync_frequency_title">Frekvence synchronizace</string>
     <string name="pref_sync_frequency_summary">Jak často máme synchronizovat vaše události?</string>
