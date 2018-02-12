@@ -2,7 +2,7 @@
 <resources><string name="app_name">FB-hendelsessynkronisering</string>
     <string name="full_app_name">Hendelsessynkronisering for Facebook</string>
     <string name="main_version_label">Versjon: %s</string>
-    <string name="main_tagline">Nå med geburtsdagssynkronisering. Å jaaa.</string>
+    <string name="main_tagline">Nå med geburtsdagssynkronisering. Jadda!</string>
     <string name="main_add_account_btn">Legg til konto</string>
     <string name="main_show_logs_btn">Vis logg</string>
     <string name="main_configure_calendars_btn">Sett opp kalendere</string>
@@ -18,8 +18,8 @@
     <string name="log_email_template">[Beskriv problemet ditt her, fortrinnsvis på Engelsk]</string>
     <string name="log_error_sending_log_toast">Klarte ikke å sende logger: Kan ikke lese loggfil</string>
 
-    <string name="auth_activity_title">Autentiser med Facebook</string>
-    <string name="auth_account_creation_error_toast">Feil under autentisering</string>
+    <string name="auth_activity_title">Bekreft identitet med Facebook</string>
+    <string name="auth_account_creation_error_toast">Feil under identitetsbekreftelse</string>
     <string name="auth_account_creation_success_toast">Konto lagt til</string>
     <string name="auth_progress_authenticating_with_fb">Autentiserer med Facebook…</string>
     <string name="auth_progress_retrieving_calendars">Henter kalendere…</string>
@@ -78,4 +78,8 @@
     <string name="pref_sync_frequency_12hours_entry">12 timer</string>
     <string name="pref_sync_frequency_24hours_entry">ett døgn</string>
     <string name="pref_general_settings_title">Hovedinnstillinger</string>
-</resources>
+<string name="auth_rate_limiting_toast">Problemer med Facebook-API-et akkurat nå, prøv igjen senere.</string>
+    <string name="sync_ntf_needs_reauthentication_title">Hendelssynkronisering for Facebook må logge inn</string>
+    <string name="sync_ntf_needs_reauthentication_description">Trykk her for å identitetsbekrefte igjen med Facebook</string>
+
+    </resources>
