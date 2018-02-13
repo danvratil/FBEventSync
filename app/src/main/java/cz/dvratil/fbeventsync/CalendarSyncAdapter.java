@@ -487,6 +487,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             logger.error(TAG, "RemoteException when removing legacy calendar: %s", e.getMessage());
         } catch (android.database.sqlite.SQLiteException e) {
             logger.error(TAG, "SQLiteException when removing legacy calendar: %s", e.getMessage());
+        } catch (java.lang.IllegalArgumentException e) {
+            logger.error(TAG, "IllegalArgumentException when removing legacy calendar: %s", e.getMessage());
         }
     }
 
