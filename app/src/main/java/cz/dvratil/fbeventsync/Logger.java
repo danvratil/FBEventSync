@@ -37,8 +37,8 @@ public class Logger {
 
     public static String LOG_FILE = "logs/sync.log";
 
-    private static int MAX_LOG_SIZE  = 512 * 1024; // 512KB
-    private static int TRIM_LOG_SIZE = 256 * 1024; // 256KB
+    private static int MAX_LOG_SIZE  = 256 * 1024; // 256KB
+    private static int TRIM_LOG_SIZE = 128 * 1024; // 128KB
 
     private static WeakReference<Logger> sInstance = null;
 
