@@ -45,10 +45,10 @@
 
     <string name="pref_general_settings_title">Hlavní nastavení</string>
     <string name="pref_sync_settings_title">Nastavení synchronizace</string>
-    <string name="pref_sync_settings_summary">Nastavte, jak často chcete synchronizovat události</string>
+    <string name="pref_sync_settings_summary">Nastavte, jak často chcete synchronizovat události.</string>
 
     <string name="pref_sync_frequency_title">Frekvence synchronizace</string>
-    <string name="pref_sync_frequency_summary">Jak často máme synchronizovat vaše události?</string>
+    <string name="pref_sync_frequency_summary">Jak často chcete synchronizovat vaše události?</string>
 
     <string name="pref_language_title">Jazyk</string>
     <string name="pref_language_summary">Jazyk narozenin a událostí</string>

@@ -26,12 +26,12 @@
     <string name="log_send_to_dev_action">Send to Developer</string>
     <string name="log_send_email_action">Send Email&#8230;</string>
     <string name="log_email_template">[Please, describe your problem here, preferably in English]</string>
-    <string name="log_error_sending_log_toast">Failed to send logs: cannot read the log file</string>
+    <string name="log_error_sending_log_toast">Failed to send logs: Cannot read the log file</string>
 
     <!-- AUTHENTICATION ACTIVITY //-->
     <string name="auth_activity_title">Authenticate with Facebook</string>
     <string name="auth_account_creation_error_toast">Error during authentication</string>
-    <string name="auth_account_creation_success_toast">Account successfully added</string>
+    <string name="auth_account_creation_success_toast">Account added</string>
     <string name="auth_rate_limiting_toast">Facebook API is currently experiencing problems. Please try again later.</string>
     <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook&#8230;</string>
     <string name="auth_progress_retrieving_calendars">Retrieving calendars&#8230;</string>
@@ -57,7 +57,7 @@
 
     <string name="pref_sync_frequency" translatable="false">pref_sync_frequency</string>
     <string name="pref_sync_frequency_title">Sync Frequency</string>
-    <string name="pref_sync_frequency_summary">How often should we sync your Facebook events?</string>
+    <string name="pref_sync_frequency_summary">How often should your Facebook events be synced?</string>
     <string name="pref_sync_frequency_default_value" translatable="false">@string/pref_sync_frequency_1hour_value</string>
 
     <string name="pref_language" translatable="false">pref_language</string>
