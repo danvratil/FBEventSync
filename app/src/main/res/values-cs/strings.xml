@@ -93,4 +93,6 @@
     <string name="auth_calendar_uri_error_toast">Stahování kalendářů selhalo</string>
     <string name="sync_ntf_needs_reauthentication_title">Události z Facebooku vyžadují příhlášení</string>
     <string name="sync_ntf_needs_reauthentication_description">Tapněte na notifikaci pro přihlášení k Facebooku</string>
+    <string name="main_sync_now">Synchronizovat události</string>
+    <string name="main_sync_in_progress">Probíhá synchronizace...</string>
 </resources>
