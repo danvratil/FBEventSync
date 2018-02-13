@@ -474,14 +474,10 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                             .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_NAME, context.getAccount().name)
                             .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                             .build(),
-                    String.format("((%s = ?) AND (%s = ?) AND (%s = ?))",
-                            CalendarContract.Calendars.NAME,
-                            CalendarContract.Calendars.ACCOUNT_NAME,
-                            CalendarContract.Calendars.ACCOUNT_TYPE),
+                    String.format("((%s = ?))",
+                            CalendarContract.Calendars.NAME),
                     new String[]{
-                            "birthday", // old name for the fb_birthday_calendar calendar
-                            context.getAccount().name,
-                            context.getAccount().type
+                            "birthday" // old name for the fb_birthday_calendar calendar
                     });
         } catch (android.os.RemoteException e) {
             logger.error(TAG, "RemoteException when removing legacy calendar: %s", e.getMessage());
