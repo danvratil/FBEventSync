@@ -138,7 +138,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
                     // Use a desktop user-agent to make sure we get a desktop version - otherwise we
                     // won't be able to get to the birthday link
-                    mWebView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0");
+                    mWebView.getSettings().setUserAgentString("Mozilla/5.0 (X11;Linux x86_64;rv:58.0) Gecko/20100101 Firefox/58.0");
                     mWebView.loadUrl("https://www.facebook.com/events");
                 } else if (uri.getPath().equals("/events/")) {
                     mLogger.debug("AUTH","Reached /events/ page, extracting iCal link");
