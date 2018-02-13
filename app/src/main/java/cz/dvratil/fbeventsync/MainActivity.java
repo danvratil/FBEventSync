@@ -19,16 +19,18 @@ package cz.dvratil.fbeventsync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SyncStatusObserver;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +40,20 @@ public class MainActivity extends AppCompatActivity {
         view.setText(String.format(getString(R.string.main_version_label), BuildConfig.VERSION_NAME));
 
         checkAccounts();
+
+        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE,
+                new SyncStatusObserver() {
+                    @Override
+                    public void onStatusChanged(int which) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                checkSyncStatus();
+                            }
+                        });
+                    }
+                });
+        checkSyncStatus();
     }
 
     public void onAddAccountClicked(View view) {
@@ -58,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onConfigureMiscClicked(View view) {
         openSettings(SettingsActivity.CONFIGURE_MISC_ACTION);
+    }
+
+    public void onSyncNowClicked(View view) {
+        CalendarSyncAdapter.requestSync(this);
     }
 
     private void openSettings(String action) {
@@ -83,13 +103,27 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.calendar_prefs_btn).setVisibility(View.GONE);
             findViewById(R.id.sync_prefs_btn).setVisibility(View.GONE);
             findViewById(R.id.misc_prefs_btn).setVisibility(View.GONE);
+            findViewById(R.id.sync_now_btn).setVisibility(View.GONE);
             findViewById(R.id.add_account_btn).setVisibility(View.VISIBLE);
         } else {
             findViewById(R.id.calendar_prefs_btn).setVisibility(View.VISIBLE);
             findViewById(R.id.sync_prefs_btn).setVisibility(View.VISIBLE);
             findViewById(R.id.misc_prefs_btn).setVisibility(View.VISIBLE);
+            findViewById(R.id.sync_now_btn).setVisibility(View.VISIBLE);
             findViewById(R.id.add_account_btn).setVisibility(View.GONE);
         }
+    }
+
+    private void checkSyncStatus() {
+        AccountManager am = AccountManager.get(this);
+        Account[] accounts = am.getAccountsByType(getString(R.string.account_type));
+        Boolean active = false;
+        for (Account acc : accounts) {
+            active |= ContentResolver.isSyncActive(acc, CalendarContract.AUTHORITY);
+        }
+
+        findViewById(R.id.sync_layout).setVisibility(active ? View.VISIBLE : View.GONE);
+        findViewById(R.id.sync_now_btn).setEnabled(!active);
     }
 
 }

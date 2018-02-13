@@ -16,6 +16,8 @@
     <string name="main_configure_calendars_btn">Configure Calendars</string>
     <string name="main_configure_sync_btn">Configure Sync Preferences</string>
     <string name="main_configure_misc_btn">Configure Miscellaneous</string>
+    <string name="main_sync_now">Sync Now</string>
+    <string name="main_sync_in_progress">Sync in progres...</string>
 
     <!-- PERMISSIONS ACTIVITY //-->
     <string name="perms_activity_title">Permissions Request</string>
