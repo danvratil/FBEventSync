@@ -82,4 +82,7 @@
     <string name="sync_ntf_needs_reauthentication_title">Hendelssynkronisering for Facebook må logge inn</string>
     <string name="sync_ntf_needs_reauthentication_description">Trykk her for å identitetsbekrefte igjen med Facebook</string>
 
+    <string name="main_sync_now">Synkroniser nå</string>
+    <string name="main_sync_in_progress">Synkroniserer…</string>
+
     </resources>
