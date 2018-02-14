@@ -54,20 +54,20 @@ public class FBCalendar {
         }
     }
 
-    private CalendarType mType = null;
-    private SyncContext mContext = null;
-    private List<FBEvent> mEventsToSync = null;
-    private HashMap<String /* FBID */, Long /* local ID */ > mPastLocalIds = null;
-    private HashMap<String /* FBID */, Long /* local ID */ > mFutureLocalIds = null;
-    private long mLocalCalendarId = -1;
-    private boolean mIsEnabled = false;
+    protected CalendarType mType = null;
+    protected SyncContext mContext = null;
+    protected List<FBEvent> mEventsToSync = null;
+    protected HashMap<String /* FBID */, Long /* local ID */ > mPastLocalIds = null;
+    protected HashMap<String /* FBID */, Long /* local ID */ > mFutureLocalIds = null;
+    protected long mLocalCalendarId = -1;
+    protected boolean mIsEnabled = false;
 
-    private class SyncStats {
+    protected class SyncStats {
         int added = 0 ;
         int removed = 0;
         int modified = 0;
     }
-    private SyncStats mSyncStats = new SyncStats();
+    protected SyncStats mSyncStats = new SyncStats();
 
     public static class Set extends HashMap<CalendarType, FBCalendar> {
         public void initialize(SyncContext ctx) {
@@ -75,7 +75,7 @@ public class FBCalendar {
             put(CalendarType.TYPE_MAYBE, new FBCalendar(ctx, CalendarType.TYPE_MAYBE));
             put(CalendarType.TYPE_DECLINED, new FBCalendar(ctx, CalendarType.TYPE_DECLINED));
             put(CalendarType.TYPE_NOT_REPLIED, new FBCalendar(ctx, CalendarType.TYPE_NOT_REPLIED));
-            put(CalendarType.TYPE_BIRTHDAY, new FBCalendar(ctx, CalendarType.TYPE_BIRTHDAY));
+            put(CalendarType.TYPE_BIRTHDAY, new FBBirthdayCalendar(ctx));
         }
 
         FBCalendar getCalendarForEvent(FBEvent event) {
@@ -235,10 +235,6 @@ public class FBCalendar {
                    android.database.sqlite.SQLiteException
     {
         HashMap<String, Long> localIds = new HashMap<>();
-
-        // HACK: Only select future events: Facebook will remove the events from the listing once
-        // they pass, but it's desirable that we keep them in the calendar. The only way to achieve
-        // so is to ignore them
         Cursor cur = mContext.getContentProviderClient().query(
                 CalendarContract.Events.CONTENT_URI,
                 new String[]{
@@ -406,37 +402,41 @@ public class FBCalendar {
         mEventsToSync.add(event);
         if (mEventsToSync.size() > 50) {
             sync();
-            mEventsToSync.clear();
         }
     }
 
-    private void sync() {
+    protected void sync() {
         if (!mIsEnabled) {
             return;
         }
 
         for (FBEvent event : mEventsToSync) {
-            Long localId = mFutureLocalIds.get(event.eventId());
-            if (localId == null) {
-                localId = mPastLocalIds.get(event.eventId());
-            }
-            try {
-                if (localId == null) {
-                    event.create(mContext);
-                    mSyncStats.added += 1;
-                } else {
-                    event.update(mContext, localId.longValue());
-                    mSyncStats.modified += 1;
-                }
-            } catch (android.os.RemoteException e) {
-                mContext.getLogger().error(TAG,"Remote exception during FBCalendar sync: %s", e.getMessage());
-                // continue with remaining events
-            } catch (android.database.sqlite.SQLiteException e) {
-                mContext.getLogger().error(TAG,"SQL exception during FBCalendar sync: %s", e.getMessage());
-                // continue with remaining events
-            }
-            mFutureLocalIds.remove(event.eventId());
+            doSyncEvent(event);
         }
+        mEventsToSync.clear();
+    }
+
+    protected void doSyncEvent(FBEvent event) {
+        Long localId = mFutureLocalIds.get(event.eventId());
+        if (localId == null) {
+            localId = mPastLocalIds.get(event.eventId());
+        }
+        try {
+            if (localId == null) {
+                event.create(mContext);
+                mSyncStats.added += 1;
+            } else {
+                event.update(mContext, localId.longValue());
+                mSyncStats.modified += 1;
+            }
+        } catch (android.os.RemoteException e) {
+            mContext.getLogger().error(TAG,"Remote exception during FBCalendar sync: %s", e.getMessage());
+            // continue with remaining events
+        } catch (android.database.sqlite.SQLiteException e) {
+            mContext.getLogger().error(TAG,"SQL exception during FBCalendar sync: %s", e.getMessage());
+            // continue with remaining events
+        }
+        mFutureLocalIds.remove(event.eventId());
     }
 
     public void finalizeSync() {
