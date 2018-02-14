@@ -74,7 +74,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     protected void onBirthdayLinkExtracted(String s) {
         mLogger.debug("AUTH","Found bday URL");
 
-        if (!s.startsWith("webcal")) {
+        if (!s.startsWith("\"webcal")) {
             mLogger.debug("AUTH", "Failed to find iCal, debug: %s", s);
             Toast.makeText(this, "Authentication error: failed to retrieve birthday calendar", Toast.LENGTH_LONG)
                     .show();
