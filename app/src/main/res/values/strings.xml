@@ -139,6 +139,8 @@
     <string name="pref_reminder_12hours_value" translatable="false">720</string>
     <string name="pref_reminder_24hours_entry">24 hours</string>
     <string name="pref_reminder_24hours_value" translatable="false">1440</string>
+    <string name="pref_reminder_36hours_entry">36 hours</string>
+    <string name="pref_reminder_36hours_value" translatable="false">2160</string>
     <string name="pref_reminder_2days_entry">2 days</string>
     <string name="pref_reminder_2days_value" translatable="false">2880</string>
     <string name="pref_reminder_1week_entry">1 week</string>
@@ -155,6 +157,7 @@
         <item>@string/pref_reminder_2hours_entry</item>
         <item>@string/pref_reminder_12hours_entry</item>
         <item>@string/pref_reminder_24hours_entry</item>
+        <item>@string/pref_reminder_36hours_entry</item>
         <item>@string/pref_reminder_2days_entry</item>
         <item>@string/pref_reminder_1week_entry</item>
     </string-array>
@@ -169,6 +172,7 @@
         <item>@string/pref_reminder_2hours_value</item>
         <item>@string/pref_reminder_12hours_value</item>
         <item>@string/pref_reminder_24hours_value</item>
+        <item>@string/pref_reminder_36hours_entry</item>
         <item>@string/pref_reminder_2days_value</item>
         <item>@string/pref_reminder_1week_value</item>
     </string-array>
