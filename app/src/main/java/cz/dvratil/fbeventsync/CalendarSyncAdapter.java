@@ -240,7 +240,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         syncEventsViaICal(calendars);
         //syncEventsViaGraph(calendars);
 
-        syncBirthdayCalendar(calendars);
+        if (calendars.get(FBCalendar.CalendarType.TYPE_BIRTHDAY).isEnabled()) {
+            syncBirthdayCalendar(calendars);
+        }
 
         calendars.release();
 
