@@ -72,7 +72,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private Logger mLogger = null;
 
     protected void onBirthdayLinkExtracted(String s) {
-        mLogger.debug("AUTH","Found bday URL");
+        mLogger.debug("AUTH","Found iCal URL");
 
         if (!s.startsWith("\"webcal")) {
             mLogger.debug("AUTH", "Failed to find iCal, debug: %s", s);
@@ -150,30 +150,40 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
                             }
                         }
 
-                        view.addJavascriptInterface(new JSObject(), "android");
+                        view.addJavascriptInterface(new JSObject(), "fbeventsync");
                         view.loadUrl(
                                 "javascript:(function() { " +
-                                        "  var elems = document.getElementByTagName(\"a\");" +
-                                        "  for (var i = 0; i < elems.length; i++) {" +
-                                        "    var link = elems[i];" +
-                                        "    if (link.href.startsWith(\"webcal://www.facebook.com/ical/b.php\")) {" +
-                                        "        android.linkExtracted(link.href); " +
+                                        "  var dash = document.getElementById(\"events_dashboard_export\");" +
+                                        "  if (dash === null) {" +
+                                        "    fbeventsync.linkExtracted(\"\");" +
+                                        "  } else {" +
+                                        "    var elems = dash.getElementsByTagName(\"a\");" +
+                                        "    for (var i = 0; i < elems.length; i++) {" +
+                                        "      var link = elems[i];" +
+                                        "      if (link.href.startsWith(\"webcal://\")) {" +
+                                        "        fbeventsync.linkExtracted(link.href); " +
                                         "        return;" +
+                                        "      }" +
                                         "    }" +
+                                        "    fbeventsync.linkExtracted(dash.outerHTML);" +
                                         "  }" +
-                                        "  android.linkExtracted(document.getElementById(\"events_dashboard_export\").outerHTML);" +
                                         "})();");
                     } else {
                         view.evaluateJavascript(
                                 "(function() { " +
-                                        "  var elems = document.getElementsByTagName(\"a\");" +
-                                        "  for (var i = 0; i < elems.length; i++) {" +
-                                        "    var link = elems[i];" +
-                                        "    if (link.href.startsWith(\"webcal://www.facebook.com/ical/b.php\")) {" +
-                                        "      return link.href;" +
+                                        "  var dash = document.getElementById(\"events_dashboard_export\");" +
+                                        "  if (dash === null) {" +
+                                        "    return \"\";" +
+                                        "  } else {" +
+                                        "    var elems = dash.getElementsByTagName(\"a\");" +
+                                        "    for (var i = 0; i < elems.length; i++) {" +
+                                        "      var link = elems[i];" +
+                                        "      if (link.href.startsWith(\"webcal://\")) {" +
+                                        "        return link.href;" +
+                                        "      }" +
                                         "    }" +
+                                        "    return dash.outerHTML;" +
                                         "  }" +
-                                        "  return document.getElementById(\"events_dashboard_export\").outerHTML;" +
                                         "})();",
                                 new ValueCallback<String>() {
                                     @Override
