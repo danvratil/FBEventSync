@@ -18,9 +18,11 @@ Report problems: https://github.com/danvratil/FBEventSync/issues
 
 Privacy policy: https://github.com/danvratil/FBEventSync/wiki/Privacy-Policy
 
+Contributing: https://github.com/danvratil/FBEventSync/wiki/Contributing
+
 Source code: https://github.com/danvratil/FBEventSync/
 
 [![Build Status](https://travis-ci.org/danvratil/FBEventSync.png?branch=master)](https://travis-ci.org/danvratil/FBEventSync)
-
+[![Translation Status](https://hosted.weblate.org/widgets/event-sync-facebook/-/strings/svg-badge.svg)](https://hosted.weblate.org/engage/event-sync-facebook/)
 
 *Google Play and the Google Play logo are trademarks of Google LLC.*
