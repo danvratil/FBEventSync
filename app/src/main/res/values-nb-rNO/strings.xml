@@ -85,4 +85,5 @@
     <string name="main_sync_now">Synkroniser nå</string>
     <string name="main_sync_in_progress">Synkroniserer…</string>
 
+    <string name="pref_reminder_36hours_entry">36 timer</string>
     </resources>
