@@ -1,2 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><string name="app_name">FB Event Sync</string>
+    <string name="full_app_name">Event Sync for Facebook</string>
+    <string name="main_version_label">Wersja: %s</string>
+    <string name="main_tagline">Teraz również synchro urodzin. Aaaawwww yeah!</string>
+    <string name="main_add_account_btn">Dodaj konto</string>
+    <string name="main_show_logs_btn">Pokaż logi</string>
+    <string name="main_configure_calendars_btn">Skonfiguruj kalendarze</string>
+    <string name="main_configure_sync_btn">Skonfiguruj preferencje synchrinizacji</string>
+    <string name="main_configure_misc_btn">Skonfiguruj różne</string>
+    <string name="main_sync_now">Synchronizuj teraz</string>
+    <string name="main_sync_in_progress">W trakcie synchronizacji...</string>
+
+    <string name="perms_activity_title">Prośba o pozwolenie</string>
+
+    <string name="log_activity_title">Logi</string>
+    <string name="log_clear_log_action">Wyczyść logi</string>
+    <string name="log_send_to_dev_action">Wyślij do dewelopera</string>
+    <string name="log_send_email_action">Wyślij email…</string>
+    <string name="log_email_template">[Tutaj opisz swój problem, najlepiej po angielsku]</string>
+    <string name="log_error_sending_log_toast">Nie udało się wysłać logów: Nie można odczytać pliku</string>
+
+    <string name="auth_activity_title">Uwierzytelnianie z Facebook</string>
+    <string name="auth_account_creation_error_toast">Błąd podczas uwierzytelniania</string>
+    <string name="auth_account_creation_success_toast">Dodano konto</string>
+    <string name="auth_rate_limiting_toast">API Faceobook`a ma chwilowo problemy. Spróbuj później.</string>
+    <string name="auth_progress_authenticating_with_fb">Uwierzytelnianie z Facebook…</string>
+    <string name="auth_progress_retrieving_calendars">Pobieranie kalendarzy…</string>
+    <string name="auth_progress_retrieving_userinfo">Pobieranie informacji użytkownika.…</string>
+    <string name="auth_calendar_uri_error_toast">Nie udało się pobrać URI kalendarza</string>
+
+    <string name="calendar_not_responded_title">Wydarzenia na które nie odpowiedziano</string>
+    <string name="calendar_declined_title">Wydarzenia na które się nie wybieram</string>
+    <string name="calendar_tentative_title">Wydarzenia którymi jestem zainteresowany</string>
+    <string name="calendar_attending_title">Wydarzenia na których się pojawię</string>
+    <string name="calendar_birthday_title">Urodziny przyjaciół</string>
+    <string name="sync_ntf_needs_reauthentication_title">Aplikacja potrzebuje się zalogować</string>
+    <string name="sync_ntf_needs_reauthentication_description">Kliknij tutaj żeby ponownie połączyć się z Facebook</string>
+
+    <string name="pref_activity_title">Ustawienia</string>
+
+    <string name="pref_sync_settings_title">Ustawienia synchronizacji</string>
+    <string name="pref_sync_settings_summary">Skonfiguruj jak często i kiedy synchornizować wydarzenia.</string>
+
+    <string name="pref_sync_frequency_title">Częstość synchronizacji</string>
+    <string name="pref_sync_frequency_summary">Jak często wydarzenia z Facebook`s powinny być synchronizowane?</string>
+    <string name="pref_language_title">Język</string>
+    <string name="pref_language_summary">Język dla urodzin i wydarzeń</string>
+    <string name="pref_language_default_entry">Język urządzenia</string>
+    <string name="pref_misc_settings_title">Różne</string>
+    <string name="pref_misc_report_bug_title">Zgłoś błąd</string>
+    <string name="pref_misc_contact_developer_title">Skontaktuj się z deweloperem</string>
+    <string name="pref_misc_rate_app_title">Oceń aplikację</string>
+
+
+    <string name="pref_calendar_settings_title">Kalendarze</string>
+    <string name="pref_calendar_settings_summary">Ustaw kalendarze, kolory i przypomnienia</string>
+
+    <string name="pref_calendar_enabled_title">Włączony</string>
+    <string name="pref_calendar_reminders_title">Przypomnienia</string>
+    <string name="pref_calendar_color_title">Kolor</string>
+
+    <string name="color_dlg_title">Wybierz kolor</string>
+    <string name="color_dlg_save_btn_title">Zapisz</string>
+    <string name="color_dlg_close_btn_title">Zamknij</string>
+
+    <string name="pref_reminder_0minutes_entry">0 minut</string>
+    <string name="pref_reminder_5minutes_entry">5 minut</string>
+    <string name="pref_reminder_10minutes_entry">10 minut</string>
+    <string name="pref_reminder_15minutes_entry">15 minut</string>
+    <string name="pref_reminder_20minutes_entry">20 minut</string>
+    <string name="pref_reminder_30minutes_entry">30 minut</string>
+    <string name="pref_reminder_1hour_entry">Godzina</string>
+    <string name="pref_reminder_2hours_entry">2 godziny</string>
+    <string name="pref_reminder_12hours_entry">12 godzin</string>
+    <string name="pref_reminder_24hours_entry">24 godziny</string>
+    <string name="pref_reminder_36hours_entry">36 godzin</string>
+    <string name="pref_reminder_2days_entry">2 dni</string>
+    <string name="pref_reminder_1week_entry">Tydzień</string>
+    <string name="pref_sync_frequency_never_entry">Nigdy</string>
+    <string name="pref_sync_frequency_1hour_entry">Godzina</string>
+    <string name="pref_sync_frequency_2hours_entry">2 godziny</string>
+    <string name="pref_sync_frequency_4hours_entry">4 godziny</string>
+    <string name="pref_sync_frequency_8hours_entry">8 godzin</string>
+    <string name="pref_sync_frequency_12hours_entry">12 godzin</string>
+    <string name="pref_sync_frequency_24hours_entry">24 godziny</string>
+    <string name="pref_general_settings_title">Ogólne</string>
+</resources>
