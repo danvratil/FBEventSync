@@ -53,7 +53,9 @@
 
         <!-- Our activities //-->
         <activity android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/full_app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
