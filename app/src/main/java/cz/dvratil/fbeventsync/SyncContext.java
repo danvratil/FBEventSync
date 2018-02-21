@@ -20,7 +20,6 @@ package cz.dvratil.fbeventsync;
 import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SyncResult;
 
 public class SyncContext {
@@ -30,6 +29,7 @@ public class SyncContext {
     private ContentProviderClient mProviderClient = null;
     private SyncResult mSyncResult = null;
     private Logger mLogger = null;
+    private Preferences mPreferences = null;
 
     public SyncContext(Context context, Account account, String accessToken,
                        ContentProviderClient providerClient, SyncResult syncResult, Logger logger) {
@@ -39,6 +39,7 @@ public class SyncContext {
         mProviderClient = providerClient;
         mSyncResult = syncResult;
         mLogger = logger;
+        mPreferences = Preferences.getInstance(context);
     }
 
     public Context getContext() {
@@ -61,9 +62,8 @@ public class SyncContext {
         return mSyncResult;
     }
 
-    public SharedPreferences getPreferences() {
-        return mContext.getSharedPreferences(
-                mContext.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS);
+    public Preferences getPreferences() {
+        return mPreferences;
     }
 
     public Logger getLogger() {

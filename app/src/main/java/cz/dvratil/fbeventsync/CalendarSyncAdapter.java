@@ -28,14 +28,12 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -93,11 +91,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     static public void updateSync(Context context) {
         String accountType = context.getResources().getString(R.string.account_type);
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        String syncFreq = pref.getString(context.getResources().getString(R.string.pref_sync_frequency),
-                                         context.getResources().getString(R.string.pref_sync_frequency_default_value));
-        assert(syncFreq != null);
-        int syncInterval = Integer.parseInt(syncFreq);
+        Preferences pref=  Preferences.getInstance(context);
+        int syncInterval = pref.syncFrequency();
 
         Logger logger = Logger.getInstance(context);
 
@@ -146,22 +141,22 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return;
         }
 
-        SharedPreferences prefs = getContext().getSharedPreferences(
-                getContext().getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS);
+        Preferences prefs = Preferences.getInstance(getContext());
 
         // Don't sync more often than every minute
         Calendar calendar = Calendar.getInstance();
-        long lastSync = prefs.getLong(getContext().getString(R.string.cfg_last_sync), 0);
+        long lastSync = prefs.lastSync();
         if (!BuildConfig.DEBUG) {
             if (calendar.getTimeInMillis() - lastSync < 60 * 1000) {
                 logger.info(TAG, "Skipping sync, last sync was only %d seconds ago",
                         (calendar.getTimeInMillis() - lastSync) / 1000);
                 return;
             }
+            prefs.setLasySync(Calendar.getInstance().getTimeInMillis());
         }
 
         // Allow up to 5 syncs per hour
-        int syncsPerHour = prefs.getInt(getContext().getString(R.string.cfg_syncs_per_hour), 0);
+        int syncsPerHour = prefs.syncsPerHour();
         if (!BuildConfig.DEBUG) {
             if (calendar.getTimeInMillis() - lastSync < 3600 * 1000) {
                 int hour = calendar.get(Calendar.HOUR);
@@ -178,9 +173,9 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             } else {
                 syncsPerHour = 1;
+                prefs.setSyncsPerHour(syncsPerHour);
             }
         }
-
 
         Context ctx = getContext();
         AccountManager mgr = AccountManager.get(ctx);
@@ -214,7 +209,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         removeOldBirthdayCalendar(mSyncContext);
         FBCalendar.Set calendars = new FBCalendar.Set();
         calendars.initialize(mSyncContext);
-        if (prefs.getInt(getContext().getString(R.string.cfg_last_version), 0) != BuildConfig.VERSION_CODE) {
+        if (prefs.lastVersion() != BuildConfig.VERSION_CODE) {
             logger.info(TAG, "New version detected: deleting all calendars");
             for (FBCalendar cal : calendars.values()) {
                 try {
@@ -230,6 +225,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                     return;
                 }
             }
+            prefs.setLastVersion(BuildConfig.VERSION_CODE);
+
             // We have to re-initialize calendars now so that they get re-created
             calendars.release();
             calendars.initialize(mSyncContext);
@@ -247,12 +244,6 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
         calendars.release();
 
         mSyncContext = null;
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(getContext().getString(R.string.cfg_last_version), BuildConfig.VERSION_CODE);
-        editor.putLong(getContext().getString(R.string.cfg_last_sync), Calendar.getInstance().getTimeInMillis());
-        editor.putInt(getContext().getString(R.string.cfg_syncs_per_hour), syncsPerHour);
-        editor.apply();
 
         logger.info(TAG, "Sync for %s done", account.name);
     }
@@ -368,8 +359,8 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return null;
         }
 
-        String userLocale = mSyncContext.getPreferences().getString(getContext().getString(R.string.pref_language), null);
-        if (userLocale == null || userLocale.equals(mSyncContext.getContext().getString(R.string.pref_language_default_value))) {
+        String userLocale = mSyncContext.getPreferences().language();
+        if (userLocale.equals(mSyncContext.getContext().getString(R.string.pref_language_default_value))) {
             Locale locale = Locale.getDefault();
             userLocale = String.format("%s_%s", locale.getLanguage(), locale.getCountry());
         }

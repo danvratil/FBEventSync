@@ -44,39 +44,8 @@ public class GraphResponseHandler extends JsonHttpResponseHandler {
         return mResponse;
     }
 
-    private Graph.AppUsage getAppUsage(Header[] headers) {
-        if (headers == null) {
-            return null;
-        }
-
-        for (int i = 0; i < headers.length; ++i) {
-            Header header = headers[i];
-            if (header.getName().equals("X-App-Usage")) {
-                try {
-                    JSONObject obj = new JSONObject(header.getValue());
-                    return new Graph.AppUsage(
-                        obj.getInt("call_count"),
-                        obj.getInt("total_time"),
-                        obj.getInt("total_cputime"));
-                } catch (org.json.JSONException e) {
-                    return null;
-                }
-            }
-        }
-
-        return null;
-    }
-
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-        Graph.AppUsage appUsage = getAppUsage(headers);
-        if (appUsage != null) {
-            mLogger.warning(TAG, "Reaching app usage limits: Call: %d%%, Time: %d%%, CPU: %d%%",
-                    appUsage.callCount, appUsage.totalTime, appUsage.totalCPUTime);
-
-            appUsage.store(mContext);
-        }
-
         if (response.has("error")) {
             onFailure(statusCode, headers, null, response);
         } else {

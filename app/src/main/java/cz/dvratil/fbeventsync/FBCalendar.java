@@ -19,7 +19,6 @@ package cz.dvratil.fbeventsync;
 
 import android.accounts.Account;
 import android.content.ContentValues;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
@@ -91,30 +90,20 @@ public class FBCalendar {
     }
 
     private int getCalendarColor() {
-        int defaultColor = mContext.getContext().getResources().getColor(R.color.colorFBBlue);
-        int key;
         switch (mType) {
             case TYPE_ATTENDING:
-                key = R.string.pref_calendar_attending_color;
-                break;
+                return mContext.getPreferences().attendingCalendarColor();
             case TYPE_MAYBE:
-                key = R.string.pref_calendar_tentative_color;
-                break;
+                return mContext.getPreferences().maybeAttendingCalendarColor();
             case TYPE_NOT_REPLIED:
-                key = R.string.pref_calendar_not_responded_color;
-                break;
+                return mContext.getPreferences().notRespondedCalendarColor();
             case TYPE_DECLINED:
-                key =R.string.pref_calendar_declined_color;
-                break;
+                return mContext.getPreferences().declinedCalendarColor();
             case TYPE_BIRTHDAY:
-                key = R.string.pref_calendar_birthday_color;
-                break;
+                return mContext.getPreferences().birthdayCalendarColor();
             default:
-                mContext.getLogger().error(TAG, "Unhandled calendar type");
-                return defaultColor;
+                return -1;
         }
-
-        return mContext.getPreferences().getInt(mContext.getContext().getString(key), defaultColor);
     }
 
     private long createLocalCalendar() throws android.os.RemoteException,
@@ -257,31 +246,22 @@ public class FBCalendar {
         mContext = context;
         mEventsToSync = new ArrayList<>();
 
-        int key = -1;
         switch (mType) {
             case TYPE_ATTENDING:
-                key = R.string.pref_calendar_attending_enabled;
+                mIsEnabled = mContext.getPreferences().attendingCalendarEnabled();
                 break;
             case TYPE_MAYBE:
-                key = R.string.pref_calendar_tentative_enabled;
+                mIsEnabled = mContext.getPreferences().maybeAttendingCalendarEnabled();
                 break;
             case TYPE_DECLINED:
-                key = R.string.pref_calendar_declined_enabled;
+                mIsEnabled = mContext.getPreferences().declinedCalendarEnabled();
                 break;
             case TYPE_NOT_REPLIED:
-                key = R.string.pref_calendar_not_responded_enabled;
+                mIsEnabled = mContext.getPreferences().notRespondedCalendarEnabled();
                 break;
             case TYPE_BIRTHDAY:
-                key = R.string.pref_calendar_birthday_enabled;
+                mIsEnabled = mContext.getPreferences().birthdayCalendarEnabled();
                 break;
-            default:
-                mContext.getLogger().error(TAG, "Unhandled calendar type");
-                mIsEnabled = false;
-        }
-        if (key > -1) {
-            mIsEnabled = mContext.getPreferences().getBoolean(mContext.getContext().getString(key), true);
-        } else {
-            mIsEnabled = false;
         }
 
         try {
@@ -358,37 +338,28 @@ public class FBCalendar {
     }
 
     public java.util.Set<Integer> getReminderIntervals() {
-        SharedPreferences prefs = mContext.getPreferences();
-        java.util.Set<String> defaultReminder = new HashSet<>();
-        for (String reminder : mContext.getContext().getResources().getStringArray(R.array.pref_reminders_default_value)) {
-            defaultReminder.add(reminder);
-        }
-
-        int key;
+        java.util.Set<String> reminders;
         switch (mType) {
             case TYPE_NOT_REPLIED:
-                key = R.string.pref_calendar_not_responded_reminders;
+                reminders = mContext.getPreferences().notRespondedCalendarReminders();
                 break;
             case TYPE_DECLINED:
-                key = R.string.pref_calendar_declined_reminders;
+                reminders = mContext.getPreferences().declinedCalendarReminders();
                 break;
             case TYPE_MAYBE:
-                key = R.string.pref_calendar_tentative_reminders;
+                reminders = mContext.getPreferences().maybeAttendingCalendarReminders();
                 break;
             case TYPE_ATTENDING:
-                key = R.string.pref_calendar_attending_reminders;
+                reminders = mContext.getPreferences().attendingCalendarReminders();
                 break;
             case TYPE_BIRTHDAY:
-                key = R.string.pref_calendar_birthday_reminders;
+                reminders = mContext.getPreferences().birthdayCalendarReminders();
                 break;
             default:
-                mContext.getLogger().error(TAG,"Unhandled calendar type");
-                return new HashSet<>();
+                return null;
         }
-
-        java.util.Set<String> configuredReminders = prefs.getStringSet(mContext.getContext().getString(key), defaultReminder);
         java.util.Set<Integer> rv = new HashSet<>();
-        for (String reminder : configuredReminders) {
+        for (String reminder : reminders) {
             rv.add(Integer.parseInt(reminder));
         }
         return rv;

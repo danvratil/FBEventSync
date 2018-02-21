@@ -28,44 +28,6 @@ import com.loopj.android.http.SyncHttpClient;
 
 public class Graph {
 
-    public static class AppUsage {
-
-        private static final String PREFS_CALLCOUNT = "appusage_callCount";
-        private static final String PREFS_TOTALTIME = "appusage_totalTime";
-        private static final String PREFS_TOTALCPUTIME = "appusage_totalCPUTime";
-
-        public int callCount = 0;
-        public int totalTime = 0;
-        public int totalCPUTime = 0;
-
-        AppUsage(int callCount, int totalTime, int totalCPUTime) {
-            this.callCount = callCount;
-            this.totalTime = totalTime;
-            this.totalCPUTime = totalCPUTime;
-        }
-
-        public void store(Context context) {
-            SharedPreferences prefs = context.getSharedPreferences(
-                    context.getString(R.string.cz_dvratil_fbeventsync_preferences),
-                    Context.MODE_MULTI_PROCESS);
-            SharedPreferences.Editor edit = prefs.edit();
-            edit.putInt(PREFS_CALLCOUNT, this.callCount);
-            edit.putInt(PREFS_TOTALTIME, this.totalTime);
-            edit.putInt(PREFS_TOTALCPUTIME, this.totalCPUTime);
-            edit.apply();
-        }
-
-        static AppUsage load(Context context) {
-            SharedPreferences prefs = context.getSharedPreferences(
-                    context.getString(R.string.cz_dvratil_fbeventsync_preferences),
-                    Context.MODE_MULTI_PROCESS);
-            return new AppUsage(
-                    prefs.getInt(PREFS_CALLCOUNT, 0),
-                    prefs.getInt(PREFS_TOTALTIME, 0),
-                    prefs.getInt(PREFS_TOTALCPUTIME, 0));
-        }
-    }
-
     private static final String BASE_URL = "https://graph.facebook.com/v2.9/";
 
     public static final String FIELDS_PARAM = "fields";
