@@ -492,7 +492,11 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             missingPermissions.add(Manifest.permission.WRITE_SYNC_SETTINGS);
         }
 
-        logger.info("SYNC.PERM", "Missing permissions: " + missingPermissions.toString());
+        if (missingPermissions.isEmpty()) {
+            logger.info("SYNC.PERM","All permissions granted");
+        } else {
+            logger.info("SYNC.PERM", "Missing permissions: " + missingPermissions.toString());
+        }
 
         if (!missingPermissions.isEmpty()) {
             Bundle extras = new Bundle();
