@@ -2,6 +2,23 @@
 <issues format="4" by="lint 3.0.1">
 
     <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of org.apache.commons:commons-lang3 than 3.5 is available: 3.6"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    implementation &apos;org.apache.commons:commons-lang3:3.5&apos;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        quickfix="studio">
+        <location
+            file="/data/projects/FBEventsync/app/build.gradle"
+            line="75"
+            column="5"/>
+    </issue>
+
+    <issue
         id="ExportedPreferenceActivity"
         severity="Warning"
         message="`PreferenceActivity` subclass `cz.dvratil.fbeventsync.SettingsActivity` should not be exported"
@@ -14,8 +31,8 @@
         errorLine1="        &lt;activity"
         errorLine2="        ^">
         <location
-            file="/data/projects/FBEventSync/app/src/main/AndroidManifest.xml"
-            line="63"
+            file="/data/projects/FBEventsync/app/src/main/AndroidManifest.xml"
+            line="69"
             column="9"/>
     </issue>
 
@@ -32,8 +49,8 @@
         errorLine1="        mWebView.getSettings().setJavaScriptEnabled(true);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="/data/projects/FBEventSync/app/src/main/java/cz/dvratil/fbeventsync/AuthenticatorActivity.java"
-            line="99"
+            file="/data/projects/FBEventsync/app/src/main/java/cz/dvratil/fbeventsync/AuthenticatorActivity.java"
+            line="103"
             column="9"/>
     </issue>
 
@@ -49,166 +66,97 @@
         errorLine2="        ^"
         quickfix="studio">
         <location
-            file="/data/projects/FBEventSync/app/src/main/AndroidManifest.xml"
-            line="38"
+            file="/data/projects/FBEventsync/app/src/main/AndroidManifest.xml"
+            line="42"
             column="9"/>
     </issue>
 
     <issue
         id="UnusedResources"
         severity="Warning"
-        message="The resource `R.string.pref_sync_over_cellular` appears to be unused"
+        message="The resource `R.string.pref_reminder_36hours_value` appears to be unused"
         category="Performance"
         priority="3"
         summary="Unused resources"
         explanation="Unused resources make applications larger and slow down builds."
-        errorLine1="    &lt;string name=&quot;pref_sync_over_cellular&quot;>Sync over cellular data&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        errorLine1="    &lt;string name=&quot;pref_reminder_36hours_value&quot; translatable=&quot;false&quot;>2160&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         quickfix="studio">
         <location
-            file="/data/projects/FBEventSync/app/src/main/res/values/strings.xml"
-            line="46"
+            file="/data/projects/FBEventsync/app/src/main/res/values/strings.xml"
+            line="147"
             column="13"/>
     </issue>
 
     <issue
-        id="UnusedResources"
+        id="TypographyEllipsis"
         severity="Warning"
-        message="The resource `R.string.pref_sync_over_cellular_summary` appears to be unused"
-        category="Performance"
-        priority="3"
-        summary="Unused resources"
-        explanation="Unused resources make applications larger and slow down builds."
-        errorLine1="    &lt;string name=&quot;pref_sync_over_cellular_summary&quot;>Allow syncing when only connected via cellular data.&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        quickfix="studio">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/values/strings.xml"
-            line="47"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        severity="Warning"
-        message="The resource `R.style.AppTheme_AppBarOverlay` appears to be unused"
-        category="Performance"
-        priority="3"
-        summary="Unused resources"
-        explanation="Unused resources make applications larger and slow down builds."
-        errorLine1="    &lt;style name=&quot;AppTheme.AppBarOverlay&quot; parent=&quot;ThemeOverlay.AppCompat.Dark.ActionBar&quot; />"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        quickfix="studio">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/values/styles.xml"
-            line="16"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
-        severity="Warning"
-        message="The resource `R.style.AppTheme_PopupOverlay` appears to be unused"
-        category="Performance"
-        priority="3"
-        summary="Unused resources"
-        explanation="Unused resources make applications larger and slow down builds."
-        errorLine1="    &lt;style name=&quot;AppTheme.PopupOverlay&quot; parent=&quot;ThemeOverlay.AppCompat.Light&quot; />"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        quickfix="studio">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/values/styles.xml"
-            line="18"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="IconLauncherShape"
-        severity="Warning"
-        message="Launcher icon used as round icon did not have a circular shape"
-        category="Usability:Icons"
-        priority="6"
-        summary="The launcher icon shape should use a distinct silhouette"
-        explanation="According to the Android Design Guide (http://developer.android.com/design/style/iconography.html) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square."
-        url="http://developer.android.com/design/style/iconography.html"
-        urls="http://developer.android.com/design/style/iconography.html">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/mipmap-hdpi/ic_launcher.png"/>
-    </issue>
-
-    <issue
-        id="IconLauncherShape"
-        severity="Warning"
-        message="Launcher icon used as round icon did not have a circular shape"
-        category="Usability:Icons"
-        priority="6"
-        summary="The launcher icon shape should use a distinct silhouette"
-        explanation="According to the Android Design Guide (http://developer.android.com/design/style/iconography.html) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square."
-        url="http://developer.android.com/design/style/iconography.html"
-        urls="http://developer.android.com/design/style/iconography.html">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/mipmap-mdpi/ic_launcher.png"/>
-    </issue>
-
-    <issue
-        id="IconLauncherShape"
-        severity="Warning"
-        message="Launcher icon used as round icon did not have a circular shape"
-        category="Usability:Icons"
-        priority="6"
-        summary="The launcher icon shape should use a distinct silhouette"
-        explanation="According to the Android Design Guide (http://developer.android.com/design/style/iconography.html) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square."
-        url="http://developer.android.com/design/style/iconography.html"
-        urls="http://developer.android.com/design/style/iconography.html">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/mipmap-xhdpi/ic_launcher.png"/>
-    </issue>
-
-    <issue
-        id="IconLauncherShape"
-        severity="Warning"
-        message="Launcher icon used as round icon did not have a circular shape"
-        category="Usability:Icons"
-        priority="6"
-        summary="The launcher icon shape should use a distinct silhouette"
-        explanation="According to the Android Design Guide (http://developer.android.com/design/style/iconography.html) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square."
-        url="http://developer.android.com/design/style/iconography.html"
-        urls="http://developer.android.com/design/style/iconography.html">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/mipmap-xxhdpi/ic_launcher.png"/>
-    </issue>
-
-    <issue
-        id="IconLauncherShape"
-        severity="Warning"
-        message="Launcher icon used as round icon did not have a circular shape"
-        category="Usability:Icons"
-        priority="6"
-        summary="The launcher icon shape should use a distinct silhouette"
-        explanation="According to the Android Design Guide (http://developer.android.com/design/style/iconography.html) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square."
-        url="http://developer.android.com/design/style/iconography.html"
-        urls="http://developer.android.com/design/style/iconography.html">
-        <location
-            file="/data/projects/FBEventSync/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"/>
-    </issue>
-
-    <issue
-        id="GoogleAppIndexingWarning"
-        severity="Warning"
-        message="App is not indexable by Google Search; consider adding at least one Activity with an ACTION-VIEW intent filter. See issue explanation for more details."
-        category="Usability"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        category="Usability:Typography"
         priority="5"
-        summary="Missing support for Firebase App Indexing"
-        explanation="Adds URLs to get your app into the Google index, to get installs and traffic to your app from Google Search."
-        url="https://g.co/AppIndexing/AndroidStudio"
-        urls="https://g.co/AppIndexing/AndroidStudio"
-        errorLine1="    &lt;application"
-        errorLine2="    ^"
+        summary="Ellipsis string can be replaced with ellipsis character"
+        explanation="You can replace the string &quot;...&quot; with a dedicated ellipsis character, ellipsis character (…, &amp;#8230;). This can help make the text more readable."
+        url="http://en.wikipedia.org/wiki/Ellipsis"
+        urls="http://en.wikipedia.org/wiki/Ellipsis"
+        errorLine1="    &lt;string name=&quot;main_sync_in_progress&quot;>W trakcie synchronizacji...&lt;/string>"
+        errorLine2="                                         ^"
         quickfix="studio">
         <location
-            file="/data/projects/FBEventSync/app/src/main/AndroidManifest.xml"
-            line="17"
-            column="5"/>
+            file="/data/projects/FBEventsync/app/src/main/res/values-pl/strings.xml"
+            line="12"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        severity="Warning"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        category="Usability:Typography"
+        priority="5"
+        summary="Ellipsis string can be replaced with ellipsis character"
+        explanation="You can replace the string &quot;...&quot; with a dedicated ellipsis character, ellipsis character (…, &amp;#8230;). This can help make the text more readable."
+        url="http://en.wikipedia.org/wiki/Ellipsis"
+        urls="http://en.wikipedia.org/wiki/Ellipsis"
+        errorLine1="    &lt;string name=&quot;main_sync_in_progress&quot;>Sync in progress...&lt;/string>"
+        errorLine2="                                         ^"
+        quickfix="studio">
+        <location
+            file="/data/projects/FBEventsync/app/src/main/res/values/strings.xml"
+            line="20"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        severity="Warning"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        category="Usability:Typography"
+        priority="5"
+        summary="Ellipsis string can be replaced with ellipsis character"
+        explanation="You can replace the string &quot;...&quot; with a dedicated ellipsis character, ellipsis character (…, &amp;#8230;). This can help make the text more readable."
+        url="http://en.wikipedia.org/wiki/Ellipsis"
+        urls="http://en.wikipedia.org/wiki/Ellipsis"
+        errorLine1="    &lt;string name=&quot;main_sync_in_progress&quot;>Probíhá synchronizace...&lt;/string>"
+        errorLine2="                                         ^"
+        quickfix="studio">
+        <location
+            file="/data/projects/FBEventsync/app/src/main/res/values-cs/strings.xml"
+            line="97"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        severity="Warning"
+        message="Launcher icon used as round icon did not have a circular shape"
+        category="Usability:Icons"
+        priority="6"
+        summary="The launcher icon shape should use a distinct silhouette"
+        explanation="According to the Android Design Guide (http://developer.android.com/design/style/iconography.html) your launcher icons should &quot;use a distinct silhouette&quot;, a &quot;three-dimensional, front view, with a slight perspective as if viewed from above, so that users perceive some depth.&quot;&#xA;&#xA;The unique silhouette implies that your launcher icon should not be a filled square."
+        url="http://developer.android.com/design/style/iconography.html"
+        urls="http://developer.android.com/design/style/iconography.html">
+        <location
+            file="/data/projects/FBEventsync/app/src/main/res/mipmap-hdpi/ic_launcher.png"/>
     </issue>
 
 </issues>

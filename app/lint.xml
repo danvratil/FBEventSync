@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="TrustAllX509TrustManager">
+        <ignore path="com/loopj/android/http/*.class"/>
+    </issue>
+
+    <issue id="GoogleAppIndexingWarning" severity="ignore"/>
+    <issue id="MissingTranslation" severity="informational"/>
+
+    <issue id="HardcodedText" severity="error"/>
+</lint>
