@@ -20,13 +20,12 @@ package cz.dvratil.fbeventsync;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Preferences {
-
-    private static Preferences sInstance = null;
 
     private SharedPreferences mPrefs = null;
     private Context mContext = null;
@@ -35,14 +34,7 @@ public class Preferences {
         return new HashSet<>(Arrays.asList(mContext.getResources().getStringArray(id)));
     }
 
-    public static synchronized Preferences getInstance(Context context) {
-        if (sInstance == null) {
-            sInstance = new Preferences(context);
-        }
-        return sInstance;
-    }
-
-    private Preferences(Context context) {
+    public Preferences(Context context) {
         mContext = context;
         mPrefs = context.getSharedPreferences(context.getString(R.string.cz_dvratil_fbeventsync_preferences),
                                               Context.MODE_MULTI_PROCESS);

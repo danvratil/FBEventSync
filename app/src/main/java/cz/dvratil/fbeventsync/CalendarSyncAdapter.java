@@ -91,7 +91,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
     static public void updateSync(Context context) {
         String accountType = context.getResources().getString(R.string.account_type);
 
-        Preferences pref=  Preferences.getInstance(context);
+        Preferences pref =  new Preferences(context);
         int syncInterval = pref.syncFrequency();
 
         Logger logger = Logger.getInstance(context);
@@ -141,7 +141,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
             return;
         }
 
-        Preferences prefs = Preferences.getInstance(getContext());
+        Preferences prefs = new Preferences(getContext());
 
         // Don't sync more often than every minute
         Calendar calendar = Calendar.getInstance();

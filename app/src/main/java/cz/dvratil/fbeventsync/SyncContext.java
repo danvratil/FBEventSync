@@ -39,7 +39,7 @@ public class SyncContext {
         mProviderClient = providerClient;
         mSyncResult = syncResult;
         mLogger = logger;
-        mPreferences = Preferences.getInstance(context);
+        mPreferences = new Preferences(context);
     }
 
     public Context getContext() {
