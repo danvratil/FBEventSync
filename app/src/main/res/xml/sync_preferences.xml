@@ -25,4 +25,10 @@
         android:entryValues="@array/pref_language_values"
         android:defaultValue="@string/pref_language_default_value"/>
 
+    <CheckBoxPreference
+        android:key="@string/pref_sync_fblink"
+        android:title="@string/pref_sync_fblink_title"
+        android:summary="@string/pref_sync_fblink_summary"
+        android:defaultValue="true"/>
+
 </PreferenceScreen>

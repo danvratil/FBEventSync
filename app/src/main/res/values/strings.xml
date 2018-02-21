@@ -62,6 +62,10 @@
     <string name="pref_sync_frequency_summary">How often should your Facebook events be synced?</string>
     <string name="pref_sync_frequency_default_value" translatable="false">@string/pref_sync_frequency_1hour_value</string>
 
+    <string name="pref_sync_fblink" translatable="false">pref_sync_fblink</string>
+    <string name="pref_sync_fblink_title">Add link to Facebook</string>
+    <string name="pref_sync_fblink_summary">Add a link to Facebook to event descriptions.</string>
+
     <string name="pref_language" translatable="false">pref_language</string>
     <string name="pref_language_title">Language</string>
     <string name="pref_language_summary">Language for birthdays and events</string>

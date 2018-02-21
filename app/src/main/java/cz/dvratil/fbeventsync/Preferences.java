@@ -58,6 +58,10 @@ public class Preferences {
                                 mContext.getString(R.string.pref_language_default_value));
     }
 
+    boolean fbLink() {
+        return mPrefs.getBoolean(mContext.getString(R.string.pref_sync_fblink), true);
+    }
+
     boolean attendingCalendarEnabled() {
         return mPrefs.getBoolean(mContext.getString(R.string.pref_calendar_attending_enabled), true);
     }

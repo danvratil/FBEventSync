@@ -258,7 +258,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
                     int len = data.length();
                     FBEvent lastEvent = null;
                     for (int i = 0; i < len; i++) {
-                        FBEvent event = FBEvent.parse(data.getJSONObject(i));
+                        FBEvent event = FBEvent.parse(data.getJSONObject(i), mSyncContext);
                         if (event != null) {
                             FBCalendar calendar = calendars.getCalendarForEvent(event);
                             if (calendar == null) {
@@ -422,7 +422,7 @@ public class CalendarSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 ICalendar cal = Biweekly.parse(new String(responseBody)).first();
                 for (VEvent vevent : cal.getEvents()) {
-                    FBEvent event = FBEvent.parse(vevent);
+                    FBEvent event = FBEvent.parse(vevent, mSyncContext);
                     FBCalendar calendar = calendars.getCalendarForEvent(event);
                     if (calendar.isEnabled()) {
                         event.setCalendar(calendar);

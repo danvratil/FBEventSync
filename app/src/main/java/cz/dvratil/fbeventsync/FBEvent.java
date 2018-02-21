@@ -118,8 +118,8 @@ public class FBEvent {
         return date.getTime();
     }
 
-    public static FBEvent parse(org.json.JSONObject event) throws org.json.JSONException,
-                                                                  java.text.ParseException {
+    public static FBEvent parse(org.json.JSONObject event, SyncContext context) throws org.json.JSONException,
+                                                                                java.text.ParseException {
         FBEvent fbEvent = new FBEvent();
         ContentValues values = fbEvent.mValues;
 
@@ -135,7 +135,9 @@ public class FBEvent {
         }
         if (event.has("description")) {
             String description = event.getString("description");
-            description += "\n\nhttps://www.facebook.com/events/" + event.getString("id");
+            if (context.getPreferences().fbLink()) {
+                description += "\n\nhttps://www.facebook.com/events/" + event.getString("id");
+            }
             values.put(CalendarContract.Events.DESCRIPTION, description);
         }
         values.put(CalendarContract.Events.DTSTART, parseDateTime(event.getString("start_time")));
@@ -171,7 +173,7 @@ public class FBEvent {
         return fbEvent;
     }
 
-    public static FBEvent parse(VEvent vevent) {
+    public static FBEvent parse(VEvent vevent, SyncContext context) {
         FBEvent fbEvent = new FBEvent();
         ContentValues values = fbEvent.mValues;
 
@@ -196,7 +198,11 @@ public class FBEvent {
         values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
 
         if (isBirthday) {
-            values.put(CalendarContract.Events.DESCRIPTION, "https://www.facebook.com/" + id);
+            if (context.getPreferences().fbLink()) {
+                values.put(CalendarContract.Events.DESCRIPTION, "https://www.facebook.com/" + id);
+            } else {
+                values.put(CalendarContract.Events.DESCRIPTION, new String());
+            }
             ICalDate date = vevent.getDateStart().getValue();
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             // HACK: Facebook only lists the "next" birthdays, which means birthdays disappear from
@@ -216,7 +222,14 @@ public class FBEvent {
         } else {
             Description desc = vevent.getDescription();
             if (desc != null) {
-                values.put(CalendarContract.Events.DESCRIPTION, desc.getValue());
+                String descStr = desc.getValue();
+                if (!context.getPreferences().fbLink()) {
+                    int pos = descStr.lastIndexOf('\n');
+                    if (pos > -1) {
+                        descStr = descStr.substring(0, pos);
+                    }
+                }
+                values.put(CalendarContract.Events.DESCRIPTION, descStr);
             }
 
             DateStart start = vevent.getDateStart();
