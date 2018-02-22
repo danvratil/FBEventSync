@@ -82,8 +82,8 @@ public class FBCalendar {
         }
 
         public void release() {
-            for (Map.Entry<CalendarType, FBCalendar> entry : entrySet()) {
-                entry.getValue().finalizeSync();
+            for (FBCalendar calendar : values()) {
+                calendar.finalizeSync();
             }
             clear();
         }
