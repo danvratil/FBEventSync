@@ -196,7 +196,7 @@ public class FBCalendar {
                 String.format("((%s = ?) AND (%s < ?))", CalendarContract.Events.CALENDAR_ID, CalendarContract.Events.DTSTART),
                 new String[]{
                         mLocalCalendarId.toString(),
-                        new Long(Calendar.getInstance().getTimeInMillis()).toString()
+                        Long.valueOf(Calendar.getInstance().getTimeInMillis()).toString()
                 });
     }
 
@@ -208,7 +208,7 @@ public class FBCalendar {
                 String.format("((%s = ?) AND (%s >= ?))", CalendarContract.Events.CALENDAR_ID, CalendarContract.Events.DTSTART),
                 new String[] {
                         mLocalCalendarId.toString(),
-                        new Long(Calendar.getInstance().getTimeInMillis()).toString()
+                        Long.valueOf(Calendar.getInstance().getTimeInMillis()).toString()
                 });
     }
 
