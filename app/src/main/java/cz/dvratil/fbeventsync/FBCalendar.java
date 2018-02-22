@@ -360,7 +360,11 @@ public class FBCalendar {
         }
         java.util.Set<Integer> rv = new HashSet<>();
         for (String reminder : reminders) {
-            rv.add(Integer.parseInt(reminder));
+            try {
+                rv.add(Integer.parseInt(reminder));
+            } catch (java.lang.NumberFormatException e) {
+                mContext.getLogger().error(TAG, "NumberFormatException when loading reminders. Value was '%s': %s", reminder, e.getMessage());
+            }
         }
         return rv;
     }
