@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class FBCalendar {
 
@@ -58,7 +57,7 @@ public class FBCalendar {
     protected List<FBEvent> mEventsToSync = null;
     protected HashMap<String /* FBID */, Long /* local ID */ > mPastLocalIds = null;
     protected HashMap<String /* FBID */, Long /* local ID */ > mFutureLocalIds = null;
-    protected long mLocalCalendarId = -1;
+    protected Long mLocalCalendarId = -1L;
     protected boolean mIsEnabled = false;
 
     protected class SyncStats {
@@ -134,13 +133,8 @@ public class FBCalendar {
         // +2 allows for up to 2 custom reminders set by the user
         values.put(CalendarContract.Calendars.MAX_REMINDERS, getReminderIntervals().size() + 2);
 
-        Uri uri = CalendarContract.Calendars.CONTENT_URI.buildUpon()
-                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, mContext.getContext().getString(R.string.account_type))
-                .build();
-
-        Uri calUri = mContext.getContentProviderClient().insert(uri, values);
+        Uri calUri = mContext.getContentProviderClient().insert(
+                mContext.contentUri(CalendarContract.Calendars.CONTENT_URI), values);
         if (calUri != null) {
             return Long.parseLong(calUri.getLastPathSegment());
         } else {
@@ -153,16 +147,16 @@ public class FBCalendar {
         ContentValues values = new ContentValues();
         values.put(CalendarContract.Calendars.CALENDAR_COLOR, getCalendarColor());
         mContext.getContentProviderClient().update(
-                CalendarContract.Calendars.CONTENT_URI,
+                mContext.contentUri(CalendarContract.Calendars.CONTENT_URI),
                 values,
                 String.format("(%s = ?)", CalendarContract.Calendars._ID),
-                new String[] { String.valueOf(mLocalCalendarId) });
+                new String[] { mLocalCalendarId.toString() });
     }
 
     private long findLocalCalendar() throws android.os.RemoteException,
                                             android.database.sqlite.SQLiteException {
         Cursor cur = mContext.getContentProviderClient().query(
-                CalendarContract.Calendars.CONTENT_URI,
+                mContext.contentUri(CalendarContract.Calendars.CONTENT_URI),
                 new String[]{ CalendarContract.Calendars._ID },
                 String.format("((%s = ?) AND (%s = ?) AND (%s = ?) AND (%s = ?))",
                         CalendarContract.Calendars.ACCOUNT_NAME,
@@ -188,9 +182,9 @@ public class FBCalendar {
     public void deleteLocalCalendar() throws android.os.RemoteException,
                                              android.database.sqlite.SQLiteException {
         mContext.getContentProviderClient().delete(
-                CalendarContract.Calendars.CONTENT_URI,
+                mContext.contentUri(CalendarContract.Calendars.CONTENT_URI),
                 String.format("(%s = ?)", CalendarContract.Calendars._ID),
-                new String[] { String.valueOf(mLocalCalendarId) });
+                new String[] { mLocalCalendarId.toString() });
     }
 
     private HashMap<String /* FBID */, Long /* local ID */ > fetchLocalPastEvents()
@@ -201,8 +195,8 @@ public class FBCalendar {
         return fetchLocalEvents(
                 String.format("((%s = ?) AND (%s < ?))", CalendarContract.Events.CALENDAR_ID, CalendarContract.Events.DTSTART),
                 new String[]{
-                        String.valueOf(mLocalCalendarId),
-                        String.valueOf(Calendar.getInstance().getTimeInMillis())
+                        mLocalCalendarId.toString(),
+                        new Long(Calendar.getInstance().getTimeInMillis()).toString()
                 });
     }
 
@@ -213,8 +207,8 @@ public class FBCalendar {
         return fetchLocalEvents(
                 String.format("((%s = ?) AND (%s >= ?))", CalendarContract.Events.CALENDAR_ID, CalendarContract.Events.DTSTART),
                 new String[] {
-                        String.valueOf(mLocalCalendarId),
-                        String.valueOf(Calendar.getInstance().getTimeInMillis())
+                        mLocalCalendarId.toString(),
+                        new Long(Calendar.getInstance().getTimeInMillis()).toString()
                 });
     }
 
@@ -225,7 +219,7 @@ public class FBCalendar {
     {
         HashMap<String, Long> localIds = new HashMap<>();
         Cursor cur = mContext.getContentProviderClient().query(
-                CalendarContract.Events.CONTENT_URI,
+                mContext.contentUri(CalendarContract.Events.CONTENT_URI),
                 new String[]{
                         CalendarContract.Events.UID_2445,
                         CalendarContract.Events._ID },
@@ -279,7 +273,7 @@ public class FBCalendar {
                     mFutureLocalIds = fetchLocalFutureEvents();
                 } else {
                     deleteLocalCalendar();
-                    mLocalCalendarId = -1;
+                    mLocalCalendarId = -1L;
                 }
             }
         } catch (android.os.RemoteException e) {

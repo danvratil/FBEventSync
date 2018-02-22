@@ -263,17 +263,12 @@ public class FBEvent {
         return fbEvent;
     }
 
-
     public long create(SyncContext context)
         throws android.os.RemoteException,
                android.database.sqlite.SQLiteException
     {
         Uri uri = context.getContentProviderClient().insert(
-                CalendarContract.Events.CONTENT_URI.buildUpon()
-                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_TYPE, context.getContext().getString(R.string.account_type))
-                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_NAME, context.getAccount().name)
-                        .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                        .build(),
+                context.contentUri(CalendarContract.Events.CONTENT_URI),
                 mValues);
         if (uri != null) {
             long eventId = Long.parseLong(uri.getLastPathSegment());
@@ -289,17 +284,17 @@ public class FBEvent {
         return -1;
     }
 
-    private HashMap<Integer /* minutes */, Long /* reminder ID */> getLocalReminders(SyncContext context, long localEventId)
+    private HashMap<Integer /* minutes */, Long /* reminder ID */> getLocalReminders(SyncContext context, Long localEventId)
         throws android.os.RemoteException,
                android.database.sqlite.SQLiteException
     {
         Cursor cur = context.getContentProviderClient().query(
-                CalendarContract.Reminders.CONTENT_URI,
+                context.contentUri(CalendarContract.Reminders.CONTENT_URI),
                 new String[]{
                         CalendarContract.Reminders._ID,
                         CalendarContract.Reminders.MINUTES },
                 String.format("(%s = ?)", CalendarContract.Reminders.EVENT_ID),
-                new String[]{ String.valueOf(localEventId) },
+                new String[]{ localEventId.toString() },
                 null);
         @SuppressLint("UseSparseArrays")
         HashMap<Integer /* minutes */, Long /* reminder ID */> localReminders = new HashMap<>();
@@ -326,28 +321,22 @@ public class FBEvent {
             reminderValues.add(values);
         }
 
-        Uri uri = CalendarContract.Reminders.CONTENT_URI.buildUpon()
-                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, context.getAccount().name)
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, context.getContext().getString(R.string.account_type))
-                .build();
-
         context.getContentProviderClient().bulkInsert(
-                uri,
+                context.contentUri(CalendarContract.Reminders.CONTENT_URI),
                 reminderValues.toArray(new ContentValues[0]));
     }
 
-    private void removeReminder(SyncContext context, long localReminderId)
+    private void removeReminder(SyncContext context, Long localReminderId)
         throws android.os.RemoteException,
                android.database.sqlite.SQLiteException
     {
         context.getContentProviderClient().delete(
                 CalendarContract.Reminders.CONTENT_URI,
                 String.format("(%s = ?)", CalendarContract.Reminders._ID ),
-                new String[]{ String.valueOf(localReminderId) });
+                new String[]{ localReminderId.toString() });
     }
 
-    public void update(SyncContext context, long localEventId)
+    public void update(SyncContext context, Long localEventId)
         throws android.os.RemoteException,
                android.database.sqlite.SQLiteException
     {
@@ -357,14 +346,10 @@ public class FBEvent {
         values.remove(CalendarContract.Events.CALENDAR_ID);
 
         context.getContentProviderClient().update(
-                CalendarContract.Events.CONTENT_URI.buildUpon()
-                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_TYPE, context.getContext().getString(R.string.account_type))
-                        .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_NAME, context.getAccount().name)
-                        .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                        .build(),
+                context.contentUri(CalendarContract.Events.CONTENT_URI),
                 values,
                 String.format("(%s = ?)", CalendarContract.Events._ID),
-                new String[] { String.valueOf(localEventId) });
+                new String[] { localEventId.toString() });
 
         HashMap<Integer /* minutes */, Long /* reminder ID */> reminders = getLocalReminders(context, localEventId);
         Set<Integer> localReminderSet = reminders.keySet();
@@ -387,13 +372,13 @@ public class FBEvent {
         }
     }
 
-    static public void remove(SyncContext context, long localEventId)
+    static public void remove(SyncContext context, Long localEventId)
         throws android.os.RemoteException,
                android.database.sqlite.SQLiteException
     {
         context.getContentProviderClient().delete(
-                CalendarContract.Events.CONTENT_URI,
+                context.contentUri(CalendarContract.Events.CONTENT_URI),
                 String.format("(%s = ?)", CalendarContract.Events._ID),
-                new String[] { String.valueOf(localEventId) });
+                new String[] { localEventId.toString() });
     }
 }

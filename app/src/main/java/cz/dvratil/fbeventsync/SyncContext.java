@@ -21,6 +21,8 @@ import android.accounts.Account;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
+import android.net.Uri;
+import android.provider.CalendarContract;
 
 public class SyncContext {
     private Context mContext = null;
@@ -68,5 +70,13 @@ public class SyncContext {
 
     public Logger getLogger() {
         return mLogger;
+    }
+
+    Uri contentUri(Uri provider) {
+        return provider.buildUpon()
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, getAccount().name)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, getContext().getString(R.string.account_type))
+                .build();
     }
 }
