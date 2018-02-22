@@ -416,6 +416,12 @@ public class FBCalendar {
         sync();
         // Only delete from future events, we want to keep past events at any cost
         Logger log = mContext.getLogger();
+        if (mFutureLocalIds == null) {
+            log.error(TAG, "FinalizeSync passed for %s calendar '%s' with null futureLocalIDs!",
+                    mIsEnabled ? "enabled" : "disabled", mType.id());
+            return;
+        }
+
         for (Long localId : mFutureLocalIds.values()) {
             try {
                 FBEvent.remove(mContext, localId.longValue());
