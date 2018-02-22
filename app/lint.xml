@@ -5,7 +5,9 @@
     </issue>
 
     <issue id="GoogleAppIndexingWarning" severity="ignore"/>
+
     <issue id="MissingTranslation" severity="informational"/>
+    <issue id="ExtraTranslation" severity="informational"/>
 
     <issue id="HardcodedText" severity="error"/>
 </lint>
