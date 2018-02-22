@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><string name="app_name">FB-evenementsynchronisatie</string>
+    <string name="full_app_name">Evenementsynchronisatie voor Facebook</string>
+    <string name="main_version_label">Versie: %s</string>
+    <string name="main_tagline">Nu met verjaardagssynchronisatie. Woehoeeeee!</string>
+    <string name="main_add_account_btn">Account toevoegen</string>
+    <string name="main_show_logs_btn">Logbestanden weergeven</string>
+    <string name="main_configure_calendars_btn">Kalenders instellen</string>
+    <string name="main_configure_sync_btn">Synchronisatie-voorkeuren instellen</string>
+    <string name="main_configure_misc_btn">Overige voorkeuren instellen</string>
+    <string name="main_sync_now">Nu synchroniseren</string>
+    <string name="main_sync_in_progress">Bezig met synchroniseren...</string>
+
+    <string name="perms_activity_title">Toestemmingsverzoek</string>
+
+    <string name="log_activity_title">Logweergave</string>
+    <string name="log_clear_log_action">Log wissen</string>
+    <string name="log_send_to_dev_action">Versturen aan ontwikkelaar</string>
+    <string name="log_send_email_action">E-mail versturen…</string>
+    <string name="log_email_template">[Beschrijf hier uw probleem, het liefst in het Engels]</string>
+    <string name="log_error_sending_log_toast">Versturen van logbestanden mislukt: het logbestand kan niet worden gelezen</string>
+
+    <string name="auth_activity_title">Authenticeren met Facebook</string>
+    <string name="auth_account_creation_error_toast">Fout tijdens authenticatie</string>
+    <string name="auth_account_creation_success_toast">Account toegevoegd</string>
+    <string name="auth_rate_limiting_toast">De Facebook-API heeft problemen. Probeer het later opnieuw.</string>
+    <string name="auth_progress_authenticating_with_fb">Bezig met authenticeren…</string>
+    <string name="auth_progress_retrieving_calendars">Bezig met ophalen van kalenders…</string>
+    <string name="auth_progress_retrieving_userinfo">Bezig met ophalen van gebruikersinformatie…</string>
+    <string name="auth_calendar_uri_error_toast">Ophalen van kalender-URL is mislukt</string>
+
+    <string name="calendar_not_responded_title">Evenementen waarop ik nog niet gereageerd heb</string>
+    <string name="calendar_declined_title">Evenementen die ik niet bijwoon</string>
+    <string name="calendar_tentative_title">Evenementen die ik misschien ga bijwonen</string>
+    <string name="calendar_attending_title">Evenementen die ik bijwoon</string>
+    <string name="calendar_birthday_title">Verjaardagen van vrienden</string>
+    <string name="sync_ntf_needs_reauthentication_title">Evenementsynchronisatie voor Facebook moet inloggen</string>
+    <string name="sync_ntf_needs_reauthentication_description">Druk hier om opnieuw te authenticeren met Facebook</string>
+
+    <string name="pref_activity_title">Instellingen</string>
+
+    <string name="pref_sync_settings_title">Synchronisatie-instellingen</string>
+    <string name="pref_sync_settings_summary">Stel in hoe vaak en wanneer evenementen gesynchroniseerd moeten worden.</string>
+
+    <string name="pref_sync_frequency_title">Synchronisatie-frequentie</string>
+    <string name="pref_sync_frequency_summary">Hoe vaak moeten uw Facebook-evenemenen worden gesynchroniseerd?</string>
+    <string name="pref_language_title">Taal</string>
+    <string name="pref_language_summary">Taal voor verjaardagen en evenementen</string>
+    <string name="pref_language_default_entry">Taal van apparaat</string>
+    <string name="pref_misc_settings_title">Overig</string>
+    <string name="pref_misc_report_bug_title">Fout (bug) rapporteren</string>
+    <string name="pref_misc_contact_developer_title">Contact opnemen met ontwikkelaar</string>
+    <string name="pref_misc_rate_app_title">App beoordelen</string>
+
+
+    <string name="pref_calendar_settings_title">Kalenders</string>
+    <string name="pref_calendar_settings_summary">Kalenders, kleuren en herinneringen instellen</string>
+
+    <string name="pref_calendar_enabled_title">Ingeschakeld</string>
+    <string name="pref_calendar_reminders_title">Herinneringen</string>
+    <string name="pref_calendar_color_title">Kleur</string>
+
+    <string name="color_dlg_title">Kies een kleur</string>
+    <string name="color_dlg_save_btn_title">Opslaan</string>
+    <string name="color_dlg_close_btn_title">Sluiten</string>
+
+    <string name="pref_reminder_0minutes_entry">0 minuten</string>
+    <string name="pref_reminder_5minutes_entry">5 minuten</string>
+    <string name="pref_reminder_10minutes_entry">10 minuten</string>
+    <string name="pref_reminder_15minutes_entry">15 minuten</string>
+    <string name="pref_reminder_20minutes_entry">20 minuten</string>
+    <string name="pref_reminder_30minutes_entry">30 minuten</string>
+    <string name="pref_reminder_1hour_entry">1 uur</string>
+    <string name="pref_reminder_2hours_entry">2 uur</string>
+    <string name="pref_reminder_12hours_entry">12 uur</string>
+    <string name="pref_reminder_24hours_entry">24 uur</string>
+    <string name="pref_reminder_36hours_entry">36 uur</string>
+    <string name="pref_reminder_2days_entry">2 dagen</string>
+    <string name="pref_reminder_1week_entry">1 week</string>
+    <string name="pref_sync_frequency_never_entry">Nooit</string>
+    <string name="pref_sync_frequency_1hour_entry">1 uur</string>
+    <string name="pref_sync_frequency_2hours_entry">2 uur</string>
+    <string name="pref_sync_frequency_4hours_entry">4 uur</string>
+    <string name="pref_sync_frequency_8hours_entry">8 uur</string>
+    <string name="pref_sync_frequency_12hours_entry">12 uur</string>
+    <string name="pref_sync_frequency_24hours_entry">24 uur</string>
+    <string name="pref_general_settings_title">Algemeen</string>
+</resources>
