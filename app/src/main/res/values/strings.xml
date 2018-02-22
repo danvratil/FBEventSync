@@ -10,7 +10,6 @@
 
     <!-- MAIN ACTIVITY //-->
     <string name="main_version_label">Version: %s</string>
-    <string name="main_tagline">Now with birthday sync. Aaawww yeah!</string>
     <string name="main_add_account_btn">Add Account</string>
     <string name="main_show_logs_btn">Show Logs</string>
     <string name="main_configure_calendars_btn">Configure Calendars</string>
