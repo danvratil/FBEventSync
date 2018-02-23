@@ -15,35 +15,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cz.dvratil.fbeventsync;
+package cz.dvratil.fbeventsync
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.util.Log;
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import android.util.Log
 
-public class CalendarSyncService extends Service {
+class CalendarSyncService : Service() {
 
-    private static final String TAG = "SYNC";
+    private var mAdapter: CalendarSyncAdapter? = null
 
-    private CalendarSyncAdapter mAdapter;
-    private static final Object sAdapterLock  = new Object();
+    override fun onCreate() {
+        super.onCreate()
+        Log.d(TAG, "Sync service created")
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "Sync service created");
-
-        synchronized (sAdapterLock) {
+        synchronized(sAdapterLock) {
             if (mAdapter == null) {
-                mAdapter = new CalendarSyncAdapter(getApplicationContext(), true);
+                mAdapter = CalendarSyncAdapter(applicationContext, true)
             }
         }
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "Sync service binded");
-        return mAdapter.getSyncAdapterBinder();
+    override fun onBind(intent: Intent): IBinder? {
+        Log.d(TAG, "Sync service binded")
+        return mAdapter!!.syncAdapterBinder
+    }
+
+    companion object {
+
+        private val TAG = "SYNC"
+        private val sAdapterLock = Any()
     }
 }

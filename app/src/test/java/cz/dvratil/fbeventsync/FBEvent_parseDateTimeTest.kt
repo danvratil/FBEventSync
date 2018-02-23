@@ -15,23 +15,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cz.dvratil.fbeventsync;
+package cz.dvratil.fbeventsync
 
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
-import com.tngtech.java.junit.dataprovider.UseDataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner
+import com.tngtech.java.junit.dataprovider.UseDataProvider
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
 
-@RunWith(DataProviderRunner.class)
-public class FBEvent_parseDateTimeTest {
+@RunWith(DataProviderRunner::class)
+class FBEvent_parseDateTimeTest {
 
     @Test
-    @UseDataProvider(value = "load", location = ExternalFileDataProvider.class)
+    @UseDataProvider(value = "load", location = arrayOf(ExternalFileDataProvider::class))
     @ExternalFileDataProvider.ExternalFile(fileName = "fbeventtest_datetime.xml")
-    public void test(String name, String input, String expectedOutput) throws Exception {
-        Assert.assertEquals(Long.parseLong(expectedOutput), FBEvent.parseDateTime(input));
+    @Throws(Exception::class)
+    fun test(name: String, input: String, expectedOutput: String) {
+        Assert.assertEquals(java.lang.Long.parseLong(expectedOutput), FBEvent.parseDateTime(input))
     }
 }
 

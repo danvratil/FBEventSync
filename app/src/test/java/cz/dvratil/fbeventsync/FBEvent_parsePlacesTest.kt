@@ -15,25 +15,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cz.dvratil.fbeventsync;
+package cz.dvratil.fbeventsync
 
-import com.tngtech.java.junit.dataprovider.DataProviderRunner;
-import com.tngtech.java.junit.dataprovider.UseDataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner
+import com.tngtech.java.junit.dataprovider.UseDataProvider
 
-import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.json.JSONObject
+import org.junit.Assert
+import org.junit.Test
+import org.junit.runner.RunWith
 
-@RunWith(DataProviderRunner.class)
-public class FBEvent_parsePlacesTest {
+@RunWith(DataProviderRunner::class)
+class FBEvent_parsePlacesTest {
 
     @Test
-    @UseDataProvider(value = "load", location = ExternalFileDataProvider.class)
+    @UseDataProvider(value = "load", location = arrayOf(ExternalFileDataProvider::class))
     @ExternalFileDataProvider.ExternalFile(fileName = "fbeventtest_places.xml")
-    public void test(String name, String input, String expectedOutput) throws Exception {
-        JSONObject place = new JSONObject(input);
-        String output = FBEvent.parsePlace(place);
-        Assert.assertEquals(expectedOutput, output);
+    @Throws(Exception::class)
+    fun test(name: String, input: String, expectedOutput: String) {
+        val place = JSONObject(input)
+        val output = FBEvent.parsePlace(place)
+        Assert.assertEquals(expectedOutput, output)
     }
 }

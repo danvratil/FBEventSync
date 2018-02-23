@@ -15,26 +15,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package cz.dvratil.fbeventsync;
+package cz.dvratil.fbeventsync
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
 
 
-public class AuthenticatorService extends Service {
+class AuthenticatorService : Service() {
 
-    private Authenticator mAuthenticator;
+    private var mAuthenticator: Authenticator? = null
 
-    @Override
-    public void onCreate() {
-        mAuthenticator = new Authenticator(this);
+    override fun onCreate() {
+        mAuthenticator = Authenticator(this)
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mAuthenticator.getIBinder();
+    override fun onBind(intent: Intent): IBinder? {
+        return mAuthenticator!!.iBinder
     }
 }
