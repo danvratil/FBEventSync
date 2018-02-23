@@ -32,7 +32,7 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
 
     @Throws(NetworkErrorException::class)
     override fun addAccount(response: AccountAuthenticatorResponse, accountType: String,
-                            authTokenType: String, requiredFeatures: Array<String>, options: Bundle): Bundle {
+                            authTokenType: String?, requiredFeatures: Array<String>?, options: Bundle?): Bundle? {
         val intent = Intent(mContext, AuthenticatorActivity::class.java)
         intent.action = Intent.ACTION_VIEW
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, accountType)
@@ -47,7 +47,7 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
 
     @Throws(NetworkErrorException::class)
     override fun getAuthToken(response: AccountAuthenticatorResponse, account: Account,
-                              authTokenType: String, options: Bundle): Bundle {
+                              authTokenType: String, options: Bundle?): Bundle? {
 
         val accMgr = AccountManager.get(mContext)
         val token = accMgr.peekAuthToken(account, authTokenType)
@@ -78,21 +78,21 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
 
     @Throws(NetworkErrorException::class)
     override fun confirmCredentials(response: AccountAuthenticatorResponse, account: Account,
-                                    options: Bundle): Bundle? {
+                                    options: Bundle?): Bundle? {
         Log.d(TAG, "Confirm credentials")
         return null
     }
 
     @Throws(NetworkErrorException::class)
     override fun updateCredentials(response: AccountAuthenticatorResponse, account: Account,
-                                   authTokenType: String, options: Bundle): Bundle? {
+                                   authTokenType: String?, options: Bundle?): Bundle? {
         Log.d(TAG, "Update crendentials")
         return null
     }
 
     @Throws(NetworkErrorException::class)
     override fun hasFeatures(response: AccountAuthenticatorResponse, account: Account,
-                             features: Array<String>): Bundle {
+                             features: Array<String>): Bundle? {
         val result = Bundle()
         result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)
         return result
@@ -105,14 +105,14 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
 
     companion object {
 
-        private val TAG = "AUTH"
+        private const val TAG = "AUTH"
 
-        val FB_OAUTH_TOKEN = "fb_oauth"
-        val FB_UID_TOKEN = "fb_uid"
-        val FB_KEY_TOKEN = "fb_key"
+        const val FB_OAUTH_TOKEN = "fb_oauth"
+        const val FB_UID_TOKEN = "fb_uid"
+        const val FB_KEY_TOKEN = "fb_key"
 
         // DON'T USE! Preserved for legacy reason so that we can clear the data when migrating to the
         // new tokens
-        val DATA_BDAY_URI = "bday_uri"
+        const val DATA_BDAY_URI = "bday_uri"
     }
 }

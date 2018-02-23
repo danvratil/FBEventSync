@@ -20,11 +20,9 @@ package cz.dvratil.fbeventsync
 import android.content.Context
 import android.content.SharedPreferences
 
-import java.util.Arrays
-
 object PreferencesMigrator {
 
-    private val PREFERENCES_VERSION = 1
+    private const val PREFERENCES_VERSION = 1
 
     @Synchronized
     fun migrate(context: Context) {
@@ -53,14 +51,13 @@ object PreferencesMigrator {
         val wrongColor = 3889560
         val correctColor = context.resources.getColor(R.color.colorFBBlue)
 
-        val keys = Arrays.asList(R.string.pref_calendar_attending_color,
+        arrayOf(R.string.pref_calendar_attending_color,
                 R.string.pref_calendar_tentative_color,
                 R.string.pref_calendar_declined_color,
                 R.string.pref_calendar_not_responded_color,
-                R.string.pref_calendar_birthday_color)
-        for (key in keys) {
-            if (prefs.getInt(context.getString(key), correctColor) == wrongColor) {
-                editor.putInt(context.getString(key), correctColor)
+                R.string.pref_calendar_birthday_color).forEach {
+            if (prefs.getInt(context.getString(it), correctColor) == wrongColor) {
+                editor.putInt(context.getString(it), correctColor)
             }
         }
     }

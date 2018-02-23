@@ -24,13 +24,13 @@ import android.os.IBinder
 
 class AuthenticatorService : Service() {
 
-    private var mAuthenticator: Authenticator? = null
+    private lateinit var mAuthenticator: Authenticator
 
     override fun onCreate() {
         mAuthenticator = Authenticator(this)
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        return mAuthenticator!!.iBinder
+        return mAuthenticator.iBinder
     }
 }

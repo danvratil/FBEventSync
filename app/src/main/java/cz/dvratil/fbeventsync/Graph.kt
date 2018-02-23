@@ -18,7 +18,6 @@
 package cz.dvratil.fbeventsync
 
 import android.content.Context
-import android.content.SharedPreferences
 
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
@@ -28,13 +27,13 @@ import com.loopj.android.http.SyncHttpClient
 
 object Graph {
 
-    private val BASE_URL = "https://graph.facebook.com/v2.9/"
+    private const val BASE_URL = "https://graph.facebook.com/v2.9/"
 
-    val FIELDS_PARAM = "fields"
-    val LIMIT_PARAM = "limit"
-    val TYPE_PARAM = "type"
-    val AFTER_PARAM = "after"
-    val ACCESS_TOKEN_PARAM = "access_token"
+    const val FIELDS_PARAM = "fields"
+    const val LIMIT_PARAM = "limit"
+    const val TYPE_PARAM = "type"
+    const val AFTER_PARAM = "after"
+    const val ACCESS_TOKEN_PARAM = "access_token"
 
     fun me(accessToken: String, handler: AsyncHttpResponseHandler): RequestHandle {
         val params = RequestParams()

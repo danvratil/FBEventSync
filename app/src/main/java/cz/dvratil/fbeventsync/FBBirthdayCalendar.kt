@@ -17,22 +17,15 @@
 
 package cz.dvratil.fbeventsync
 
-import android.provider.CalendarContract
-
 import java.util.HashSet
 
 class FBBirthdayCalendar(context: SyncContext) : FBCalendar(context, FBCalendar.CalendarType.TYPE_BIRTHDAY) {
 
-    internal var mSyncedEvents: HashSet<String>? = null
-
-    init {
-
-        mSyncedEvents = HashSet()
-    }
+    private var mSyncedEvents =  HashSet<String>()
 
     override fun doSyncEvent(event: FBEvent) {
         super.doSyncEvent(event)
-        mSyncedEvents!!.add(event.eventId())
+        mSyncedEvents.add(event.eventId())
     }
 
     override fun finalizeSync() {
@@ -46,18 +39,18 @@ class FBBirthdayCalendar(context: SyncContext) : FBCalendar(context, FBCalendar.
         // we synced from mPastLocalIds we are left with events that we did not receive in this sync
         // run - such events represent birthdays of friends who have been unfriended since the last
         // sync and we want those removed.
-        for (syncedEvent in mSyncedEvents!!) {
-            mPastLocalIds!!.remove(syncedEvent)
+        for (syncedEvent in mSyncedEvents) {
+            mPastLocalIds.remove(syncedEvent)
         }
-        for (eventId in mPastLocalIds!!.values) {
+        for (eventId in mPastLocalIds.values) {
             try {
                 FBEvent.remove(mContext, eventId)
                 mSyncStats.removed += 1
             } catch (e: android.os.RemoteException) {
-                mContext!!.logger!!.error(TAG, "Remote exception during FBCalendar finalizeSync: %s", e.message)
+                mContext.logger.error(TAG, "Remote exception during FBCalendar finalizeSync: %s", e.message)
                 // continue with remaining events
             } catch (e: android.database.sqlite.SQLiteException) {
-                mContext!!.logger!!.error(TAG, "SQL exception during FBCalendar fynalize sync: %s", e.message)
+                mContext.logger.error(TAG, "SQL exception during FBCalendar fynalize sync: %s", e.message)
                 // continue with remaining events
             }
 
@@ -67,7 +60,6 @@ class FBBirthdayCalendar(context: SyncContext) : FBCalendar(context, FBCalendar.
     }
 
     companion object {
-
-        private val TAG = "FBBirthdayCalendar"
+        private const val TAG = "FBBirthdayCalendar"
     }
 }

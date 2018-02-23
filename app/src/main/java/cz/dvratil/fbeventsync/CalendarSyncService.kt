@@ -24,27 +24,24 @@ import android.util.Log
 
 class CalendarSyncService : Service() {
 
-    private var mAdapter: CalendarSyncAdapter? = null
+    private lateinit var mAdapter: CalendarSyncAdapter
 
     override fun onCreate() {
         super.onCreate()
         Log.d(TAG, "Sync service created")
 
         synchronized(sAdapterLock) {
-            if (mAdapter == null) {
-                mAdapter = CalendarSyncAdapter(applicationContext, true)
-            }
+            mAdapter = CalendarSyncAdapter(applicationContext, true)
         }
     }
 
     override fun onBind(intent: Intent): IBinder? {
         Log.d(TAG, "Sync service binded")
-        return mAdapter!!.syncAdapterBinder
+        return mAdapter.syncAdapterBinder
     }
 
     companion object {
-
-        private val TAG = "SYNC"
+        private const val TAG = "SYNC"
         private val sAdapterLock = Any()
     }
 }

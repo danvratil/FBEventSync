@@ -23,17 +23,13 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 
-import java.util.ArrayList
-
 class PermissionRequestActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val extras = intent.extras
-        val missingPerms = extras!!.getStringArrayList(MISSING_PERMISSIONS)
-
-        ActivityCompat.requestPermissions(this, missingPerms!!.toTypedArray<String>(),
+        val missingPerms = intent.extras?.getStringArrayList(MISSING_PERMISSIONS) ?: return
+        ActivityCompat.requestPermissions(this, missingPerms.toTypedArray<String>(),
                 PERMISSION_REQUEST_ID)
     }
 
@@ -41,7 +37,7 @@ class PermissionRequestActivity : AppCompatActivity() {
                                             grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            PERMISSION_REQUEST_ID -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            PERMISSION_REQUEST_ID -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Permissions granted by user")
             } else {
                 Log.d(TAG, "Permissions denied by user!")
@@ -53,12 +49,11 @@ class PermissionRequestActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val MISSING_PERMISSIONS = "cz.dvratil.fbeventsync.PermissionRequestActivity.MISSING_PERMISSIONS"
+        const val PERMISSION_NOTIFY = "cz.dvratil.fbeventsync.PermissionRequestActivity.PERMISSION_NOTIFY"
 
-        val MISSING_PERMISSIONS = "cz.dvratil.fbeventsync.PermissionRequestActivity.MISSING_PERMISSIONS"
-        val PERMISSION_NOTIFY = "cz.dvratil.fbeventsync.PermissionRequestActivity.PERMISSION_NOTIFY"
+        private const val PERMISSION_REQUEST_ID = 0
 
-        private val PERMISSION_REQUEST_ID = 0
-
-        private val TAG = "PERMS"
+        private const val TAG = "PERMS"
     }
 }

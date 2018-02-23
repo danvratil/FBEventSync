@@ -41,7 +41,6 @@ import android.support.v4.content.ContextCompat
 import com.loopj.android.http.DataAsyncHttpResponseHandler
 import com.loopj.android.http.RequestParams
 
-import org.json.JSONArray
 import org.json.JSONObject
 
 import java.util.ArrayList
@@ -50,22 +49,17 @@ import java.util.Locale
 import java.util.TimeZone
 
 import biweekly.Biweekly
-import biweekly.ICalendar
-import biweekly.component.VEvent
 import cz.msebera.android.httpclient.Header
-import cz.msebera.android.httpclient.NameValuePair
 import cz.msebera.android.httpclient.client.utils.URIBuilder
 
 class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractThreadedSyncAdapter(context, autoInitialize) {
 
-    private var logger: Logger? = null
+    private var logger: Logger
 
     private var mSyncContext: SyncContext? = null
 
     init {
-
         PreferencesMigrator.migrate(context)
-
         logger = Logger.getInstance(context)
 
         checkPermissions()
@@ -74,15 +68,15 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
     override fun onPerformSync(account: Account, bundle: Bundle, authority: String,
                                provider: ContentProviderClient, syncResult: SyncResult) {
-        logger!!.info(TAG, "performSync request for account %s, authority %s", account.name, authority)
+        logger.info(TAG, "performSync request for account %s, authority %s", account.name, authority)
 
         if (mSyncContext != null) {
-            logger!!.warning(TAG, "SyncContext not null, another sync already running? Aborting this one")
+            logger.warning(TAG, "SyncContext not null, another sync already running? Aborting this one")
             return
         }
 
         if (!checkPermissions()) {
-            logger!!.info(TAG, "Skipping sync, missing permissions")
+            logger.info(TAG, "Skipping sync, missing permissions")
             return
         }
 
@@ -93,11 +87,11 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         val lastSync = prefs.lastSync()
         if (!BuildConfig.DEBUG) {
             if (calendar.timeInMillis - lastSync < 60 * 1000) {
-                logger!!.info(TAG, "Skipping sync, last sync was only %d seconds ago",
+                logger.info(TAG, "Skipping sync, last sync was only %d seconds ago",
                         (calendar.timeInMillis - lastSync) / 1000)
                 return
             }
-            prefs.setLasySync(Calendar.getInstance().timeInMillis)
+            prefs.setLastSync(Calendar.getInstance().timeInMillis)
         }
 
         // Allow up to 5 syncs per hour
@@ -106,14 +100,14 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             if (calendar.timeInMillis - lastSync < 3600 * 1000) {
                 val hour = calendar.get(Calendar.HOUR)
                 calendar.timeInMillis = lastSync
-                logger!!.debug(TAG, "Lasy sync hour: %d, now sync hour: %d", calendar.get(Calendar.HOUR), hour)
+                logger.debug(TAG, "Lasy sync hour: %d, now sync hour: %d", calendar.get(Calendar.HOUR), hour)
                 if (calendar.get(Calendar.HOUR) != hour) {
                     syncsPerHour = 1
                 } else {
                     syncsPerHour++
                 }
                 if (syncsPerHour > 5) {
-                    logger!!.info(TAG, "Skipping sync, too many syncs per hour")
+                    logger.info(TAG, "Skipping sync, too many syncs per hour")
                     return
                 }
             } else {
@@ -129,43 +123,44 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             val result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, false, null, null).result
             accessToken = result.getString(AccountManager.KEY_AUTHTOKEN)
             if (accessToken == null) {
-                logger!!.debug(TAG, "Needs to reauthenticate, will wait for user")
+                logger.debug(TAG, "Needs to reauthenticate, will wait for user")
                 createAuthNotification()
                 return
             } else {
-                logger!!.debug(TAG, "Access token received")
+                logger.debug(TAG, "Access token received")
             }
         } catch (e: android.accounts.OperationCanceledException) {
-            logger!!.error(TAG, "Failed to obtain auth token: %s", e.message)
+            logger.error(TAG, "Failed to obtain auth token: %s", e.message)
             syncResult.stats.numAuthExceptions++
             return
         } catch (e: android.accounts.AuthenticatorException) {
-            logger!!.error(TAG, "Failed to obtain auth token: %s", e.message)
+            logger.error(TAG, "Failed to obtain auth token: %s", e.message)
             syncResult.stats.numAuthExceptions++
             return
         } catch (e: java.io.IOException) {
-            logger!!.error(TAG, "Failed to obtain auth token: %s", e.message)
+            logger.error(TAG, "Failed to obtain auth token: %s", e.message)
             syncResult.stats.numAuthExceptions++
             return
         }
 
-        mSyncContext = SyncContext(context, account, accessToken, provider, syncResult, logger)
+        val syncContext = SyncContext(context, account, accessToken, provider, syncResult, logger)
+        mSyncContext = syncContext
 
-        removeOldBirthdayCalendar(mSyncContext)
+        removeOldBirthdayCalendar(syncContext)
         val calendars = FBCalendar.Set()
-        calendars.initialize(mSyncContext)
+        calendars.initialize(syncContext)
         if (prefs.lastVersion() != BuildConfig.VERSION_CODE) {
-            logger!!.info(TAG, "New version detected: deleting all calendars")
+            logger.info(TAG, "New version detected: deleting all calendars")
             for (cal in calendars.values) {
                 try {
                     cal.deleteLocalCalendar()
                 } catch (e: android.os.RemoteException) {
                     // FIXME: Handle exceptions
-                    logger!!.error(TAG, "Failed to cleanup calendars: %s", e.message)
+                    logger.error(TAG, "Failed to cleanup calendars: %s", e.message)
                     syncResult.stats.numIoExceptions++
                     return
                 } catch (e: android.database.sqlite.SQLiteException) {
-                    logger!!.error(TAG, "Failed to cleanup calendars: %s", e.message)
+                    logger.error(TAG, "Failed to cleanup calendars: %s", e.message)
                     syncResult.stats.numIoExceptions++
                     return
                 }
@@ -175,7 +170,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
             // We have to re-initialize calendars now so that they get re-created
             calendars.release()
-            calendars.initialize(mSyncContext)
+            calendars.initialize(syncContext)
         }
 
         // Sync via iCal only - not avoiding Graph calls, but it gives us access to private group
@@ -183,7 +178,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         syncEventsViaICal(calendars)
         //syncEventsViaGraph(calendars);
 
-        if (calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY].isEnabled) {
+        if (calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]?.isEnabled == true) {
             syncBirthdayCalendar(calendars)
         }
 
@@ -191,30 +186,29 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
         mSyncContext = null
 
-        logger!!.info(TAG, "Sync for %s done", account.name)
+        logger.info(TAG, "Sync for %s done", account.name)
     }
 
     private fun syncEventsViaGraph(calendars: FBCalendar.Set) {
+        val syncContext = mSyncContext ?: return
         var cursor: String? = null
         do {
-            val response = fetchEvents(cursor)
+            val response = fetchEvents(cursor) ?: continue
             try {
-                if (response!!.has("data")) {
+                if (response.has("data")) {
                     val data = response.getJSONArray("data")
                     val len = data.length()
                     var lastEvent: FBEvent? = null
                     for (i in 0 until len) {
-                        val event = FBEvent.parse(data.getJSONObject(i), mSyncContext)
-                        if (event != null) {
-                            val calendar = calendars.getCalendarForEvent(event)
-                            if (calendar == null) {
-                                logger!!.error(TAG, "Failed to find calendar for event!")
-                                continue
-                            }
-                            event.setCalendar(calendar)
-                            calendar.syncEvent(event)
-                            lastEvent = event
+                        val event = FBEvent.parse(data.getJSONObject(i)!!, syncContext)
+                        val calendar = calendars.getCalendarForEvent(event)
+                        if (calendar == null) {
+                            logger.error(TAG, "Failed to find calendar for event!")
+                            continue
                         }
+                        event.setCalendar(calendar)
+                        calendar.syncEvent(event)
+                        lastEvent = event
                     }
 
                     // Only sync events back one year, don't go any further in the past to save
@@ -222,7 +216,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                     if (lastEvent != null) {
                         val cal = Calendar.getInstance(TimeZone.getDefault())
                         cal.add(Calendar.YEAR, -1)
-                        val lastEventStart = lastEvent.values!!.getAsLong(CalendarContract.Events.DTSTART)!!
+                        val lastEventStart = lastEvent.values.getAsLong(CalendarContract.Events.DTSTART)
                         if (lastEventStart < cal.timeInMillis) {
                             break
                         }
@@ -231,18 +225,19 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 cursor = getNextCursor(response)
             } catch (e: java.text.ParseException) {
                 cursor = null
-                logger!!.error(TAG, "Text parse exception: %s", e.message)
-                mSyncContext!!.syncResult!!.stats.numParseExceptions++
+                logger.error(TAG, "Text parse exception: %s", e.message)
+                syncContext.syncResult.stats.numParseExceptions++
             } catch (e: org.json.JSONException) {
                 cursor = null
-                logger!!.error(TAG, "JSON exception in main loop: %s", e.message)
-                mSyncContext!!.syncResult!!.stats.numParseExceptions++
+                logger.error(TAG, "JSON exception in main loop: %s", e.message)
+                syncContext.syncResult.stats.numParseExceptions++
             }
 
         } while (cursor != null)
     }
 
     private fun fetchEvents(cursor: String?): JSONObject? {
+        val syncContext = mSyncContext ?: return null
         val params = RequestParams()
         params.add(Graph.FIELDS_PARAM, "id,name,description,place,start_time,end_time,owner,is_canceled,rsvp_status")
         params.add(Graph.LIMIT_PARAM, "100")
@@ -250,22 +245,20 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             params.add(Graph.AFTER_PARAM, cursor)
         }
 
-        val handler = GraphResponseHandler(mSyncContext!!.context)
+        val handler = GraphResponseHandler(syncContext.context)
 
-        logger!!.debug(TAG, "Sending Graph request...")
-        Graph.events(mSyncContext!!.accessToken, params, handler)
-        logger!!.debug(TAG, "Graph response received")
+        logger.debug(TAG, "Sending Graph request...")
+        Graph.events(syncContext.accessToken, params, handler)
+        logger.debug(TAG, "Graph response received")
 
         return handler.response
     }
 
     private fun getNextCursor(obj: JSONObject): String? {
-        try {
-            val paging = obj.getJSONObject("paging") ?: return null
-            val cursor = paging.getJSONObject("cursors") ?: return null
-            return cursor.getString("after")
+        return try {
+            obj.getJSONObject("paging")?.getJSONObject("cursors")?.getString("after")
         } catch (e: org.json.JSONException) {
-            return null
+            null
         }
 
     }
@@ -276,36 +269,37 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
     }
 
     private fun getICalSyncURI(uriType: ICalURIType): Uri? {
-        val accManager = AccountManager.get(mSyncContext!!.context)
+        val syncContext = mSyncContext ?: return null
+        val accManager = AccountManager.get(syncContext.context)
         val uid: String?
         val key: String?
         try {
             // This block will automatically trigger authentication if the tokens are missing, so
             // no explicit migration from the old bday_uri is needed
-            uid = accManager.blockingGetAuthToken(mSyncContext!!.account, Authenticator.FB_UID_TOKEN, false)
-            key = accManager.blockingGetAuthToken(mSyncContext!!.account, Authenticator.FB_KEY_TOKEN, false)
+            uid = accManager.blockingGetAuthToken(syncContext.account, Authenticator.FB_UID_TOKEN, false)
+            key = accManager.blockingGetAuthToken(syncContext.account, Authenticator.FB_KEY_TOKEN, false)
         } catch (e: android.accounts.OperationCanceledException) {
-            logger!!.error(TAG, "User cancelled obtaining UID/KEY token: %s", e.message)
+            logger.error(TAG, "User cancelled obtaining UID/KEY token: %s", e.message)
             return null
         } catch (e: java.io.IOException) {
-            logger!!.error(TAG, "IO Exception while obtaining UID/KEY token: %s", e.message)
+            logger.error(TAG, "IO Exception while obtaining UID/KEY token: %s", e.message)
             return null
         } catch (e: android.accounts.AuthenticatorException) {
-            logger!!.error(TAG, "Authenticator exception while obtaining UID/KEY token: %s", e.message)
+            logger.error(TAG, "Authenticator exception while obtaining UID/KEY token: %s", e.message)
             return null
         }
 
         if (uid == null || key == null || uid.isEmpty() || key.isEmpty()) {
-            logger!!.error(TAG, "Failed to obtain UID/KEY tokens from account manager")
+            logger.error(TAG, "Failed to obtain UID/KEY tokens from account manager")
             // We only need to invalidate one token to force re-sync
-            accManager.invalidateAuthToken(mSyncContext!!.context!!.getString(R.string.account_type), mSyncContext!!.accessToken)
+            accManager.invalidateAuthToken(syncContext.context.getString(R.string.account_type), syncContext.accessToken)
             return null
         }
 
-        var userLocale = mSyncContext!!.preferences!!.language()
-        if (userLocale == mSyncContext!!.context!!.getString(R.string.pref_language_default_value)) {
+        var userLocale = syncContext.preferences.language()
+        if (userLocale == syncContext.context.getString(R.string.pref_language_default_value)) {
             val locale = Locale.getDefault()
-            userLocale = String.format("%s_%s", locale.language, locale.country)
+            userLocale = "${locale.language}_${locale.country}"
         }
 
         return Uri.parse("https://www.facebook.com").buildUpon()
@@ -317,7 +311,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
     }
 
     private fun sanitizeICalUri(uri: Uri): String {
-        try {
+        return try {
             val b = URIBuilder(uri.toString())
             val params = b.queryParams
             b.clearParameters()
@@ -328,9 +322,9 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                     b.addParameter(param.name, param.value)
                 }
             }
-            return b.toString()
+            b.toString()
         } catch (e: java.net.URISyntaxException) {
-            return "<URI parsing error>"
+            "<URI parsing error>"
         }
 
     }
@@ -338,48 +332,49 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
     private fun syncEventsViaICal(calendars: FBCalendar.Set) {
         val uri = getICalSyncURI(ICalURIType.EVENTS) ?: return
 
-        logger!!.debug(TAG, "Syncing event iCal from %s", sanitizeICalUri(uri))
+        logger.debug(TAG, "Syncing event iCal from %s", sanitizeICalUri(uri))
         syncICalCalendar(calendars, uri.toString())
     }
 
     private fun syncBirthdayCalendar(calendars: FBCalendar.Set) {
         val uri = getICalSyncURI(ICalURIType.BIRTHDAYS) ?: return
 
-        logger!!.debug(TAG, "Syncing birthday iCal from %s", sanitizeICalUri(uri))
+        logger.debug(TAG, "Syncing birthday iCal from %s", sanitizeICalUri(uri))
         syncICalCalendar(calendars, uri.toString())
     }
 
     private fun syncICalCalendar(calendars: FBCalendar.Set, uri: String) {
         Graph.fetchBirthdayICal(uri, object : DataAsyncHttpResponseHandler() {
             override fun onSuccess(statusCode: Int, headers: Array<Header>, responseBody: ByteArray?) {
+                val syncContext = mSyncContext ?: return
                 if (responseBody == null) {
-                    logger!!.error(TAG, "Response body is empty!!!!!")
+                    logger.error(TAG, "Response body is empty!")
                     return
                 }
 
                 val cal = Biweekly.parse(String(responseBody)).first()
                 for (vevent in cal.events) {
-                    val event = FBEvent.parse(vevent, mSyncContext)
-                    val calendar = calendars.getCalendarForEvent(event)
+                    val event = FBEvent.parse(vevent, syncContext)
+                    val calendar = calendars.getCalendarForEvent(event) ?: return
                     if (calendar.isEnabled) {
                         event.setCalendar(calendar)
                         calendar.syncEvent(event)
                     }
                 }
-                logger!!.debug(TAG, "iCal sync done")
+                logger.debug(TAG, "iCal sync done")
             }
 
             override fun onFailure(statusCode: Int, headers: Array<Header>?, responseBody: ByteArray?, error: Throwable?) {
                 val err = if (responseBody == null) "Unknown error" else String(responseBody)
-                logger!!.error(TAG, "Error retrieving iCal file: %d, %s", statusCode, err)
-                logger!!.error(TAG, "URI: %s", uri)
+                logger.error(TAG, "Error retrieving iCal file: %d, %s", statusCode, err)
+                logger.error(TAG, "URI: %s", uri)
                 if (headers != null) {
                     for (header in headers) {
-                        logger!!.error(TAG, "    %s: %s", header.name, header.value)
+                        logger.error(TAG, "    %s: %s", header.name, header.value)
                     }
                 }
                 if (error != null) {
-                    logger!!.error(TAG, "Throwable: %s", error.toString())
+                    logger.error(TAG, "Throwable: %s", error.toString())
                 }
             }
 
@@ -391,24 +386,19 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
     private fun removeOldBirthdayCalendar(context: SyncContext) {
         // remove old "birthday" calendar
-        logger!!.debug(TAG, "Removing legacy birthday calendar")
+        logger.debug(TAG, "Removing legacy birthday calendar")
         try {
-            context.contentProviderClient!!.delete(
-                    CalendarContract.Calendars.CONTENT_URI.buildUpon()
-                            .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_TYPE, context.context!!.getString(R.string.account_type))
-                            .appendQueryParameter(CalendarContract.SyncState.ACCOUNT_NAME, context.account!!.name)
-                            .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                            .build(),
-                    String.format("((%s = ?))",
-                            CalendarContract.Calendars.NAME),
-                    arrayOf("birthday" // old name for the fb_birthday_calendar calendar
-                    ))
+            context.contentProviderClient.delete(
+                    context.contentUri(CalendarContract.Calendars.CONTENT_URI),
+                    "(${CalendarContract.Calendars.NAME} = ?)",
+                    arrayOf("birthday") // old name for the fb_birthday_calendar calendar
+            )
         } catch (e: android.os.RemoteException) {
-            logger!!.error(TAG, "RemoteException when removing legacy calendar: %s", e.message)
+            logger.error(TAG, "RemoteException when removing legacy calendar: %s", e.message)
         } catch (e: android.database.sqlite.SQLiteException) {
-            logger!!.error(TAG, "SQLiteException when removing legacy calendar: %s", e.message)
+            logger.error(TAG, "SQLiteException when removing legacy calendar: %s", e.message)
         } catch (e: java.lang.IllegalArgumentException) {
-            logger!!.error(TAG, "IllegalArgumentException when removing legacy calendar: %s", e.message)
+            logger.error(TAG, "IllegalArgumentException when removing legacy calendar: %s", e.message)
         }
 
     }
@@ -427,13 +417,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             missingPermissions.add(Manifest.permission.WRITE_SYNC_SETTINGS)
         }
 
-        if (missingPermissions.isEmpty()) {
-            logger!!.info("SYNC.PERM", "All permissions granted")
-        } else {
-            logger!!.info("SYNC.PERM", "Missing permissions: " + missingPermissions.toString())
-        }
-
         if (!missingPermissions.isEmpty()) {
+            logger.info("SYNC.PERM", "Missing permissions: " + missingPermissions.toString())
             val extras = Bundle()
             extras.putStringArrayList(PermissionRequestActivity.MISSING_PERMISSIONS, missingPermissions)
 
@@ -443,6 +428,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             context.startActivity(intent)
             return false
         }
+
+        logger.info("SYNC.PERM", "All permissions granted")
         return true
     }
 
@@ -470,7 +457,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
     companion object {
 
-        private val TAG = "SYNC"
+        private const val TAG = "SYNC"
 
         fun requestSync(context: Context) {
             val accountType = context.resources.getString(R.string.account_type)
@@ -489,7 +476,6 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
             val pref = Preferences(context)
             val syncInterval = pref.syncFrequency()
-
             val logger = Logger.getInstance(context)
 
             for (account in AccountManager.get(context).getAccountsByType(accountType)) {

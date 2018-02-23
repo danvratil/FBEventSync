@@ -18,11 +18,9 @@
 package cz.dvratil.fbeventsync
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.content.FileProvider
-import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -36,21 +34,18 @@ import android.widget.Toast
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import java.util.Locale
 
 class LogViewActivity : AppCompatActivity() {
 
-    internal var mTextView: TextView? = null
-    internal var mScrollView: ScrollView? = null
+    private lateinit var mTextView: TextView
+    private lateinit var mScrollView: ScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_log_view)
-        val toolbar = findViewById<View>(R.id.logview_toolbar) as Toolbar
-        setSupportActionBar(toolbar)
+        setSupportActionBar(findViewById<View>(R.id.logview_toolbar) as Toolbar)
 
-        val ab = supportActionBar
-        ab!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         mTextView = findViewById<View>(R.id.log_text_view) as TextView
         mScrollView = findViewById<View>(R.id.log_scroll_view) as ScrollView
@@ -83,18 +78,11 @@ class LogViewActivity : AppCompatActivity() {
 
                 intent.putExtra(
                         Intent.EXTRA_TEXT,
-                        String.format(
-                                Locale.US,
-                                "%s\n\n\n" +
-                                        "App ID: %s\n" +
-                                        "App version: %d (%s)\n" +
-                                        "App build: %s\n" +
-                                        "OS: %s (API %d)\n",
-                                getString(R.string.log_email_template),
-                                BuildConfig.APPLICATION_ID,
-                                BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME,
-                                BuildConfig.BUILD_TYPE,
-                                Build.VERSION.RELEASE, Build.VERSION.SDK_INT))
+                        "${getString(R.string.log_email_template)}\n\n\n" +
+                                "App ID: ${BuildConfig.APPLICATION_ID}\n" +
+                                "App version: ${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME})\n" +
+                                "App build: ${BuildConfig.BUILD_TYPE}\n" +
+                                "OS: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})\n")
 
                 val logFile = File(filesDir, Logger.LOG_FILE)
                 if (!logFile.exists() || !logFile.canRead()) {
@@ -119,10 +107,11 @@ class LogViewActivity : AppCompatActivity() {
         try {
             val buffer = BufferedReader(FileReader(file))
             try {
-                var line: String
-                while ((line = buffer.readLine()) != null) {
+                var line = buffer.readLine()
+                while (line != null) {
                     builder.append(line)
                     builder.append('\n')
+                    line = buffer.readLine()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Exception when reading log: " + e.message)
@@ -132,12 +121,11 @@ class LogViewActivity : AppCompatActivity() {
             Log.e(TAG, "Exception when opening log: " + e.message)
         }
 
-        mTextView!!.text = builder.toString()
-        mScrollView!!.post { mScrollView!!.fullScroll(View.FOCUS_DOWN) }
+        mTextView.text = builder.toString()
+        mScrollView.post { mScrollView.fullScroll(View.FOCUS_DOWN) }
     }
 
     companion object {
-
-        private val TAG = "LOGVIEW"
+        private const val TAG = "LOGVIEW"
     }
 }

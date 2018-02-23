@@ -20,8 +20,6 @@ package cz.dvratil.fbeventsync
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.content.res.XmlResourceParser
 import android.os.Bundle
 import android.preference.ListPreference
@@ -31,14 +29,11 @@ import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
 
 import com.kizitonwose.colorpreference.ColorPreference
 import com.larswerkman.lobsterpicker.LobsterPicker
 import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider
 
-import java.util.ArrayList
 import java.util.Locale
 
 class SettingsActivity : PreferenceActivity() {
@@ -55,21 +50,25 @@ class SettingsActivity : PreferenceActivity() {
         var fragment: PreferenceFragment? = null
         val action = intent.action
         var fragmentTitleId = 0
-        if (action === CONFIGURE_CALENDARS) {
-            fragment = CalendarPreferenceFragment()
-            fragmentTitleId = R.string.pref_calendar_settings_title
-        } else if (action === CONFIGURE_SYNC_ACTION) {
-            fragment = SyncPreferenceFragment()
-            fragmentTitleId = R.string.pref_sync_settings_title
-        } else if (action === CONFIGURE_MISC_ACTION) {
-            fragment = MiscPreferenceFragment()
-            fragmentTitleId = R.string.pref_misc_settings_title
+        when (action) {
+            CONFIGURE_CALENDARS -> {
+                fragment = CalendarPreferenceFragment()
+                fragmentTitleId = R.string.pref_calendar_settings_title
+            }
+            CONFIGURE_SYNC_ACTION -> {
+                fragment = SyncPreferenceFragment()
+                fragmentTitleId = R.string.pref_sync_settings_title
+            }
+            CONFIGURE_MISC_ACTION -> {
+                fragment = MiscPreferenceFragment()
+                fragmentTitleId = R.string.pref_misc_settings_title
+            }
         }
 
         // API 21
         //String preferencesName = PreferenceManager.getDefaultSharedPreferencesName(this);
         val prefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS)
-        prefs.registerOnSharedPreferenceChangeListener { prefs, key ->
+        prefs.registerOnSharedPreferenceChangeListener { _, key ->
             if (key == getString(R.string.pref_sync_frequency)) {
                 mShouldRescheduleSync = true
             }
@@ -77,15 +76,13 @@ class SettingsActivity : PreferenceActivity() {
         }
 
         fragmentManager.beginTransaction().replace(R.id.settings_content, fragment).commit()
-        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
-        toolbar.setTitle(fragmentTitleId)
+        findViewById<Toolbar>(R.id.settings_toolbar).title = getString(fragmentTitleId)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
+        findViewById<Toolbar>(R.id.settings_toolbar).setNavigationOnClickListener { finish() }
     }
 
     private fun maybeSync() {
@@ -147,7 +144,7 @@ class SettingsActivity : PreferenceActivity() {
             AlertDialog.Builder(activity)
                     .setView(colorView)
                     .setTitle(getString(R.string.color_dlg_title))
-                    .setPositiveButton(getString(R.string.color_dlg_save_btn_title)) { dialogInterface, i -> (preference as ColorPreference).value = lobsterPicker.color }
+                    .setPositiveButton(getString(R.string.color_dlg_save_btn_title)) { _, _ -> (preference as ColorPreference).value = lobsterPicker.color }
                     .setNegativeButton(getString(R.string.color_dlg_close_btn_title), null)
                     .show()
         }
@@ -161,10 +158,8 @@ class SettingsActivity : PreferenceActivity() {
             addPreferencesFromResource(R.xml.sync_preferences)
             val pref = findPreference(getString(R.string.pref_language)) as ListPreference
             val parser = resources.getXml(R.xml.fb_languages)
-            val entryValues = ArrayList<CharSequence>()
-            entryValues.add(getString(R.string.pref_language_default_value))
-            val entries = ArrayList<CharSequence>()
-            entries.add(getString(R.string.pref_language_default_entry))
+            val entryValues = mutableListOf(getString(R.string.pref_language_default_value))
+            val entries = mutableListOf(getString(R.string.pref_language_default_entry))
             try {
                 var ev = parser.eventType
                 while (ev != XmlResourceParser.END_DOCUMENT) {
@@ -172,15 +167,10 @@ class SettingsActivity : PreferenceActivity() {
                         val code = parser.getAttributeValue(null, "code")
                         val lang = code.substring(0, 2)
                         val locale = Locale(lang, code.substring(3, 5))
-                        val name: String
-                        if (locale.displayLanguage == lang) {
-                            name = String.format(Locale.getDefault(), "%s (%s)",
-                                    parser.getAttributeValue(null, "name"),
-                                    locale.displayCountry)
-                        } else {
-                            name = locale.displayName
-                        }
-                        entries.add(name)
+                        entries.add(when (locale.displayLanguage) {
+                            lang -> "${parser.getAttributeValue(null, "name")} (${locale.displayCountry})"
+                            else -> locale.displayName
+                        })
                         entryValues.add(code)
                     }
                     ev = parser.next()
@@ -193,8 +183,8 @@ class SettingsActivity : PreferenceActivity() {
                 Log.e("PREFS", "Language XML IO exception:" + e.message)
             }
 
-            pref.setEntries(entries.toTypedArray<CharSequence>())
-            pref.setEntryValues(entryValues.toTypedArray<CharSequence>())
+            pref.entries = entries.toTypedArray<CharSequence>()
+            pref.entryValues = entryValues.toTypedArray<CharSequence>()
         }
     }
 
@@ -206,9 +196,8 @@ class SettingsActivity : PreferenceActivity() {
     }
 
     companion object {
-
-        var CONFIGURE_CALENDARS = "cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS"
-        var CONFIGURE_SYNC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC"
-        var CONFIGURE_MISC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC"
+        const val CONFIGURE_CALENDARS = "cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS"
+        const val CONFIGURE_SYNC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC"
+        const val CONFIGURE_MISC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC"
     }
 }

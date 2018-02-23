@@ -19,11 +19,8 @@ package cz.dvratil.fbeventsync
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
-import android.database.Cursor
-import android.net.Uri
 import android.provider.CalendarContract
 
-import org.apache.commons.lang3.StringUtils
 import org.json.JSONObject
 
 import java.text.SimpleDateFormat
@@ -36,63 +33,53 @@ import java.util.Locale
 import java.util.TimeZone
 
 import biweekly.component.VEvent
-import biweekly.property.DateEnd
-import biweekly.property.DateStart
-import biweekly.property.Description
-import biweekly.property.Location
-import biweekly.property.Organizer
-import biweekly.property.RawProperty
-import biweekly.util.ICalDate
 
 class FBEvent private constructor() {
 
-    var values: ContentValues? = null
+    var values = ContentValues()
     var rsvp: FBCalendar.CalendarType? = null
-        private set
     private var mCalendar: FBCalendar? = null
 
-    init {
-        values = ContentValues()
-    }
-
     fun eventId(): String {
-        return values!!.getAsString(CalendarContract.Events.UID_2445)
+        return values.getAsString(CalendarContract.Events.UID_2445)
     }
 
     fun setCalendar(calendar: FBCalendar) {
         mCalendar = calendar
-        values!!.put(CalendarContract.Events.CALENDAR_ID, calendar.localId())
-        values!!.put(CalendarContract.Events.AVAILABILITY, calendar.availability())
+        values.put(CalendarContract.Events.CALENDAR_ID, calendar.localId())
+        values.put(CalendarContract.Events.AVAILABILITY, calendar.availability())
     }
 
-    @Throws(android.os.RemoteException::class, android.database.sqlite.SQLiteException::class)
+    @Throws(android.os.RemoteException::class,
+            android.database.sqlite.SQLiteException::class)
     fun create(context: SyncContext): Long {
-        val uri = context.contentProviderClient!!.insert(
+        val uri = context.contentProviderClient.insert(
                 context.contentUri(CalendarContract.Events.CONTENT_URI),
                 values)
-        if (uri != null) {
-            val eventId = java.lang.Long.parseLong(uri.lastPathSegment)
+        if (uri != null && mCalendar != null) {
+            val eventId = uri.lastPathSegment.toLong()
             val reminders = mCalendar!!.reminderIntervals
             if (!reminders.isEmpty()) {
                 createReminders(context, eventId, reminders)
             }
 
-            context.syncResult!!.stats.numInserts++
+            context.syncResult.stats.numInserts++
             return eventId
         }
 
         return -1
     }
 
-    @Throws(android.os.RemoteException::class, android.database.sqlite.SQLiteException::class)
-    private fun getLocalReminders(context: SyncContext, localEventId: Long?): HashMap<Int, Long>/* minutes *//* reminder ID */ {
-        val cur = context.contentProviderClient!!.query(
+    @Throws(android.os.RemoteException::class,
+            android.database.sqlite.SQLiteException::class)
+    private fun getLocalReminders(context: SyncContext, localEventId: Long): HashMap<Int, Long>/* minutes *//* reminder ID */ {
+        val cur = context.contentProviderClient.query(
                 context.contentUri(CalendarContract.Reminders.CONTENT_URI),
                 arrayOf(CalendarContract.Reminders._ID, CalendarContract.Reminders.MINUTES),
-                String.format("(%s = ?)", CalendarContract.Reminders.EVENT_ID),
-                arrayOf(localEventId!!.toString()), null)
-        @SuppressLint("UseSparseArrays")
-        val localReminders = HashMap<Int, Long>()/* minutes *//* reminder ID */
+                "(${CalendarContract.Reminders.EVENT_ID} = ?)",
+                arrayOf(localEventId.toString()), null)
+        @Suppress("UseSparseArrays")
+        val localReminders = HashMap<Int /* minutes */, Long /* reminder ID */>()
         if (cur != null) {
             while (cur.moveToNext()) {
                 localReminders[cur.getInt(1)] = cur.getLong(0)
@@ -103,7 +90,8 @@ class FBEvent private constructor() {
         return localReminders
     }
 
-    @Throws(android.os.RemoteException::class, android.database.sqlite.SQLiteException::class)
+    @Throws(android.os.RemoteException::class,
+            android.database.sqlite.SQLiteException::class)
     private fun createReminders(context: SyncContext, localEventId: Long, reminders: Set<Int>) {
         val reminderValues = ArrayList<ContentValues>()
         for (reminder in reminders) {
@@ -114,31 +102,33 @@ class FBEvent private constructor() {
             reminderValues.add(values)
         }
 
-        context.contentProviderClient!!.bulkInsert(
+        context.contentProviderClient.bulkInsert(
                 context.contentUri(CalendarContract.Reminders.CONTENT_URI),
-                reminderValues.toTypedArray<ContentValues>())
+                reminderValues.toTypedArray())
     }
 
-    @Throws(android.os.RemoteException::class, android.database.sqlite.SQLiteException::class)
-    private fun removeReminder(context: SyncContext, localReminderId: Long?) {
-        context.contentProviderClient!!.delete(
+    @Throws(android.os.RemoteException::class,
+            android.database.sqlite.SQLiteException::class)
+    private fun removeReminder(context: SyncContext, localReminderId: Long) {
+        context.contentProviderClient.delete(
                 CalendarContract.Reminders.CONTENT_URI,
-                String.format("(%s = ?)", CalendarContract.Reminders._ID),
-                arrayOf(localReminderId!!.toString()))
+                "(${CalendarContract.Reminders._ID} = ?)",
+                arrayOf(localReminderId.toString()))
     }
 
-    @Throws(android.os.RemoteException::class, android.database.sqlite.SQLiteException::class)
-    fun update(context: SyncContext, localEventId: Long?) {
+    @Throws(android.os.RemoteException::class,
+            android.database.sqlite.SQLiteException::class)
+    fun update(context: SyncContext, localEventId: Long) {
         val values = ContentValues(this.values)
         values.remove(CalendarContract.Events._ID)
         values.remove(CalendarContract.Events.UID_2445)
         values.remove(CalendarContract.Events.CALENDAR_ID)
 
-        context.contentProviderClient!!.update(
+        context.contentProviderClient.update(
                 context.contentUri(CalendarContract.Events.CONTENT_URI),
                 values,
-                String.format("(%s = ?)", CalendarContract.Events._ID),
-                arrayOf(localEventId!!.toString()))
+                "(${CalendarContract.Events._ID} = ?)",
+                arrayOf(localEventId.toString()))
 
         val reminders = getLocalReminders(context, localEventId)/* minutes *//* reminder ID */
         val localReminderSet = reminders.keys
@@ -156,13 +146,15 @@ class FBEvent private constructor() {
         if (!toAdd.isEmpty()) {
             createReminders(context, localEventId, toAdd)
         }
-        for (reminder in toRemove) {
-            removeReminder(context, reminders[reminder])
+        toRemove.forEach {
+            val r: Long? = reminders[it]
+            if (r != null) {
+                removeReminder(context, r)
+            }
         }
     }
 
     companion object {
-
         @Throws(org.json.JSONException::class)
         fun parsePlace(event: JSONObject): String {
             val placeStr = ArrayList<String>()
@@ -174,12 +166,12 @@ class FBEvent private constructor() {
                 if (place.has("location")) {
                     val locationStr = ArrayList<String>()
                     val location = place.getJSONObject("location")
-                    val locs = arrayOf("street", "city", "zip", "country")
-                    for (loc in locs) {
-                        if (location.has(loc)) {
-                            locationStr.add(location.getString(loc))
+                    arrayOf("street", "city", "zip", "country").forEach {
+                        if (location.has(it)) {
+                            locationStr.add(location.getString(it))
                         }
                     }
+
                     if (locationStr.isEmpty()) {
                         if (location.has("longitude")) {
                             locationStr.add(location.getDouble("longitude").toString())
@@ -191,7 +183,8 @@ class FBEvent private constructor() {
                     placeStr.addAll(locationStr)
                 }
             }
-            return StringUtils.join(placeStr, ", ")
+
+            return placeStr.joinToString(", ")
         }
 
         @Throws(java.text.ParseException::class)
@@ -209,14 +202,15 @@ class FBEvent private constructor() {
             return date.time
         }
 
-        @Throws(org.json.JSONException::class, java.text.ParseException::class)
+        @Throws(org.json.JSONException::class,
+                java.text.ParseException::class)
         fun parse(event: org.json.JSONObject, context: SyncContext): FBEvent {
             val fbEvent = FBEvent()
             val values = fbEvent.values
 
             // FIXME: Right now we are abusing UID_2445 to store the Facebook ID - maybe there's a
             // better field for that (ideally an integer-based one)?
-            values!!.put(CalendarContract.Events.UID_2445, event.getString("id"))
+            values.put(CalendarContract.Events.UID_2445, event.getString("id"))
             if (event.has("owner")) {
                 values.put(CalendarContract.Events.ORGANIZER, event.getJSONObject("owner").getString("name"))
             }
@@ -226,8 +220,8 @@ class FBEvent private constructor() {
             }
             if (event.has("description")) {
                 var description = event.getString("description")
-                if (context.preferences!!.fbLink()) {
-                    description += "\n\nhttps://www.facebook.com/events/" + event.getString("id")
+                if (context.preferences.fbLink()) {
+                    description += "\n\nhttps://www.facebook.com/events/${event.getString("id")}"
                 }
                 values.put(CalendarContract.Events.DESCRIPTION, description)
             }
@@ -240,7 +234,7 @@ class FBEvent private constructor() {
                 // If there's no dt_end, assume 1 hour duration
                 values.put(CalendarContract.Events.DURATION, "P1H")
             }
-            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=" + event.getString("id"))
+            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=${event.getString("id")}")
 
             if (event.has("rsvp_status")) {
                 val status = event.getString("rsvp_status")
@@ -249,7 +243,8 @@ class FBEvent private constructor() {
                     "unsure" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_MAYBE
                     "declined" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_DECLINED
                     "not_replied" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_NOT_REPLIED
-                }//logger.warning("SYNC.EVENT", "Unknown RSVP status: %s", status);
+                    // else logger.warning("SYNC.EVENT", "Unknown RSVP status: %s", status);
+                }
             }
             return fbEvent
         }
@@ -266,7 +261,7 @@ class FBEvent private constructor() {
                 isBirthday = false
             }
 
-            values!!.put(CalendarContract.Events.UID_2445, uid)
+            values.put(CalendarContract.Events.UID_2445, uid)
             values.put(CalendarContract.Events.TITLE, vevent.summary.value)
             val organizer = vevent.organizer
             if (organizer != null) {
@@ -279,8 +274,8 @@ class FBEvent private constructor() {
             values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
 
             if (isBirthday) {
-                if (context.preferences!!.fbLink()) {
-                    values.put(CalendarContract.Events.DESCRIPTION, "https://www.facebook.com/" + id)
+                if (context.preferences.fbLink()) {
+                    values.put(CalendarContract.Events.DESCRIPTION, "https://www.facebook.com/$id")
                 } else {
                     values.put(CalendarContract.Events.DESCRIPTION, String())
                 }
@@ -299,12 +294,12 @@ class FBEvent private constructor() {
                 values.put(CalendarContract.Events.DURATION, "P1D")
 
                 fbEvent.rsvp = FBCalendar.CalendarType.TYPE_BIRTHDAY
-                values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://user?id=" + id)
+                values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://user?id=$id")
             } else {
                 val desc = vevent.description
                 if (desc != null) {
                     var descStr = desc.value
-                    if (!context.preferences!!.fbLink()) {
+                    if (!context.preferences.fbLink()) {
                         val pos = descStr.lastIndexOf('\n')
                         if (pos > -1) {
                             descStr = descStr.substring(0, pos)
@@ -330,18 +325,19 @@ class FBEvent private constructor() {
                     }
                 }
 
-                values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=" + id)
+                values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=$id")
             }
 
             return fbEvent
         }
 
-        @Throws(android.os.RemoteException::class, android.database.sqlite.SQLiteException::class)
-        fun remove(context: SyncContext, localEventId: Long?) {
-            context.contentProviderClient!!.delete(
+        @Throws(android.os.RemoteException::class,
+                android.database.sqlite.SQLiteException::class)
+        fun remove(context: SyncContext, localEventId: Long) {
+            context.contentProviderClient.delete(
                     context.contentUri(CalendarContract.Events.CONTENT_URI),
-                    String.format("(%s = ?)", CalendarContract.Events._ID),
-                    arrayOf(localEventId!!.toString()))
+                    "(${CalendarContract.Events._ID} = ?)",
+                    arrayOf(localEventId.toString()))
         }
     }
 }

@@ -24,31 +24,16 @@ import android.content.SyncResult
 import android.net.Uri
 import android.provider.CalendarContract
 
-class SyncContext(context: Context, account: Account, accessToken: String,
-                  providerClient: ContentProviderClient, syncResult: SyncResult, logger: Logger) {
-    val context: Context? = null
-    val account: Account? = null
-    val accessToken: String? = null
-    var contentProviderClient: ContentProviderClient? = null
-    val syncResult: SyncResult? = null
-    val logger: Logger? = null
-    var preferences: Preferences? = null
-
-    init {
-        this.context = context
-        this.account = account
-        this.accessToken = accessToken
-        contentProviderClient = providerClient
-        this.syncResult = syncResult
-        this.logger = logger
-        preferences = Preferences(context)
-    }
+class SyncContext(val context: Context, val account: Account, val accessToken: String,
+                  val contentProviderClient: ContentProviderClient, val syncResult: SyncResult,
+                  val logger: Logger) {
+    val preferences = Preferences(context)
 
     internal fun contentUri(provider: Uri): Uri {
         return provider.buildUpon()
                 .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account!!.name)
-                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, context!!.getString(R.string.account_type))
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
+                .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, context.getString(R.string.account_type))
                 .build()
     }
 }

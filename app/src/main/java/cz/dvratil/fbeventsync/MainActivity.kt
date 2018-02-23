@@ -17,11 +17,9 @@
 
 package cz.dvratil.fbeventsync
 
-import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Intent
-import android.content.SyncStatusObserver
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -36,16 +34,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val view = findViewById<TextView>(R.id.versionLabel)
-        view.setText(String.format(getString(R.string.main_version_label), BuildConfig.VERSION_NAME))
+        view.text = String.format(getString(R.string.main_version_label), BuildConfig.VERSION_NAME)
 
         checkAccounts()
 
-        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-        ) { runOnUiThread { checkSyncStatus() } }
+        ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE) {
+            runOnUiThread { checkSyncStatus() }
+        }
         checkSyncStatus()
     }
 
-    fun onAddAccountClicked(view: View) {
+    fun onAddAccountClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(Settings.ACTION_ADD_ACCOUNT)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             intent.putExtra(Settings.EXTRA_ACCOUNT_TYPES, arrayOf(getString(R.string.account_type)))
@@ -53,19 +52,19 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun onConfigureCalendarsClicked(view: View) {
+    fun onConfigureCalendarsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         openSettings(SettingsActivity.CONFIGURE_CALENDARS)
     }
 
-    fun onConfigureSyncClicked(view: View) {
+    fun onConfigureSyncClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         openSettings(SettingsActivity.CONFIGURE_SYNC_ACTION)
     }
 
-    fun onConfigureMiscClicked(view: View) {
+    fun onConfigureMiscClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         openSettings(SettingsActivity.CONFIGURE_MISC_ACTION)
     }
 
-    fun onSyncNowClicked(view: View) {
+    fun onSyncNowClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         CalendarSyncAdapter.requestSync(this)
     }
 
@@ -75,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun onShowLogsClicked(view: View) {
+    fun onShowLogsClicked(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, LogViewActivity::class.java)
         startActivity(intent)
     }
@@ -87,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAccounts() {
         val accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type))
-        if (accounts.size == 0) {
+        if (accounts.isEmpty()) {
             findViewById<View>(R.id.calendar_prefs_btn).visibility = View.GONE
             findViewById<View>(R.id.sync_prefs_btn).visibility = View.GONE
             findViewById<View>(R.id.misc_prefs_btn).visibility = View.GONE
@@ -105,13 +104,12 @@ class MainActivity : AppCompatActivity() {
     private fun checkSyncStatus() {
         val am = AccountManager.get(this)
         val accounts = am.getAccountsByType(getString(R.string.account_type))
-        var active: Boolean? = false
+        var active = false
         for (acc in accounts) {
             active = active or ContentResolver.isSyncActive(acc, CalendarContract.AUTHORITY)
         }
 
         findViewById<View>(R.id.sync_layout).visibility = if (active) View.VISIBLE else View.GONE
-        findViewById<View>(R.id.sync_now_btn).isEnabled = (!active)!!
+        findViewById<View>(R.id.sync_now_btn).isEnabled = (!active)
     }
-
 }

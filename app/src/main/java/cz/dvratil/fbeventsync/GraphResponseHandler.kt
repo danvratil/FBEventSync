@@ -26,48 +26,42 @@ import org.json.JSONObject
 import cz.msebera.android.httpclient.Header
 
 
-class GraphResponseHandler(context: Context) : JsonHttpResponseHandler() {
+class GraphResponseHandler(private var mContext: Context) : JsonHttpResponseHandler() {
 
-    private var mLogger: Logger? = null
-    private var mContext: Context? = null
+    private var mLogger=  Logger.getInstance(mContext)
 
     var response: JSONObject? = null
-        private set
-
-    init {
-        mContext = context
-        mLogger = Logger.getInstance(context)
-    }
 
     override fun onSuccess(statusCode: Int, headers: Array<Header>?, response: JSONObject?) {
-        if (response!!.has("error")) {
-            onFailure(statusCode, headers, null, response)
-        } else {
-            this.response = response
+        if (response != null) {
+            if (response.has("error")) {
+                onFailure(statusCode, headers, null, response)
+            } else {
+                this.response = response
+            }
         }
     }
 
     override fun onFailure(statusCode: Int, headers: Array<Header>?, throwable: Throwable?, errorResponse: JSONObject?) {
         if (errorResponse == null) {
-            mLogger!!.error(TAG, "Graph error: failure and empty response (code %d)", statusCode)
+            mLogger.error(TAG, "Graph error: failure and empty response (code %d)", statusCode)
             return
         }
         try {
             val err = errorResponse.getJSONObject("error")
             val errCode = err.getInt("code")
-            if (errCode == 190) {
-                requestTokenRefresh()
-                return
-            } else if (errorResponse.has("message")) {
-                mLogger!!.error(TAG, "Graph error:" + errorResponse.getString("message"))
-            } else {
-                mLogger!!.error(TAG, "Graph error:" + errorResponse.toString())
+            when {
+                errCode == 190 -> {
+                    requestTokenRefresh()
+                    return
+                }
+                errorResponse.has("message") -> mLogger.error(TAG, "Graph error:" + errorResponse.getString("message"))
+                else -> mLogger.error(TAG, "Graph error:" + errorResponse.toString())
             }
             response = errorResponse
         } catch (e: org.json.JSONException) {
-            mLogger!!.error(TAG, "JSONException: %s", e.message)
+            mLogger.error(TAG, "JSONException: %s", e.message)
         }
-
     }
 
     private fun requestTokenRefresh() {
@@ -75,7 +69,6 @@ class GraphResponseHandler(context: Context) : JsonHttpResponseHandler() {
     }
 
     companion object {
-
-        private val TAG = "GRAPH"
+        private const val TAG = "GRAPH"
     }
 }
