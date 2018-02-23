@@ -27,7 +27,7 @@ object PreferencesMigrator {
     @Synchronized
     fun migrate(context: Context) {
 
-        val prefs = context.getSharedPreferences(context.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS)
+        val prefs = context.getSharedPreferences(context.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE)
 
         val version = prefs.getInt(context.getString(R.string.cfg_prefs_version), 0)
         // Nothing to do
@@ -49,6 +49,7 @@ object PreferencesMigrator {
     // Version 1 introduced versioning and contains fix for default calendar color values
     private fun updateToVersion1(prefs: SharedPreferences, editor: SharedPreferences.Editor, context: Context) {
         val wrongColor = 3889560
+        @Suppress("DEPRECATION")
         val correctColor = context.resources.getColor(R.color.colorFBBlue)
 
         arrayOf(R.string.pref_calendar_attending_color,

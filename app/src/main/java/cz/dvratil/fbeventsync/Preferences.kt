@@ -27,7 +27,7 @@ class Preferences(private var mContext: Context) {
 
     private var mPrefs: SharedPreferences = mContext.getSharedPreferences(
             mContext.getString(R.string.cz_dvratil_fbeventsync_preferences),
-            Context.MODE_MULTI_PROCESS)
+            Context.MODE_PRIVATE)
 
     private fun getStringArray(id: Int): Set<String> {
         return HashSet(Arrays.asList(*mContext.resources.getStringArray(id)))
@@ -56,6 +56,7 @@ class Preferences(private var mContext: Context) {
     }
 
     internal fun attendingCalendarColor(): Int {
+        @Suppress("DEPRECATION")
         return mPrefs.getInt(mContext.getString(R.string.pref_calendar_attending_color),
                 mContext.resources.getColor(R.color.colorFBBlue))
     }
@@ -70,6 +71,7 @@ class Preferences(private var mContext: Context) {
     }
 
     internal fun maybeAttendingCalendarColor(): Int {
+        @Suppress("DEPRECATION")
         return mPrefs.getInt(mContext.getString(R.string.pref_calendar_tentative_color),
                 mContext.resources.getColor(R.color.colorFBBlue))
     }
@@ -84,6 +86,7 @@ class Preferences(private var mContext: Context) {
     }
 
     internal fun notRespondedCalendarColor(): Int {
+        @Suppress("DEPRECATION")
         return mPrefs.getInt(mContext.getString(R.string.pref_calendar_not_responded_color),
                 mContext.resources.getColor(R.color.colorFBBlue))
     }
@@ -98,6 +101,7 @@ class Preferences(private var mContext: Context) {
     }
 
     internal fun declinedCalendarColor(): Int {
+        @Suppress("DEPRECATION")
         return mPrefs.getInt(mContext.getString(R.string.pref_calendar_declined_color),
                 mContext.resources.getColor(R.color.colorFBBlue))
     }
@@ -112,6 +116,7 @@ class Preferences(private var mContext: Context) {
     }
 
     internal fun birthdayCalendarColor(): Int {
+        @Suppress("DEPRECATION")
         return mPrefs.getInt(mContext.getString(R.string.pref_calendar_birthday_color),
                 mContext.resources.getColor(R.color.colorFBBlue))
     }

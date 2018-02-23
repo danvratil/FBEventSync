@@ -67,7 +67,7 @@ class SettingsActivity : PreferenceActivity() {
 
         // API 21
         //String preferencesName = PreferenceManager.getDefaultSharedPreferencesName(this);
-        val prefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_MULTI_PROCESS)
+        val prefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE)
         prefs.registerOnSharedPreferenceChangeListener { _, key ->
             if (key == getString(R.string.pref_sync_frequency)) {
                 mShouldRescheduleSync = true
@@ -131,6 +131,7 @@ class SettingsActivity : PreferenceActivity() {
             @SuppressLint("InflateParams")
             val colorView = inflater.inflate(R.layout.color_dialog, null)
 
+            @Suppress("DEPRECATION")
             val color = PreferenceManager.getDefaultSharedPreferences(activity)
                     .getInt(key, resources.getColor(R.color.colorFBBlue))
             val lobsterPicker = colorView.findViewById<LobsterPicker>(R.id.colordialog_lobsterpicker)

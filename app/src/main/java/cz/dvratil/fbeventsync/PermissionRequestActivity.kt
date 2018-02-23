@@ -50,7 +50,6 @@ class PermissionRequestActivity : AppCompatActivity() {
 
     companion object {
         const val MISSING_PERMISSIONS = "cz.dvratil.fbeventsync.PermissionRequestActivity.MISSING_PERMISSIONS"
-        const val PERMISSION_NOTIFY = "cz.dvratil.fbeventsync.PermissionRequestActivity.PERMISSION_NOTIFY"
 
         private const val PERMISSION_REQUEST_ID = 0
 

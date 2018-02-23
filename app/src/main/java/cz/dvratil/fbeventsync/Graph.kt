@@ -31,7 +31,6 @@ object Graph {
 
     const val FIELDS_PARAM = "fields"
     const val LIMIT_PARAM = "limit"
-    const val TYPE_PARAM = "type"
     const val AFTER_PARAM = "after"
     const val ACCESS_TOKEN_PARAM = "access_token"
 

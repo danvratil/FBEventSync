@@ -32,9 +32,7 @@ import android.provider.CalendarContract
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
-import android.view.Window
 import android.webkit.JavascriptInterface
-import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
@@ -58,7 +56,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     private lateinit var mProgressLabel: TextView
     private lateinit var mLogger: Logger
 
-    protected fun onBirthdayLinkExtracted(s: String) {
+    private fun onBirthdayLinkExtracted(s: String) {
         mLogger.debug("AUTH", "Found iCal URL")
 
         if (!s.startsWith("\"webcal")) {
@@ -77,7 +75,6 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
-        window.requestFeature(Window.FEATURE_PROGRESS)
         setContentView(R.layout.activity_authenticator)
 
         val activity = this
@@ -87,18 +84,14 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         mProgressLabel = findViewById(R.id.authProgressString)
         mWebView = findViewById(R.id.webview)
         mWebView.settings.javaScriptEnabled = true
-        mWebView.webChromeClient = object : WebChromeClient() {
-            override fun onProgressChanged(view: WebView, newProgress: Int) {
-                activity.setProgress(newProgress)
-            }
-        }
 
         mAccountManager = AccountManager.get(baseContext)
 
         mWebView.webViewClient = object : WebViewClient() {
 
-            override// Deprecated in API level 23
-            fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
+            // Deprecated in API level 23
+            @Suppress("OverridingDeprecatedMember")
+            override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
                 Toast.makeText(activity, "Authentication error: " + description, Toast.LENGTH_LONG)
                         .show()
             }
@@ -130,6 +123,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                     mLogger.debug("AUTH", "Reached /events/ page, extracting iCal link")
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                         class JSObject {
+                            @Suppress("unused")
                             @JavascriptInterface
                             fun linkExtracted(s: String) {
                                 onBirthdayLinkExtracted(s)

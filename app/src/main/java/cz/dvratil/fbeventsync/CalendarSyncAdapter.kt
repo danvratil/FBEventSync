@@ -189,6 +189,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         logger.info(TAG, "Sync for %s done", account.name)
     }
 
+    @Suppress("unused")
     private fun syncEventsViaGraph(calendars: FBCalendar.Set) {
         val syncContext = mSyncContext ?: return
         var cursor: String? = null
@@ -491,11 +492,15 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 // Schedule periodic sync based on current configuration
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     // we can enable inexact timers in our periodic sync
-                    val request = SyncRequest.Builder()
-                            .syncPeriodic(syncInterval.toLong(), (syncInterval / 3).toLong())
-                            .setSyncAdapter(account, CalendarContract.AUTHORITY)
-                            .setExtras(Bundle()).build()
-                    ContentResolver.requestSync(request)
+                    val request = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        SyncRequest.Builder()
+                                .syncPeriodic(syncInterval.toLong(), (syncInterval / 3).toLong())
+                                .setSyncAdapter(account, CalendarContract.AUTHORITY)
+                                .setExtras(Bundle()).build()
+                    } else {
+                        null
+                    }
+                    ContentResolver.requestSync(request!!)
                     logger.info(TAG, "Scheduled periodic sync for account %s using requestSync, interval: %d",
                             account.name, syncInterval)
                 } else {

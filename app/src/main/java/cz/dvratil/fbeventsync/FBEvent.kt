@@ -70,6 +70,7 @@ class FBEvent private constructor() {
         return -1
     }
 
+    @SuppressLint("UseSparseArrays")
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
     private fun getLocalReminders(context: SyncContext, localEventId: Long): HashMap<Int, Long>/* minutes *//* reminder ID */ {
@@ -78,7 +79,6 @@ class FBEvent private constructor() {
                 arrayOf(CalendarContract.Reminders._ID, CalendarContract.Reminders.MINUTES),
                 "(${CalendarContract.Reminders.EVENT_ID} = ?)",
                 arrayOf(localEventId.toString()), null)
-        @Suppress("UseSparseArrays")
         val localReminders = HashMap<Int /* minutes */, Long /* reminder ID */>()
         if (cur != null) {
             while (cur.moveToNext()) {
@@ -285,6 +285,7 @@ class FBEvent private constructor() {
                 // the listing the day after it they pass. Many users dislike that (and I understand why)
                 // so we hack around by always setting the year as current year - 1 and setting yearly
                 // recurrence so that they don't disappear from the calendar
+                @Suppress("DEPRECATION")
                 calendar.set(calendar.get(Calendar.YEAR) - 1, date.month, date.date, 0, 0, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
                 values.put(CalendarContract.Events.DTSTART, calendar.timeInMillis)
