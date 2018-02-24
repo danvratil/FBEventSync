@@ -84,6 +84,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
 
     class Set : HashMap<CalendarType, FBCalendar>() {
         fun initialize(ctx: SyncContext) {
+            clear()
             put(CalendarType.TYPE_ATTENDING, FBCalendar(ctx, CalendarType.TYPE_ATTENDING))
             put(CalendarType.TYPE_MAYBE, FBCalendar(ctx, CalendarType.TYPE_MAYBE))
             put(CalendarType.TYPE_DECLINED, FBCalendar(ctx, CalendarType.TYPE_DECLINED))
@@ -92,13 +93,6 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
         }
 
         fun getCalendarForEvent(event: FBEvent) = get(event.rsvp)
-
-        fun release() {
-            for (calendar in values) {
-                calendar.finalizeSync()
-            }
-            clear()
-        }
     }
 
     @Throws(android.os.RemoteException::class,

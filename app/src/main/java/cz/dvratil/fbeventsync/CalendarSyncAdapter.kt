@@ -169,20 +169,24 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             prefs.setLastVersion(BuildConfig.VERSION_CODE)
 
             // We have to re-initialize calendars now so that they get re-created
-            calendars.release()
             calendars.initialize(syncContext)
         }
 
         // Sync via iCal only - not avoiding Graph calls, but it gives us access to private group
         // events which are otherwise missing from Graph
-        syncEventsViaICal(calendars)
-        //syncEventsViaGraph(calendars);
-
-        if (calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]?.isEnabled == true) {
-            syncBirthdayCalendar(calendars)
+        if (syncEventsViaICal(calendars)) {
+            calendars.forEach {
+                if (it.value.type() != FBCalendar.CalendarType.TYPE_BIRTHDAY) {
+                    it.value.finalizeSync()
+                }
+            }
         }
 
-        calendars.release()
+        if (calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]?.isEnabled == true) {
+            if (syncBirthdayCalendar(calendars)) {
+                calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]!!.finalizeSync()
+            }
+        }
 
         mSyncContext = null
 
@@ -330,21 +334,22 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
     }
 
-    private fun syncEventsViaICal(calendars: FBCalendar.Set) {
-        val uri = getICalSyncURI(ICalURIType.EVENTS) ?: return
+    private fun syncEventsViaICal(calendars: FBCalendar.Set): Boolean {
+        val uri = getICalSyncURI(ICalURIType.EVENTS) ?: return false
 
         logger.debug(TAG, "Syncing event iCal from %s", sanitizeICalUri(uri))
-        syncICalCalendar(calendars, uri.toString())
+        return syncICalCalendar(calendars, uri.toString())
     }
 
-    private fun syncBirthdayCalendar(calendars: FBCalendar.Set) {
-        val uri = getICalSyncURI(ICalURIType.BIRTHDAYS) ?: return
+    private fun syncBirthdayCalendar(calendars: FBCalendar.Set): Boolean {
+        val uri = getICalSyncURI(ICalURIType.BIRTHDAYS) ?: return false
 
         logger.debug(TAG, "Syncing birthday iCal from %s", sanitizeICalUri(uri))
-        syncICalCalendar(calendars, uri.toString())
+        return syncICalCalendar(calendars, uri.toString())
     }
 
-    private fun syncICalCalendar(calendars: FBCalendar.Set, uri: String) {
+    private fun syncICalCalendar(calendars: FBCalendar.Set, uri: String): Boolean {
+        var success = false
         Graph.fetchBirthdayICal(uri, object : DataAsyncHttpResponseHandler() {
             override fun onSuccess(statusCode: Int, headers: Array<Header>, responseBody: ByteArray?) {
                 val syncContext = mSyncContext ?: return
@@ -363,6 +368,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                     }
                 }
                 logger.debug(TAG, "iCal sync done")
+                success = true
             }
 
             override fun onFailure(statusCode: Int, headers: Array<Header>?, responseBody: ByteArray?, error: Throwable?) {
@@ -383,6 +389,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 // silence debug output
             }
         })
+
+        return success
     }
 
     private fun removeOldBirthdayCalendar(context: SyncContext) {

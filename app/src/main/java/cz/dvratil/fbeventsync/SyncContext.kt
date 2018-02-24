@@ -24,8 +24,11 @@ import android.content.SyncResult
 import android.net.Uri
 import android.provider.CalendarContract
 
-class SyncContext(val context: Context, val account: Account, val accessToken: String,
-                  val contentProviderClient: ContentProviderClient, val syncResult: SyncResult,
+class SyncContext(val context: Context,
+                  val account: Account,
+                  val accessToken: String,
+                  val contentProviderClient: ContentProviderClient,
+                  val syncResult: SyncResult,
                   val logger: Logger) {
     val preferences = Preferences(context)
 
