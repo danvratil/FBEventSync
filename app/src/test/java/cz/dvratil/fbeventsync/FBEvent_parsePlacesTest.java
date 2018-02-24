@@ -33,7 +33,7 @@ public class FBEvent_parsePlacesTest {
     @ExternalFileDataProvider.ExternalFile(fileName = "fbeventtest_places.xml")
     public void test(String name, String input, String expectedOutput) throws Exception {
         JSONObject place = new JSONObject(input);
-        String output = FBEvent.parsePlace(place);
+        String output = FBEvent.Companion.parsePlace(place);
         Assert.assertEquals(expectedOutput, output);
     }
 }

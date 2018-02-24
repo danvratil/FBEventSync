@@ -31,7 +31,7 @@ public class FBEvent_parseDateTimeTest {
     @UseDataProvider(value = "load", location = ExternalFileDataProvider.class)
     @ExternalFileDataProvider.ExternalFile(fileName = "fbeventtest_datetime.xml")
     public void test(String name, String input, String expectedOutput) throws Exception {
-        Assert.assertEquals(Long.parseLong(expectedOutput), FBEvent.parseDateTime(input));
+        Assert.assertEquals(Long.parseLong(expectedOutput), FBEvent.Companion.parseDateTime(input));
     }
 }
 

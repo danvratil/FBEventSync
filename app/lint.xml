@@ -6,6 +6,10 @@
 
     <issue id="GoogleAppIndexingWarning" severity="ignore"/>
 
+    <!-- With Kotlin, these checks are currently broken //-->
+    <issue id="OnClick" severity="ignore"/>
+    <issue id="UnusedResources" severity="ignore"/>
+
     <issue id="MissingTranslation" severity="informational"/>
     <issue id="ExtraTranslation" severity="informational"/>
 
