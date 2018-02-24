@@ -33,12 +33,10 @@ class GraphResponseHandler(private var mContext: Context) : JsonHttpResponseHand
     var response: JSONObject? = null
 
     override fun onSuccess(statusCode: Int, headers: Array<Header>?, response: JSONObject?) {
-        if (response != null) {
-            if (response.has("error")) {
-                onFailure(statusCode, headers, null, response)
-            } else {
-                this.response = response
-            }
+        if (response?.has("error") == true) {
+            onFailure(statusCode, headers, null, response)
+        } else {
+            this.response = response
         }
     }
 

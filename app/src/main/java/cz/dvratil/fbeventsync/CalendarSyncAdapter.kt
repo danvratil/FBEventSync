@@ -116,8 +116,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             }
         }
 
-        val ctx = context
-        val mgr = AccountManager.get(ctx)
+        val mgr = AccountManager.get(context)
         val accessToken: String?
         try {
             val result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, false, null, null).result
@@ -151,19 +150,19 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         if (prefs.lastVersion() != BuildConfig.VERSION_CODE) {
             logger.info(TAG, "New version detected: deleting all calendars")
             removeOldBirthdayCalendar(syncContext)
-            calendars.values.forEach {
-                try {
+            try {
+                calendars.values.forEach {
                     it.deleteLocalCalendar()
-                } catch (e: android.os.RemoteException) {
-                    // FIXME: Handle exceptions
-                    logger.error(TAG, "Failed to cleanup calendars: %s", e.message)
-                    syncResult.stats.numIoExceptions++
-                    return
-                } catch (e: android.database.sqlite.SQLiteException) {
-                    logger.error(TAG, "Failed to cleanup calendars: %s", e.message)
-                    syncResult.stats.numIoExceptions++
-                    return
                 }
+            } catch (e: android.os.RemoteException) {
+                // FIXME: Handle exceptions
+                logger.error(TAG, "Failed to cleanup calendars: %s", e.message)
+                syncResult.stats.numIoExceptions++
+                return
+            } catch (e: android.database.sqlite.SQLiteException) {
+                logger.error(TAG, "Failed to cleanup calendars: %s", e.message)
+                syncResult.stats.numIoExceptions++
+                return
             }
             prefs.setLastVersion(BuildConfig.VERSION_CODE)
 
@@ -358,8 +357,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 }
 
                 val cal = Biweekly.parse(String(responseBody)).first()
-                for (vevent in cal.events) {
-                    val event = FBEvent.parse(vevent, syncContext)
+                cal.events.forEach {
+                    val event = FBEvent.parse(it, syncContext)
                     val calendar = calendars.getCalendarForEvent(event) ?: return
                     if (calendar.isEnabled) {
                         event.setCalendar(calendar)
@@ -374,10 +373,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 val err = if (responseBody == null) "Unknown error" else String(responseBody)
                 logger.error(TAG, "Error retrieving iCal file: %d, %s", statusCode, err)
                 logger.error(TAG, "URI: %s", uri)
-                if (headers != null) {
-                    for (header in headers) {
-                        logger.error(TAG, "    %s: %s", header.name, header.value)
-                    }
+                headers?.forEach {
+                    logger.error(TAG, "    %s: %s", it.name, it.value)
                 }
                 if (error != null) {
                     logger.error(TAG, "Throwable: %s", error.toString())

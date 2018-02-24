@@ -39,9 +39,7 @@ class FBBirthdayCalendar(context: SyncContext) : FBCalendar(context, FBCalendar.
         // we synced from mPastLocalIds we are left with events that we did not receive in this sync
         // run - such events represent birthdays of friends who have been unfriended since the last
         // sync and we want those removed.
-        for (syncedEvent in mSyncedEvents) {
-            mPastLocalIds.remove(syncedEvent)
-        }
+        mSyncedEvents.forEach { mPastLocalIds.remove(it) }
         for (eventId in mPastLocalIds.values) {
             try {
                 FBEvent.remove(mContext, eventId)
