@@ -54,6 +54,5 @@ class PermissionRequestActivity : AppCompatActivity() {
         private const val PERMISSION_REQUEST_ID = 0
 
         private const val TAG = "PERMS"
-        private const val test: String = "XYZ"
     }
 }
