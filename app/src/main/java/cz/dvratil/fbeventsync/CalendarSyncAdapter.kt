@@ -146,14 +146,14 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         val syncContext = SyncContext(context, account, accessToken, provider, syncResult, logger)
         mSyncContext = syncContext
 
-        removeOldBirthdayCalendar(syncContext)
         val calendars = FBCalendar.Set()
         calendars.initialize(syncContext)
         if (prefs.lastVersion() != BuildConfig.VERSION_CODE) {
             logger.info(TAG, "New version detected: deleting all calendars")
-            for (cal in calendars.values) {
+            removeOldBirthdayCalendar(syncContext)
+            calendars.values.forEach {
                 try {
-                    cal.deleteLocalCalendar()
+                    it.deleteLocalCalendar()
                 } catch (e: android.os.RemoteException) {
                     // FIXME: Handle exceptions
                     logger.error(TAG, "Failed to cleanup calendars: %s", e.message)
@@ -164,7 +164,6 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                     syncResult.stats.numIoExceptions++
                     return
                 }
-
             }
             prefs.setLastVersion(BuildConfig.VERSION_CODE)
 
