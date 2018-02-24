@@ -176,12 +176,12 @@ class SettingsActivity : PreferenceActivity() {
                     }
                     ev = parser.next()
                 }
-            } catch (e: org.xmlpull.v1.XmlPullParserException) {
-                e.printStackTrace()
-                Log.e("PREFS", "Language XML parsing exception: " + e.message)
-            } catch (e: java.io.IOException) {
-                e.printStackTrace()
-                Log.e("PREFS", "Language XML IO exception:" + e.message)
+            } catch (e: Exception) {
+                when (e) {
+                    is org.xmlpull.v1.XmlPullParserException,
+                    is java.io.IOException -> Logger.getInstance(activity).error(TAG, "SyncPreferenceFragment: $e")
+                    else -> Logger.getInstance(activity).error(TAG, "SyncPreferenceFragment: unhandled $e")
+                }
             }
 
             pref.entries = entries.toTypedArray<CharSequence>()
@@ -197,6 +197,7 @@ class SettingsActivity : PreferenceActivity() {
     }
 
     companion object {
+        private const val TAG = "PREFS"
         const val CONFIGURE_CALENDARS = "cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS"
         const val CONFIGURE_SYNC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC"
         const val CONFIGURE_MISC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC"

@@ -114,11 +114,11 @@ class LogViewActivity : AppCompatActivity() {
                     line = buffer.readLine()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception when reading log: " + e.message)
+                Log.e(TAG, "loadLogFile read: $e")
             }
 
         } catch (e: Exception) {
-            Log.e(TAG, "Exception when opening log: " + e.message)
+            Log.e(TAG, "loadLogFile open: $e")
         }
 
         mTextView.text = builder.toString()

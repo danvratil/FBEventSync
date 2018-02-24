@@ -60,7 +60,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
                 try {
                     rv.add(Integer.parseInt(reminder))
                 } catch (e: java.lang.NumberFormatException) {
-                    mContext.logger.error(TAG, "NumberFormatException when loading reminders. Value was '%s': %s", reminder, e.message)
+                    mContext.logger.error(TAG, "reminderIntervals: $e. (value was '$reminder')")
                 }
             }
             return rv
@@ -231,14 +231,17 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
                     mLocalCalendarId = -1L
                 }
             }
-        } catch (e: android.os.RemoteException) {
-            mContext.logger.error(TAG, "Remote exception on creation: %s", e.message)
-        } catch (e: android.database.sqlite.SQLiteException) {
-            mContext.logger.error(TAG, "SQL exception on creation: %s", e.message)
-        } catch (e: NumberFormatException) {
-            mContext.logger.error(TAG, "Number exception on creation: %s", e.message)
+        } catch (e: Exception) {
+            when (e) {
+                is android.os.RemoteException,
+                is android.database.sqlite.SQLiteException,
+                is NumberFormatException -> mContext.logger.error(TAG, "init: $e")
+                else -> {
+                    mContext.logger.error(TAG, "init: unhandled $e")
+                    throw e
+                }
+            }
         }
-
     }
 
     fun id() = mType.id()
@@ -297,14 +300,16 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
                 event.update(mContext, localId)
                 mSyncStats.modified += 1
             }
-        } catch (e: android.os.RemoteException) {
-            mContext.logger.error(TAG, "Remote exception during FBCalendar sync: %s", e.message)
-            // continue with remaining events
-        } catch (e: android.database.sqlite.SQLiteException) {
-            mContext.logger.error(TAG, "SQL exception during FBCalendar sync: %s", e.message)
-            // continue with remaining events
+        } catch (e: Exception) {
+            when (e) {
+                is android.os.RemoteException,
+                is android.database.sqlite.SQLiteException -> mContext.logger.error(TAG, "doSyncEvent: $e")
+                else -> {
+                    mContext.logger.error(TAG, "doSyncEvent: unhandled $e")
+                    throw e
+                }
+            }
         }
-
         mFutureLocalIds.remove(event.eventId())
     }
 
@@ -320,22 +325,24 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
             try {
                 FBEvent.remove(mContext, localId)
                 mSyncStats.removed += 1
-            } catch (e: android.os.RemoteException) {
-                log.error(TAG, "Remote exception during FBCalendar finalizeSync: %s", e.message)
-                // continue with remaining events
-            } catch (e: android.database.sqlite.SQLiteException) {
-                log.error(TAG, "SQL exception during FBCalendar finalizeSync: %s", e.message)
-                // continue with remaining events
+            } catch (e: Exception) {
+                when (e) {
+                    is android.os.RemoteException,
+                    is android.database.sqlite.SQLiteException -> log.error(TAG, "finalizeSync: $e")
+                    else -> {
+                        log.error(TAG,"finalizeSync: unhandled $e")
+                        throw e
+                    }
+                }
             }
-
         }
         mFutureLocalIds.clear()
         mPastLocalIds.clear()
 
-        log.info(TAG, "Sync stats for %s", name())
-        log.info(TAG, "    Events added: %d", mSyncStats.added)
-        log.info(TAG, "    Events modified: %d", mSyncStats.modified)
-        log.info(TAG, "    Events removed: %d", mSyncStats.removed)
+        log.info(TAG, "Sync stats for ${name()}")
+        log.info(TAG, "    Events added: ${mSyncStats.added}")
+        log.info(TAG, "    Events modified: ${mSyncStats.modified}")
+        log.info(TAG, "    Events removed: ${mSyncStats.removed}")
     }
 
     companion object {

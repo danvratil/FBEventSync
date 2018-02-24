@@ -243,7 +243,7 @@ class FBEvent private constructor() {
                     "unsure" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_MAYBE
                     "declined" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_DECLINED
                     "not_replied" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_NOT_REPLIED
-                    else -> context.logger.warning("SYNC.EVENT", "Unknown RSVP status: %s", status)
+                    else -> context.logger.warning("SYNC.EVENT", "Unknown RSVP status '$status'")
                 }
             }
             return fbEvent
@@ -323,7 +323,7 @@ class FBEvent private constructor() {
                         "TENTATIVE" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_MAYBE
                         "DECLINED" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_DECLINED
                         "NEEDS-ACTION" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_NOT_REPLIED
-                        else -> context.logger.warning("SYNC.EVENT", "Unknown RSVP status: %s", prop.value)
+                        else -> context.logger.warning("SYNC.EVENT", "Unknown RSVP status '${prop.value}'")
                     }
                 }
 

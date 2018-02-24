@@ -63,7 +63,7 @@ class Logger private constructor() {
 
                 mLogWriter = FileWriter(mLogFile, true)
             } catch (e: IOException) {
-                Log.e(TAG, "IOException when truncating log file: " + e.message)
+                Log.e(TAG, "clearLogs: $e")
             }
         }
     }
@@ -93,7 +93,7 @@ class Logger private constructor() {
                 mLogFile = logFile
                 mLogWriter = FileWriter(logFile, true)
             } catch (e: IOException) {
-                Log.e(TAG, "IOException when shrinking log file:" + e.message)
+                Log.e(TAG, "truncateLogs: $e")
             }
         }
     }
@@ -117,7 +117,7 @@ class Logger private constructor() {
                 mLogWriter = FileWriter(logFile, true)
                 mLogFile = logFile
             } catch (e: IOException) {
-                Log.e(TAG, "Failed to open log: " + e.message)
+                Log.e(TAG, "Failed to open log: $e")
                 mLogWriter = null
                 mLogFile = null
             }
@@ -126,25 +126,24 @@ class Logger private constructor() {
         }
     }
 
-    fun debug(tag: String, msg: String, vararg args: Any?) {
-        doLog(LogLevel.DEBUG, tag, msg, *args)
+    fun debug(tag: String, msg: String) {
+        doLog(LogLevel.DEBUG, tag, msg)
     }
 
-    fun info(tag: String, msg: String, vararg args: Any?) {
-        doLog(LogLevel.INFO, tag, msg, *args)
+    fun info(tag: String, msg: String) {
+        doLog(LogLevel.INFO, tag, msg)
     }
 
-    fun warning(tag: String, msg: String, vararg args: Any?) {
-        doLog(LogLevel.WARNING, tag, msg, *args)
+    fun warning(tag: String, msg: String) {
+        doLog(LogLevel.WARNING, tag, msg)
     }
 
-    fun error(tag: String, msg: String, vararg args: Any?) {
-        doLog(LogLevel.ERROR, tag, msg, *args)
+    fun error(tag: String, msg: String) {
+        doLog(LogLevel.ERROR, tag, msg)
     }
 
-    private fun doLog(level: LogLevel, tag: String, msg: String, vararg args: Any?) {
-        val formattedMsg = String.format(msg, *args)
-        val logMsg = "${mDateFormat.format(Date())} $level/$tag: $formattedMsg"
+    private fun doLog(level: LogLevel, tag: String, msg: String) {
+        val logMsg = "${mDateFormat.format(Date())} $level/$tag: $msg\n"
         synchronized(this) {
             val writer = mLogWriter ?: return
             val logFile = mLogFile ?: return
@@ -152,7 +151,7 @@ class Logger private constructor() {
                 writer.write(logMsg)
                 writer.flush()
             } catch (e: IOException) {
-                Log.e(TAG, "Log IOException: " + e.message)
+                Log.e(TAG, "doLog: $e")
             }
 
             if (logFile.length() >= MAX_LOG_SIZE) {
@@ -160,7 +159,7 @@ class Logger private constructor() {
             }
 
             if (level.toInt() >= mMinLogCatLvl.toInt()) {
-                Log.println(level.toInt(), tag, formattedMsg)
+                Log.println(level.toInt(), tag, msg)
             }
         }
     }

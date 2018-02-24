@@ -42,7 +42,7 @@ class GraphResponseHandler(private var mContext: Context) : JsonHttpResponseHand
 
     override fun onFailure(statusCode: Int, headers: Array<Header>?, throwable: Throwable?, errorResponse: JSONObject?) {
         if (errorResponse == null) {
-            mLogger.error(TAG, "Graph error: failure and empty response (code %d)", statusCode)
+            mLogger.error(TAG, "Graph error: failure and empty response (code $statusCode)")
             return
         }
         try {
@@ -53,12 +53,12 @@ class GraphResponseHandler(private var mContext: Context) : JsonHttpResponseHand
                     requestTokenRefresh()
                     return
                 }
-                errorResponse.has("message") -> mLogger.error(TAG, "Graph error:" + errorResponse.getString("message"))
-                else -> mLogger.error(TAG, "Graph error:" + errorResponse.toString())
+                errorResponse.has("message") -> mLogger.error(TAG, "Graph error: ${errorResponse.getString("message")}")
+                else -> mLogger.error(TAG, "Graph error: ${errorResponse}")
             }
             response = errorResponse
         } catch (e: org.json.JSONException) {
-            mLogger.error(TAG, "JSONException: %s", e.message)
+            mLogger.error(TAG, "onFailure: $e")
         }
     }
 

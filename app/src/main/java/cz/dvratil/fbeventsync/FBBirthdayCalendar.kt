@@ -44,14 +44,16 @@ class FBBirthdayCalendar(context: SyncContext) : FBCalendar(context, FBCalendar.
             try {
                 FBEvent.remove(mContext, eventId)
                 mSyncStats.removed += 1
-            } catch (e: android.os.RemoteException) {
-                mContext.logger.error(TAG, "Remote exception during FBCalendar finalizeSync: %s", e.message)
-                // continue with remaining events
-            } catch (e: android.database.sqlite.SQLiteException) {
-                mContext.logger.error(TAG, "SQL exception during FBCalendar fynalize sync: %s", e.message)
-                // continue with remaining events
+            } catch (e: Exception) {
+                when (e) {
+                    is android.os.RemoteException,
+                    is android.database.sqlite.SQLiteException -> mContext.logger.error(TAG, "FBCalendar.finalizeSync: $e")
+                    else -> {
+                        mContext.logger.error(TAG, "FBCalendar.finalizeSync: unhandled $e")
+                        throw e
+                    }
+                }
             }
-
         }
 
         super.finalizeSync()

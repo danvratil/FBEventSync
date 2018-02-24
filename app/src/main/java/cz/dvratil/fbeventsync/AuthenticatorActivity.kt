@@ -60,7 +60,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         mLogger.debug("AUTH", "Found iCal URL")
 
         if (!s.startsWith("\"webcal")) {
-            mLogger.debug("AUTH", "Failed to find iCal, debug: %s", s)
+            mLogger.debug("AUTH", "Failed to find iCal, debug: $s")
             Toast.makeText(this, "Authentication error: failed to retrieve birthday calendar", Toast.LENGTH_LONG)
                     .show()
             finish()
@@ -92,7 +92,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             // Deprecated in API level 23
             @Suppress("OverridingDeprecatedMember")
             override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
-                Toast.makeText(activity, "Authentication error: " + description, Toast.LENGTH_LONG)
+                Toast.makeText(activity, "Authentication error: $description", Toast.LENGTH_LONG)
                         .show()
             }
 
@@ -113,7 +113,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                     mProgressLabel.visibility = View.VISIBLE
                     mProgressLabel.text = getString(R.string.auth_progress_retrieving_calendars)
 
-                    mAccessToken = Uri.parse("http://localhost/?" + uri.fragment).getQueryParameter("access_token")
+                    mAccessToken = Uri.parse("http://localhost/?${uri.fragment}").getQueryParameter("access_token")
 
                     // Use a desktop user-agent to make sure we get a desktop version - otherwise we
                     // won't be able to get to the birthday link
@@ -198,7 +198,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                         val accountName = response.getString("name")
                         createAccount(accessToken, accountName)
                     } catch (e: org.json.JSONException) {
-                        mLogger.error("AUTH", "JSON exception: %s", e.message)
+                        mLogger.error("AUTH", "JSON exception: ${e.message}")
                         Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast),
                                 Toast.LENGTH_SHORT)
                                 .show()
@@ -230,7 +230,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                         // pass
                     }
 
-                    mLogger.error("AUTH", "FetchUserInfo failure: %s", errorResponse.toString())
+                    mLogger.error("AUTH", "FetchUserInfo failure: $errorResponse")
                 } else {
                     mLogger.error("AUTH", "FetchUserInfo failure: unknown error")
                 }
@@ -242,7 +242,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     }
 
     private fun createAccount(accessToken: String, accountName: String) {
-        mLogger.debug("AUTH", "Creating account %s", accountName)
+        mLogger.debug("AUTH", "Creating account $accountName")
         val intent = intent
         val account = Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
         if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
@@ -256,7 +256,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         val key = icalUri.getQueryParameter("key")
         val uid = icalUri.getQueryParameter("uid")
         if (key == null || key.isEmpty() || uid == null || uid.isEmpty()) {
-            mLogger.error("AUTH", "Failed to retrieve iCal URL! The raw URL was " + mBDayCalendar)
+            mLogger.error("AUTH", "Failed to retrieve iCal URL! The raw URL was \"$mBDayCalendar\"")
             Toast.makeText(this, getString(R.string.auth_calendar_uri_error_toast), Toast.LENGTH_SHORT)
                     .show()
             finish()
