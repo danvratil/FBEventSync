@@ -35,8 +35,8 @@ android {
         applicationId "cz.dvratil.fbeventsync"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 24
-        versionName "0.21"
+        versionCode 25
+        versionName "0.22"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
