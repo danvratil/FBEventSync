@@ -113,12 +113,11 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
         // TODO: Figure out how to get local timezone
         //values.put(CalendarContract.Calendars.CALENDAR_TIMEZONE, tz);
         values.put(CalendarContract.Calendars.ALLOWED_REMINDERS,
-                String.format(Locale.US, "%d,%d", CalendarContract.Reminders.METHOD_DEFAULT,
-                        CalendarContract.Reminders.METHOD_ALERT))
+                "${CalendarContract.Reminders.METHOD_DEFAULT},${CalendarContract.Reminders.METHOD_ALERT}")
         values.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-                String.format(Locale.US, "%d,%d,%d", CalendarContract.Events.AVAILABILITY_BUSY,
-                        CalendarContract.Events.AVAILABILITY_FREE,
-                        CalendarContract.Events.AVAILABILITY_TENTATIVE))
+                "${CalendarContract.Events.AVAILABILITY_BUSY}," +
+                        "${CalendarContract.Events.AVAILABILITY_FREE}," +
+                        "${CalendarContract.Events.AVAILABILITY_TENTATIVE}")
         values.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
                 CalendarContract.Attendees.TYPE_NONE.toString())
         // +2 allows for up to 2 custom reminders set by the user
