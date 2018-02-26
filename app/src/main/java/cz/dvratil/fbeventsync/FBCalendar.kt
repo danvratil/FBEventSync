@@ -122,7 +122,6 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
 
         val calUri = mContext.contentProviderClient.insert(
                 mContext.contentUri(CalendarContract.Calendars.CONTENT_URI), values)
-
         return calUri?.lastPathSegment?.toLong() ?: -1
     }
 
@@ -149,13 +148,9 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
                          "(${CalendarContract.Calendars.OWNER_ACCOUNT} = ?) AND " +
                          "(${CalendarContract.Calendars.NAME} = ?))",
                 arrayOf(mContext.account.name, mContext.context.getString(R.string.account_type), mContext.account.name, mType.id()), null)
-        var result = -1L
-        if (cur != null) {
-            if (cur.moveToNext()) {
-                result = cur.getLong(0)
-            }
-            cur.close()
-        }
+
+        var result = if (cur?.moveToNext() == true) cur.getLong(0) else -1L
+        cur?.close()
         return result
     }
 
@@ -187,17 +182,15 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
     private fun fetchLocalEvents(selectorQuery: String, selectorValues: Array<String>): HashMap<String /* FBID */, Long>/* local ID */ {
-        val localIds = HashMap<String, Long>()
         val cur = mContext.contentProviderClient.query(
                 mContext.contentUri(CalendarContract.Events.CONTENT_URI),
                 arrayOf(CalendarContract.Events.UID_2445, CalendarContract.Events._ID),
                 selectorQuery, selectorValues, null)
-        if (cur != null) {
-            while (cur.moveToNext()) {
-                localIds[cur.getString(0)] = cur.getLong(1)
-            }
-            cur.close()
+        val localIds = HashMap<String, Long>()
+        while (cur?.moveToNext() == true) {
+            localIds[cur.getString(0)] = cur.getLong(1)
         }
+        cur?.close()
         return localIds
     }
 
@@ -284,10 +277,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
     }
 
     protected open fun doSyncEvent(event: FBEvent) {
-        var localId: Long? = mFutureLocalIds[event.eventId()]
-        if (localId == null) {
-            localId = mPastLocalIds[event.eventId()]
-        }
+        var localId: Long? = mFutureLocalIds[event.eventId()] ?: mPastLocalIds[event.eventId()]
         try {
             if (localId == null) {
                 event.create(mContext)

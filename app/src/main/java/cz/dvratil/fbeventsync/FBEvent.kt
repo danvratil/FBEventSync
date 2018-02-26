@@ -77,13 +77,10 @@ class FBEvent private constructor() {
                 "(${CalendarContract.Reminders.EVENT_ID} = ?)",
                 arrayOf(localEventId.toString()), null)
         val localReminders = HashMap<Int /* minutes */, Long /* reminder ID */>()
-        if (cur != null) {
-            while (cur.moveToNext()) {
-                localReminders[cur.getInt(1)] = cur.getLong(0)
-            }
-            cur.close()
+        while (cur?.moveToNext() == true) {
+            localReminders[cur.getInt(1)] = cur.getLong(0)
         }
-
+        cur?.close()
         return localReminders
     }
 
