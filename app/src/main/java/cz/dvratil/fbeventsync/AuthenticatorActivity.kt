@@ -113,7 +113,15 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                     mProgressLabel.visibility = View.VISIBLE
                     mProgressLabel.text = getString(R.string.auth_progress_retrieving_calendars)
 
-                    mAccessToken = Uri.parse("http://localhost/?${uri.fragment}").getQueryParameter("access_token")
+                    val token = Uri.parse("http://localhost/?${uri.fragment}")?.getQueryParameter("access_token")
+                    if (token == null) {
+                        mLogger.error("AUTH", "Failed to extract access_token, the URI was '$uri'")
+                        Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
+                                .show()
+                        finish()
+                        return
+                    }
+                    mAccessToken = token
 
                     // Use a desktop user-agent to make sure we get a desktop version - otherwise we
                     // won't be able to get to the birthday link
