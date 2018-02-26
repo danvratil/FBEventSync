@@ -24,11 +24,8 @@ import android.provider.CalendarContract
 import org.json.JSONObject
 
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
-import java.util.HashMap
-import java.util.HashSet
 import java.util.Locale
 import java.util.TimeZone
 
@@ -73,7 +70,7 @@ class FBEvent private constructor() {
     @SuppressLint("UseSparseArrays")
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    private fun getLocalReminders(context: SyncContext, localEventId: Long): HashMap<Int, Long>/* minutes *//* reminder ID */ {
+    private fun getLocalReminders(context: SyncContext, localEventId: Long): HashMap<Int /* minutes */, Long /* reminder ID */> {
         val cur = context.contentProviderClient.query(
                 context.contentUri(CalendarContract.Reminders.CONTENT_URI),
                 arrayOf(CalendarContract.Reminders._ID, CalendarContract.Reminders.MINUTES),
@@ -93,7 +90,7 @@ class FBEvent private constructor() {
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
     private fun createReminders(context: SyncContext, localEventId: Long, reminders: Set<Int>) {
-        val reminderValues = ArrayList<ContentValues>()
+        val reminderValues = arrayListOf<ContentValues>()
         for (reminder in reminders) {
             val values = ContentValues()
             values.put(CalendarContract.Reminders.EVENT_ID, localEventId)
@@ -157,7 +154,7 @@ class FBEvent private constructor() {
     companion object {
         @Throws(org.json.JSONException::class)
         fun parsePlace(event: JSONObject): String {
-            val placeStr = ArrayList<String>()
+            val placeStr = arrayListOf<String>()
             if (event.has("place")) {
                 val place = event.getJSONObject("place")!!
                 if (place.has("name")) {

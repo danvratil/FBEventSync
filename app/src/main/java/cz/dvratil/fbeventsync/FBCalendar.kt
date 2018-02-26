@@ -21,9 +21,6 @@ import android.content.ContentValues
 import android.provider.CalendarContract
 
 import java.util.Calendar
-import java.util.HashMap
-import java.util.HashSet
-import java.util.Locale
 
 typealias FBIDLocalIDMap = HashMap<String, Long>
 

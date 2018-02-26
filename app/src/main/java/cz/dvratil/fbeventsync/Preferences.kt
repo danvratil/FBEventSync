@@ -20,9 +20,6 @@ package cz.dvratil.fbeventsync
 import android.content.Context
 import android.content.SharedPreferences
 
-import java.util.Arrays
-import java.util.HashSet
-
 class Preferences(private var mContext: Context) {
 
     private var mPrefs: SharedPreferences = mContext.getSharedPreferences(
@@ -30,7 +27,7 @@ class Preferences(private var mContext: Context) {
             Context.MODE_PRIVATE)
 
     private fun getStringArray(id: Int): Set<String> {
-        return HashSet(Arrays.asList(*mContext.resources.getStringArray(id)))
+        return mContext.resources.getStringArray(id).toSet()
     }
 
     internal fun syncFrequency(): Int {

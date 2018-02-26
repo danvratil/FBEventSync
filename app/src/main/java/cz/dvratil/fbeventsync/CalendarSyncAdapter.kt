@@ -43,7 +43,6 @@ import com.loopj.android.http.RequestParams
 
 import org.json.JSONObject
 
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -426,7 +425,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
     }
 
     private fun checkPermissions(): Boolean {
-        val missingPermissions = ArrayList<String>()
+        val missingPermissions = arrayListOf<String>()
         var permissionCheck = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALENDAR)
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             missingPermissions.add(Manifest.permission.READ_CALENDAR)

@@ -17,8 +17,6 @@
 
 package cz.dvratil.fbeventsync
 
-import java.util.HashSet
-
 class FBBirthdayCalendar(context: SyncContext) : FBCalendar(context, FBCalendar.CalendarType.TYPE_BIRTHDAY) {
 
     private var mSyncedEvents =  HashSet<String>()
