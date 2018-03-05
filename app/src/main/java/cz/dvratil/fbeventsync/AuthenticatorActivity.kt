@@ -98,8 +98,11 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                val uri = Uri.parse(url)
+                if (activity.isFinishing) {
+                    return
+                }
 
+                val uri = Uri.parse(url)
                 if (uri.path.contains("/login.php")) {
                     mLogger.debug("AUTH", "Reached login.php")
                     mWebView.visibility = View.VISIBLE
@@ -183,9 +186,12 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         checkInternetPermission()
     }
 
-
     private fun startLogin() {
-        val uri = Uri.Builder()
+        if (isFinishing) {
+            return
+        }
+
+        mWebView.loadUrl(Uri.Builder()
                 .scheme("https")
                 .authority("www.facebook.com")
                 .path("/v2.9/dialog/oauth")
@@ -193,14 +199,20 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                 .appendQueryParameter("redirect_uri", "https://www.facebook.com/connect/login_success.html")
                 .appendQueryParameter("response_type", "token")
                 .appendQueryParameter("scopes", TOKEN_SCOPE)
-                .build()
-        mWebView.loadUrl(uri.toString())
+                .build().toString())
     }
 
     private fun fetchUserInfo(accessToken: String) {
+        if (isFinishing) {
+            return
+        }
+
         val activity = this
         Graph.me(accessToken, object : JsonHttpResponseHandler() {
             override fun onSuccess(statusCode: Int, headers: Array<Header>?, response: JSONObject?) {
+                if (activity.isFinishing) {
+                    return
+                }
                 if (response != null) {
                     try {
                         val accountName = response.getString("name")
@@ -223,6 +235,9 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             }
 
             override fun onFailure(statusCode: Int, headers: Array<Header>?, throwable: Throwable, errorResponse: JSONObject?) {
+                if (activity.isFinishing) {
+                    return
+                }
                 if (errorResponse != null) {
                     try {
                         val err = errorResponse.getJSONObject("error")
@@ -250,6 +265,9 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     }
 
     private fun createAccount(accessToken: String, accountName: String) {
+        if (isFinishing) {
+            return
+        }
         mLogger.debug("AUTH", "Creating account $accountName")
         val intent = intent
         val account = Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
