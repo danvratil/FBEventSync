@@ -188,7 +188,12 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
                 selectorQuery, selectorValues, null)
         val localIds = HashMap<String, Long>()
         while (cur?.moveToNext() == true) {
-            localIds[cur.getString(0)] = cur.getLong(1)
+            try {
+                localIds[cur.getString(0)] = cur.getLong(1)
+            } catch (e: IllegalStateException) {
+                mContext.logger.error(TAG, "IllegalStateException when reading from cursor (had ${cur.columnCount} columns)")
+                // continue
+            }
         }
         cur?.close()
         return localIds
