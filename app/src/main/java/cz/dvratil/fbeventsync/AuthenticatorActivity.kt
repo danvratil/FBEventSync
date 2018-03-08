@@ -103,12 +103,12 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                 }
 
                 val uri = Uri.parse(url)
-                if (uri.path.contains("/login.php")) {
+                if (uri?.path?.contains("/login.php") == true) {
                     mLogger.debug("AUTH", "Reached login.php")
                     mWebView.visibility = View.VISIBLE
                     mProgressBar.visibility = View.GONE
                     mProgressLabel.visibility = View.GONE
-                } else if (uri.path == "/connect/login_success.html") {
+                } else if (uri?.path == "/connect/login_success.html") {
                     // TODO: Check if all privileges were granted
                     mLogger.debug("AUTH", "Reached login_success with token")
                     mWebView.visibility = View.GONE
@@ -130,7 +130,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                     // won't be able to get to the birthday link
                     mWebView.settings.userAgentString = "Mozilla/5.0 (X11;Linux x86_64;rv:58.0) Gecko/20100101 Firefox/58.0"
                     mWebView.loadUrl("https://www.facebook.com/events")
-                } else if (uri.path == "/events/") {
+                } else if (uri?.path == "/events/") {
                     mLogger.debug("AUTH", "Reached /events/ page, extracting iCal link")
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                         class JSObject {
@@ -178,6 +178,12 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                                         "})();"
                         ) { s -> onBirthdayLinkExtracted(s) }
                     }
+                } else {
+                    mLogger.error("AUTH","Failed to parse token URL from string '$url'")
+                    Toast.makeText(activity, getString(R.string.auth_calendar_uri_error_toast), Toast.LENGTH_SHORT)
+                            .show()
+                    finish()
+                    return
                 }
             }
         }
