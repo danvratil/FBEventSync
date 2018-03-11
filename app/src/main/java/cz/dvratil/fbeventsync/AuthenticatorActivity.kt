@@ -179,11 +179,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                         ) { s -> onBirthdayLinkExtracted(s) }
                     }
                 } else {
-                    mLogger.error("AUTH","Failed to parse token URL from string '$url'")
-                    Toast.makeText(activity, getString(R.string.auth_calendar_uri_error_toast), Toast.LENGTH_SHORT)
-                            .show()
-                    finish()
-                    return
+                    // likely 2FA Auth flow, ignore
                 }
             }
         }
