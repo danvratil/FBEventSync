@@ -49,7 +49,7 @@
     <string name="pref_language_default_entry">Język urządzenia</string>
     <string name="pref_misc_settings_title">Różne</string>
     <string name="pref_misc_report_bug_title">Zgłoś błąd</string>
-    <string name="pref_misc_contact_developer_title">Skontaktuj się z deweloperem</string>
+    <string name="pref_misc_contact_developer_title">Skontaktuj się z twórcą oprogramowania</string>
     <string name="pref_misc_rate_app_title">Oceń aplikację</string>
 
 
@@ -70,15 +70,15 @@
     <string name="pref_reminder_15minutes_entry">15 minut</string>
     <string name="pref_reminder_20minutes_entry">20 minut</string>
     <string name="pref_reminder_30minutes_entry">30 minut</string>
-    <string name="pref_reminder_1hour_entry">Godzina</string>
+    <string name="pref_reminder_1hour_entry">1 godzina</string>
     <string name="pref_reminder_2hours_entry">2 godziny</string>
     <string name="pref_reminder_12hours_entry">12 godzin</string>
     <string name="pref_reminder_24hours_entry">24 godziny</string>
     <string name="pref_reminder_36hours_entry">36 godzin</string>
     <string name="pref_reminder_2days_entry">2 dni</string>
-    <string name="pref_reminder_1week_entry">Tydzień</string>
+    <string name="pref_reminder_1week_entry">1 tydzień</string>
     <string name="pref_sync_frequency_never_entry">Nigdy</string>
-    <string name="pref_sync_frequency_1hour_entry">Godzina</string>
+    <string name="pref_sync_frequency_1hour_entry">1 godzina</string>
     <string name="pref_sync_frequency_2hours_entry">2 godziny</string>
     <string name="pref_sync_frequency_4hours_entry">4 godziny</string>
     <string name="pref_sync_frequency_8hours_entry">8 godzin</string>
