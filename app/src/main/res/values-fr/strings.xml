@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="app_name">FB Event Sync</string>
+<resources><string name="app_name">Synchronisation d\'événements FB</string>
     <string name="full_app_name">Synchronisation d\'événement pour Facebook</string>
     <string name="main_version_label">Version : %s</string>
     <string name="main_tagline">Maintenant avec la synchronisation des anniversaires. Aaawww yeah !</string>
