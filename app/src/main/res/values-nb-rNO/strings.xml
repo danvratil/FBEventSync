@@ -86,4 +86,7 @@
     <string name="main_sync_in_progress">Synkroniserer…</string>
 
     <string name="pref_reminder_36hours_entry">36 timer</string>
+    <string name="pref_sync_fblink_title">Legg til lenke til Facebook</string>
+    <string name="pref_sync_fblink_summary">Legg til en Facebook-lenke til hendelsesbeskrivelser.</string>
+
     </resources>
