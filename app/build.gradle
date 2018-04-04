@@ -38,6 +38,9 @@ android {
         versionCode 28
         versionName "0.25"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
     buildTypes {
         release {

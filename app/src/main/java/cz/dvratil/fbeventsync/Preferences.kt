@@ -47,9 +47,14 @@ class Preferences(private var mContext: Context) {
         return mPrefs.getBoolean(mContext.getString(R.string.pref_calendar_attending_enabled), true)
     }
 
-    internal fun attendingCalendarReminders(): Set<String> {
+    internal fun attendingCalendarReminders(): List<FBReminder> {
         return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_attending_reminders),
-                getStringArray(R.array.pref_reminders_default_value))
+                getStringArray(R.array.pref_reminders_default_value)).map{ FBReminder.fromString(it) }
+    }
+
+    internal fun attendingCalendarAllDayReminders(): List<FBReminder> {
+        return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_attending_allday_reminders),
+                getStringArray(R.array.pref_allday_reminders_default_value)).map{ FBReminder.fromString(it) }
     }
 
     internal fun attendingCalendarColor(): Int {
@@ -62,9 +67,14 @@ class Preferences(private var mContext: Context) {
         return mPrefs.getBoolean(mContext.getString(R.string.pref_calendar_tentative_enabled), true)
     }
 
-    internal fun maybeAttendingCalendarReminders(): Set<String> {
+    internal fun maybeAttendingCalendarReminders(): List<FBReminder> {
         return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_tentative_reminders),
-                getStringArray(R.array.pref_reminders_default_value))
+                getStringArray(R.array.pref_reminders_default_value)).map{ FBReminder.fromString(it) }
+    }
+
+    internal fun maybeAttendingCalendarAllDayReminders(): List<FBReminder> {
+        return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_tentative_allday_reminders),
+                getStringArray(R.array.pref_allday_reminders_default_value)).map{ FBReminder.fromString(it) }
     }
 
     internal fun maybeAttendingCalendarColor(): Int {
@@ -77,9 +87,14 @@ class Preferences(private var mContext: Context) {
         return mPrefs.getBoolean(mContext.getString(R.string.pref_calendar_not_responded_enabled), true)
     }
 
-    internal fun notRespondedCalendarReminders(): Set<String> {
+    internal fun notRespondedCalendarReminders(): List<FBReminder> {
         return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_not_responded_reminders),
-                getStringArray(R.array.pref_reminders_default_value))
+                getStringArray(R.array.pref_reminders_default_value)).map{ FBReminder.fromString(it) }
+    }
+
+    internal fun notRespondedCalendarAllDayReminders(): List<FBReminder> {
+        return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_not_responded_allday_reminders),
+                getStringArray(R.array.pref_allday_reminders_default_value)).map{ FBReminder.fromString(it) }
     }
 
     internal fun notRespondedCalendarColor(): Int {
@@ -92,9 +107,14 @@ class Preferences(private var mContext: Context) {
         return mPrefs.getBoolean(mContext.getString(R.string.pref_calendar_declined_enabled), true)
     }
 
-    internal fun declinedCalendarReminders(): Set<String> {
+    internal fun declinedCalendarReminders(): List<FBReminder> {
         return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_declined_reminders),
-                getStringArray(R.array.pref_reminders_default_value))
+                getStringArray(R.array.pref_reminders_default_value)).map{ FBReminder.fromString(it) }
+    }
+
+    internal fun declinedCalendarAllDayReminders(): List<FBReminder> {
+        return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_declined_allday_reminders),
+                getStringArray(R.array.pref_allday_reminders_default_value)).map{ FBReminder.fromString(it) }
     }
 
     internal fun declinedCalendarColor(): Int {
@@ -107,9 +127,9 @@ class Preferences(private var mContext: Context) {
         return mPrefs.getBoolean(mContext.getString(R.string.pref_calendar_birthday_enabled), true)
     }
 
-    internal fun birthdayCalendarReminders(): Set<String> {
-        return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_birthday_reminders),
-                getStringArray(R.array.pref_reminders_default_value))
+    internal fun birthdayCalendarAllDayReminders(): List<FBReminder> {
+        return mPrefs.getStringSet(mContext.getString(R.string.pref_calendar_birthday_allday_reminders),
+                getStringArray(R.array.pref_allday_reminders_default_value)).map{ FBReminder.fromString(it) }
     }
 
     internal fun birthdayCalendarColor(): Int {
@@ -141,4 +161,5 @@ class Preferences(private var mContext: Context) {
     internal fun setLastVersion(lastVersion: Int) {
         mPrefs.edit().putInt(mContext.getString(R.string.cfg_last_version), lastVersion).apply()
     }
+
 }

@@ -8,6 +8,9 @@
     <string name="facebook_app_id" translatable="false">1775235912769870</string>
     <string name="cfg_prefs_version" translatable="false">prefs_version</string>
 
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+
     <!-- MAIN ACTIVITY //-->
     <string name="main_version_label">Version: %s</string>
     <string name="main_add_account_btn">Add Account</string>
@@ -96,22 +99,27 @@
 
     <string name="pref_calendar_attending_enabled" translatable="false">pref_attending_enabled</string>
     <string name="pref_calendar_attending_reminders" translatable="false">pref_attending_reminders</string>
+    <string name="pref_calendar_attending_allday_reminders" translatable="false">pref_attending_allday_reminders</string>
     <string name="pref_calendar_attending_color" translatable="false">pref_attending_color</string>
     <string name="pref_calendar_tentative_enabled" translatable="false">pref_tentative_enabled</string>
     <string name="pref_calendar_tentative_reminders" translatable="false">pref_maybe_reminders</string>
+    <string name="pref_calendar_tentative_allday_reminders" translatable="false">pref_maybe_allday_reminders</string>
     <string name="pref_calendar_tentative_color" translatable="false">pref_maybe_color</string>
     <string name="pref_calendar_not_responded_enabled" translatable="false">pref_not_responded_enabled</string>
     <string name="pref_calendar_not_responded_reminders" translatable="false">pref_not_responded_reminders</string>
+    <string name="pref_calendar_not_responded_allday_reminders" translatable="false">pref_not_responded_allday_reminders</string>
     <string name="pref_calendar_not_responded_color" translatable="false">pref_not_responded_color</string>
     <string name="pref_calendar_declined_enabled" translatable="false">pref_declined_enabled</string>
     <string name="pref_calendar_declined_reminders" translatable="false">pref_declined_reminders</string>
+    <string name="pref_calendar_declined_allday_reminders" translatable="false">pref_declined_allday_reminders</string>
     <string name="pref_calendar_declined_color" translatable="false">pref_declined_color</string>
     <string name="pref_calendar_birthday_enabled" translatable="false">pref_birthday_enabled</string>
-    <string name="pref_calendar_birthday_reminders" translatable="false">pref_birthday_reminders</string>
+    <string name="pref_calendar_birthday_allday_reminders" translatable="false">pref_birthday_allday_reminders</string>
     <string name="pref_calendar_birthday_color" translatable="false">pref_birthday_color</string>
 
     <string name="pref_calendar_enabled_title">Enabled</string>
     <string name="pref_calendar_reminders_title">Reminders</string>
+    <string name="pref_calendar_allday_reminders_title">All-day Events Reminders</string>
     <string name="pref_calendar_color_title">Color</string>
 
     <string name="color_dlg_title">Choose Color</string>
@@ -121,6 +129,24 @@
     <string name="cfg_last_sync" translatable="false">lastSync</string>
     <string name="cfg_syncs_per_hour" translatable="false">syncPerHour</string>
     <string name="cfg_last_version" translatable="false">lastVersion</string>
+
+    <!-- N day(s) before at HH:MM //-->
+    <plurals name="pref_reminder_allday_description">
+        <item quantity="one">%d day before at %s</item>
+        <item quantity="other">%d days before at %s</item>
+    </plurals>
+    <!-- [ number picker ] days before at [ time picker ] //-->
+    <string name="allday_reminder_daysBeforeAt">days before at</string>
+
+    <!-- Minutes,allday, see FBReminder.fromString for details //-->
+    <string-array name="pref_allday_reminders_default_value">
+        <item>720,true</item>
+    </string-array>
+
+    <plurals name="pref_reminder_anyminutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
 
     <string name="pref_reminder_0minutes_entry">0 minutes</string>
     <string name="pref_reminder_0minutes_value" translatable="false">0</string>

@@ -1,95 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory android:title="@string/calendar_attending_title">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="@string/pref_calendar_attending_enabled"
-            android:title="@string/pref_calendar_enabled_title"
-            android:defaultValue="true" />
+            android:title="@string/pref_calendar_enabled_title" />
         <MultiSelectListPreference
-            android:key="@string/pref_calendar_attending_reminders"
-            android:title="@string/pref_calendar_reminders_title"
+            android:defaultValue="@array/pref_reminders_default_value"
             android:entries="@array/pref_reminders_entries"
             android:entryValues="@array/pref_reminders_values"
-            android:defaultValue="@array/pref_reminders_default_value" />
+            android:key="@string/pref_calendar_attending_reminders"
+            android:title="@string/pref_calendar_reminders_title" />
+        <PreferenceScreen android:title="@string/pref_calendar_allday_reminders_title">
+            <intent
+                android:targetClass="cz.dvratil.fbeventsync.AllDayReminderPreferenceActivity"
+                android:targetPackage="cz.dvratil.fbeventsync">
+                <extra
+                    android:name="calendarType"
+                    android:value="@string/pref_calendar_attending_allday_reminders" />
+            </intent>
+        </PreferenceScreen>
         <com.kizitonwose.colorpreference.ColorPreference
+            android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_attending_color"
             android:title="@string/pref_calendar_color_title"
-            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_tentative_title">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="@string/pref_calendar_tentative_enabled"
-            android:title="@string/pref_calendar_enabled_title"
-            android:defaultValue="true" />
+            android:title="@string/pref_calendar_enabled_title" />
         <MultiSelectListPreference
-            android:key="@string/pref_calendar_tentative_reminders"
-            android:title="@string/pref_calendar_reminders_title"
+            android:defaultValue="@array/pref_reminders_default_value"
             android:entries="@array/pref_reminders_entries"
             android:entryValues="@array/pref_reminders_values"
-            android:defaultValue="@array/pref_reminders_default_value" />
+            android:key="@string/pref_calendar_tentative_reminders"
+            android:title="@string/pref_calendar_reminders_title" />
+        <PreferenceScreen android:title="@string/pref_calendar_allday_reminders_title">
+            <intent
+                android:targetClass="cz.dvratil.fbeventsync.AllDayReminderPreferenceActivity"
+                android:targetPackage="cz.dvratil.fbeventsync">
+                <extra
+                    android:name="calendarType"
+                    android:value="@string/pref_calendar_tentative_allday_reminders" />
+            </intent>
+        </PreferenceScreen>
         <com.kizitonwose.colorpreference.ColorPreference
+            android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_tentative_color"
             android:title="@string/pref_calendar_color_title"
-            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_not_responded_title">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="@string/pref_calendar_not_responded_enabled"
-            android:title="@string/pref_calendar_enabled_title"
-            android:defaultValue="true" />
+            android:title="@string/pref_calendar_enabled_title" />
         <MultiSelectListPreference
-            android:key="@string/pref_calendar_not_responded_reminders"
-            android:title="@string/pref_calendar_reminders_title"
+            android:defaultValue="@array/pref_reminders_default_value"
             android:entries="@array/pref_reminders_entries"
             android:entryValues="@array/pref_reminders_values"
-            android:defaultValue="@array/pref_reminders_default_value" />
+            android:key="@string/pref_calendar_not_responded_reminders"
+            android:title="@string/pref_calendar_reminders_title" />
+        <PreferenceScreen android:title="@string/pref_calendar_allday_reminders_title">
+            <intent
+                android:targetClass="cz.dvratil.fbeventsync.AllDayReminderPreferenceActivity"
+                android:targetPackage="cz.dvratil.fbeventsync">
+                <extra
+                    android:name="calendarType"
+                    android:value="@string/pref_calendar_not_responded_allday_reminders" />
+            </intent>
+        </PreferenceScreen>
         <com.kizitonwose.colorpreference.ColorPreference
+            android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_not_responded_color"
             android:title="@string/pref_calendar_color_title"
-            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_declined_title">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="@string/pref_calendar_declined_enabled"
-            android:title="@string/pref_calendar_enabled_title"
-            android:defaultValue="true" />
+            android:title="@string/pref_calendar_enabled_title" />
         <MultiSelectListPreference
-            android:key="@string/pref_calendar_declined_reminders"
-            android:title="@string/pref_calendar_reminders_title"
+            android:defaultValue="@array/pref_reminders_default_value"
             android:entries="@array/pref_reminders_entries"
             android:entryValues="@array/pref_reminders_values"
-            android:defaultValue="@array/pref_reminders_default_value" />
+            android:key="@string/pref_calendar_declined_reminders"
+            android:title="@string/pref_calendar_reminders_title" />
+        <PreferenceScreen android:title="@string/pref_calendar_allday_reminders_title">
+            <intent
+                android:targetClass="cz.dvratil.fbeventsync.AllDayReminderPreferenceActivity"
+                android:targetPackage="cz.dvratil.fbeventsync">
+                <extra
+                    android:name="calendarType"
+                    android:value="@string/pref_calendar_declined_allday_reminders" />
+            </intent>
+        </PreferenceScreen>
         <com.kizitonwose.colorpreference.ColorPreference
+            android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_declined_color"
             android:title="@string/pref_calendar_color_title"
-            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_birthday_title">
         <SwitchPreference
+            android:defaultValue="true"
             android:key="@string/pref_calendar_birthday_enabled"
-            android:title="@string/pref_calendar_enabled_title"
-            android:defaultValue="true" />
-        <MultiSelectListPreference
-            android:key="@string/pref_calendar_birthday_reminders"
-            android:title="@string/pref_calendar_reminders_title"
-            android:entries="@array/pref_reminders_entries"
-            android:entryValues="@array/pref_reminders_values"
-            android:defaultValue="@array/pref_reminders_default_value" />
+            android:title="@string/pref_calendar_enabled_title" />
+        <PreferenceScreen android:title="@string/pref_calendar_allday_reminders_title">
+            <intent
+                android:targetClass="cz.dvratil.fbeventsync.AllDayReminderPreferenceActivity"
+                android:targetPackage="cz.dvratil.fbeventsync">
+                <extra
+                    android:name="calendarType"
+                    android:value="@string/pref_calendar_birthday_allday_reminders" />
+            </intent>
+        </PreferenceScreen>
         <com.kizitonwose.colorpreference.ColorPreference
+            android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_birthday_color"
             android:title="@string/pref_calendar_color_title"
-            android:defaultValue="@color/colorFBBlue"
             app:showDialog="false" />
     </PreferenceCategory>
 </PreferenceScreen>

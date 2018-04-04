@@ -90,6 +90,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cz.dvratil.fbeventsync.MainActivity" />
         </activity>
+        <activity
+            android:name=".AllDayReminderPreferenceActivity"
+            android:label="@string/pref_calendar_allday_reminders_title"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName="cz.dvratil.fbeventsync.SettingsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cz.dvratil.fbeventsync.SettingsActivity" />
+        </activity>
 
         <!-- Providers //-->
         <provider

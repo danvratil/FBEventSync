@@ -43,24 +43,26 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
                 FBCalendar.CalendarType.TYPE_BIRTHDAY -> mContext.preferences.birthdayCalendarColor()
             }
 
-    val reminderIntervals: kotlin.collections.Set<Int>
+    val reminderIntervals: List<FBReminder>
         get() {
-            val reminders = when (mType) {
+            return when (mType) {
                 FBCalendar.CalendarType.TYPE_NOT_REPLIED -> mContext.preferences.notRespondedCalendarReminders()
                 FBCalendar.CalendarType.TYPE_DECLINED -> mContext.preferences.declinedCalendarReminders()
                 FBCalendar.CalendarType.TYPE_MAYBE -> mContext.preferences.maybeAttendingCalendarReminders()
                 FBCalendar.CalendarType.TYPE_ATTENDING -> mContext.preferences.attendingCalendarReminders()
-                FBCalendar.CalendarType.TYPE_BIRTHDAY -> mContext.preferences.birthdayCalendarReminders()
+                FBCalendar.CalendarType.TYPE_BIRTHDAY -> emptyList()
             }
-            val rv = HashSet<Int>()
-            for (reminder in reminders) {
-                try {
-                    rv.add(Integer.parseInt(reminder))
-                } catch (e: java.lang.NumberFormatException) {
-                    mContext.logger.error(TAG, "reminderIntervals: $e. (value was '$reminder')")
-                }
+        }
+
+    val allDayReminderIntervals: List<FBReminder>
+        get() {
+            return when (mType) {
+                FBCalendar.CalendarType.TYPE_NOT_REPLIED -> mContext.preferences.notRespondedCalendarAllDayReminders()
+                FBCalendar.CalendarType.TYPE_DECLINED -> mContext.preferences.declinedCalendarAllDayReminders()
+                FBCalendar.CalendarType.TYPE_MAYBE -> mContext.preferences.maybeAttendingCalendarAllDayReminders()
+                FBCalendar.CalendarType.TYPE_ATTENDING -> mContext.preferences.attendingCalendarAllDayReminders()
+                FBCalendar.CalendarType.TYPE_BIRTHDAY -> mContext.preferences.birthdayCalendarAllDayReminders()
             }
-            return rv
         }
 
     enum class CalendarType constructor(private val id: String) {

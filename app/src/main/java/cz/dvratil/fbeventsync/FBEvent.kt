@@ -47,6 +47,10 @@ class FBEvent private constructor() {
         values.put(CalendarContract.Events.AVAILABILITY, calendar.availability())
     }
 
+    fun isAllDay(): Boolean? {
+        return values.getAsBoolean(CalendarContract.Events.ALL_DAY)
+    }
+
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
     fun create(context: SyncContext): Long {
@@ -55,8 +59,8 @@ class FBEvent private constructor() {
                 values)
         if (uri != null && mCalendar != null) {
             val eventId = uri.lastPathSegment.toLong()
-            val reminders = mCalendar!!.reminderIntervals
-            if (!reminders.isEmpty()) {
+            val reminders = if (isAllDay() == true) mCalendar!!.allDayReminderIntervals else mCalendar!!.reminderIntervals
+            if (reminders.isNotEmpty()) {
                 createReminders(context, eventId, reminders)
             }
 
@@ -70,15 +74,15 @@ class FBEvent private constructor() {
     @SuppressLint("UseSparseArrays")
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    private fun getLocalReminders(context: SyncContext, localEventId: Long): HashMap<Int /* minutes */, Long /* reminder ID */> {
+    private fun getLocalReminders(context: SyncContext, localEventId: Long): HashMap<FBReminder, Long /* reminder ID */> {
         val cur = context.contentProviderClient.query(
                 context.contentUri(CalendarContract.Reminders.CONTENT_URI),
                 arrayOf(CalendarContract.Reminders._ID, CalendarContract.Reminders.MINUTES),
                 "(${CalendarContract.Reminders.EVENT_ID} = ?)",
                 arrayOf(localEventId.toString()), null)
-        val localReminders = HashMap<Int /* minutes */, Long /* reminder ID */>()
+        val localReminders = HashMap<FBReminder, Long /* reminder ID */>()
         while (cur?.moveToNext() == true) {
-            localReminders[cur.getInt(1)] = cur.getLong(0)
+            localReminders[FBReminder(cur.getInt(1), false)] = cur.getLong(0)
         }
         cur?.close()
         return localReminders
@@ -86,13 +90,13 @@ class FBEvent private constructor() {
 
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    private fun createReminders(context: SyncContext, localEventId: Long, reminders: Set<Int>) {
+    private fun createReminders(context: SyncContext, localEventId: Long, reminders: List<FBReminder>) {
         val reminderValues = arrayListOf<ContentValues>()
         for (reminder in reminders) {
             val values = ContentValues()
             values.put(CalendarContract.Reminders.EVENT_ID, localEventId)
             values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT)
-            values.put(CalendarContract.Reminders.MINUTES, reminder)
+            values.put(CalendarContract.Reminders.MINUTES, reminder.minutesOffset)
             reminderValues.add(values)
         }
 
@@ -124,21 +128,21 @@ class FBEvent private constructor() {
                 "(${CalendarContract.Events._ID} = ?)",
                 arrayOf(localEventId.toString()))
 
-        val reminders = getLocalReminders(context, localEventId)/* minutes *//* reminder ID */
+        val reminders = getLocalReminders(context, localEventId)
         val localReminderSet = reminders.keys
-        val configuredReminders = mCalendar!!.reminderIntervals
+        val configuredReminders = if (isAllDay() == true) mCalendar!!.allDayReminderIntervals else mCalendar!!.reminderIntervals
 
         // Silly Java can't even subtract Sets...*sigh*
-        val toAdd = HashSet<Int>()
+        val toAdd = HashSet<FBReminder>()
         toAdd.addAll(configuredReminders)
         toAdd.removeAll(localReminderSet)
 
-        val toRemove = HashSet<Int>()
+        val toRemove = HashSet<FBReminder>()
         toRemove.addAll(localReminderSet)
         toRemove.removeAll(configuredReminders)
 
         if (!toAdd.isEmpty()) {
-            createReminders(context, localEventId, toAdd)
+            createReminders(context, localEventId, toAdd.toList())
         }
         toRemove.forEach {
             val r: Long? = reminders[it]
