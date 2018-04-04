@@ -32,6 +32,7 @@ import android.provider.CalendarContract
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
+import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -47,9 +48,12 @@ import cz.msebera.android.httpclient.Header
 
 class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
+    data class Cookies(val cookies: String = String(), val url: String = String())
+
     private lateinit var mAccountManager: AccountManager
     private var mAccessToken = String()
     private var mBDayCalendar = String()
+    private var mCookies = Cookies()
 
     private lateinit var mWebView: WebView
     private lateinit var mProgressBar: ProgressBar
@@ -124,6 +128,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                         finish()
                         return
                     }
+                    mCookies = Cookies(CookieManager.getInstance().getCookie(url), url)
                     mAccessToken = token
 
                     // Use a desktop user-agent to make sure we get a desktop version - otherwise we
@@ -193,6 +198,19 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             return
         }
 
+        // Try to restore cookies from account settings. If KEY_ACCOUNT_NAME wasn't set or points
+        // to an invalid account no cookies will be set user will be prompted with Facebook login
+        val accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+        if (accountName != null) {
+            val account = mAccountManager.getAccountsByType(getString(R.string.account_type)).find { it.name == accountName }
+            if (account != null) {
+                val cookies = mAccountManager.getUserData(account, Authenticator.FB_COOKIES)
+                if (cookies != null) {
+                    CookieManager.getInstance().setCookie("https://www.facebook.com", cookies)
+                }
+            }
+        }
+
         mWebView.loadUrl(Uri.Builder()
                 .scheme("https")
                 .authority("www.facebook.com")
@@ -207,6 +225,13 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     private fun fetchUserInfo(accessToken: String) {
         if (isFinishing) {
             return
+        }
+
+        // Once we've reached this point we no longer need the webview, so reset cookies
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().removeAllCookies(null)
+        } else {
+            CookieManager.getInstance().removeAllCookie()
         }
 
         val activity = this
@@ -294,6 +319,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         mAccountManager.setAuthToken(account, Authenticator.FB_OAUTH_TOKEN, accessToken)
         mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, key)
         mAccountManager.setAuthToken(account, Authenticator.FB_UID_TOKEN, uid)
+        mAccountManager.setUserData(account, Authenticator.FB_COOKIES, mCookies.cookies)
 
         val result = Intent()
         result.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountName)

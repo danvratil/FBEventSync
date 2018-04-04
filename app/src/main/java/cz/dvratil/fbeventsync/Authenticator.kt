@@ -110,6 +110,7 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
         const val FB_OAUTH_TOKEN = "fb_oauth"
         const val FB_UID_TOKEN = "fb_uid"
         const val FB_KEY_TOKEN = "fb_key"
+        const val FB_COOKIES = "fb_cookies"
 
         // DON'T USE! Preserved for legacy reason so that we can clear the data when migrating to the
         // new tokens
