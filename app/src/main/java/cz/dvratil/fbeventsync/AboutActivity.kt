@@ -17,26 +17,12 @@
 
 package cz.dvratil.fbeventsync
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
-import android.content.res.XmlResourceParser
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.preference.ListPreference
-import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.preference.PreferenceFragment
-import android.preference.PreferenceManager
 import android.support.v7.widget.Toolbar
-
-import com.kizitonwose.colorpreference.ColorPreference
-import com.larswerkman.lobsterpicker.LobsterPicker
-import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider
-
-import java.util.Locale
 
 class AboutActivity : PreferenceActivity() {
 
@@ -45,6 +31,8 @@ class AboutActivity : PreferenceActivity() {
         setContentView(R.layout.activity_about)
 
         fragmentManager.beginTransaction().replace(R.id.about_content, AboutFragment()).commit()
+
+        findViewById<Toolbar>(R.id.about_toolbar).title = getString(R.string.about_activity_title)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -52,7 +40,6 @@ class AboutActivity : PreferenceActivity() {
 
         findViewById<Toolbar>(R.id.about_toolbar).setNavigationOnClickListener { finish() }
     }
-
 
     class AboutFragment : PreferenceFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
