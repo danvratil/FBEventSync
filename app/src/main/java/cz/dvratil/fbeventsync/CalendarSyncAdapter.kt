@@ -371,6 +371,16 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                     return
                 }
 
+                // content-type: text/html and no content-disposition indicates an error - let's assume
+                // it's just invalid key and try to re-authenticate
+                if (headers.any { it.name.equals("content-type", true) && it.value.contains("text/html",true) }
+                    && headers.none { it.name.equals("content-disposition", true) }) {
+                    logger.debug(TAG, "Response indicates expired iCal URI, offering reauthentication")
+                    AccountManager.get(context).invalidateAuthToken(context.getString(R.string.account_type), syncContext.accessToken)
+                    createAuthNotification()
+                    return
+                }
+
                 val cal = Biweekly.parse(String(responseBody)).first()
                 cal.events.forEach {
                     val event = FBEvent.parse(it, syncContext)
