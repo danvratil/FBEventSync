@@ -17,6 +17,7 @@
 
 package cz.dvratil.fbeventsync
 
+import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Intent
@@ -113,6 +114,17 @@ class MainActivity : AppCompatActivity() {
             adapter = AccountAdapter(context)
             layoutManager = LinearLayoutManager(context)
         }
+    }
+
+    override fun onResume() {
+        AccountManager.get(this).addOnAccountsUpdatedListener(mRecyclerView.adapter as AccountAdapter, null, true)
+        super.onResume()
+    }
+
+
+    override fun onPause() {
+        AccountManager.get(this).removeOnAccountsUpdatedListener(mRecyclerView.adapter as AccountAdapter)
+        super.onPause()
     }
 
     fun onAddAccountClicked(@Suppress("UNUSED_PARAMETER") view: View) {

@@ -35,10 +35,18 @@ object Graph {
     const val ACCESS_TOKEN_PARAM = "access_token"
 
     fun me(accessToken: String, handler: AsyncHttpResponseHandler): RequestHandle {
-        val params = RequestParams()
-        params.add(ACCESS_TOKEN_PARAM, accessToken)
-        params.add(FIELDS_PARAM, "name")
+        val params = RequestParams().apply {
+            add(ACCESS_TOKEN_PARAM, accessToken)
+            add(FIELDS_PARAM, "name")
+        }
         return AsyncHttpClient().get(BASE_URL + "/me", params, handler)
+    }
+
+    fun mePicture(accessToken: String, handler: AsyncHttpResponseHandler): RequestHandle {
+        var params = RequestParams().apply {
+            add(ACCESS_TOKEN_PARAM, accessToken)
+        }
+        return AsyncHttpClient().get(BASE_URL + "/me/picture", params, handler)
     }
 
     fun events(accessToken: String, params: RequestParams, handler: AsyncHttpResponseHandler): RequestHandle {
@@ -49,11 +57,12 @@ object Graph {
 
     fun refreshTokens(context: Context, scopes: String, handler: AsyncHttpResponseHandler): RequestHandle {
         val client = SyncHttpClient()
-        val params = RequestParams()
-        params.put("client_id", context.getString(R.string.facebook_app_id))
-        params.put("redirect_uri", "https://www.facebook.com/connect/login_success.html")
-        params.put("response_type", "token")
-        params.put("scopes", scopes)
+        val params = RequestParams().apply {
+            put("client_id", context.getString(R.string.facebook_app_id))
+            put("redirect_uri", "https://www.facebook.com/connect/login_success.html")
+            put("response_type", "token")
+            put("scopes", scopes)
+        }
         return client.get("https://www.facebook.com/v2.9/dialog/oauth", params, handler)
     }
 

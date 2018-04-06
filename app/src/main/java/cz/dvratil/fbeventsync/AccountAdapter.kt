@@ -30,6 +30,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.view.LayoutInflater
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 
 
@@ -41,6 +42,7 @@ class AccountAdapter(private var mContext: Context) : RecyclerView.Adapter<Accou
         var syncBtn = view.findViewById<Button>(R.id.account_card_sync_btn)
         var removeBtn = view.findViewById<Button>(R.id.account_card_remove_btn)
         var syncIndicator = view.findViewById<ProgressBar>(R.id.account_card_sync_progress)
+        var avatarView  = view.findViewById<ImageView>(R.id.account_card_avatar)
     }
 
     data class AccountData(var account: Account, var isSyncing: Boolean) {
@@ -59,7 +61,6 @@ class AccountAdapter(private var mContext: Context) : RecyclerView.Adapter<Accou
         }
 
         mAccounts = mutableListOf()
-        onAccountsUpdated(mAccountManager.getAccountsByType(mContext.getString(R.string.account_type)))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -71,6 +72,9 @@ class AccountAdapter(private var mContext: Context) : RecyclerView.Adapter<Accou
         holder.name.text = account.account.name
         holder.syncBtn.isEnabled = !account.isSyncing
         holder.syncIndicator.visibility = if (account.isSyncing) View.VISIBLE else View.GONE
+        AvatarProvider.getAvatar(mContext, account.account, {
+            holder.avatarView.setImageDrawable(it)
+        })
 
         holder.syncBtn.setOnClickListener {
             CalendarSyncAdapter.requestSync(mContext, account.account)
@@ -84,8 +88,9 @@ class AccountAdapter(private var mContext: Context) : RecyclerView.Adapter<Accou
 
     // OnAccountUpdateListener interface
     override fun onAccountsUpdated(accounts: Array<out Account>) {
+        val accountType = mContext.getString(R.string.account_type)
         mAccounts.clear()
-        for (account in accounts) {
+        for (account in accounts.filter { it.type == accountType }) {
             mAccounts.add(AccountData(account, ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY)))
         }
         notifyDataSetChanged()

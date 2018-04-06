@@ -16,49 +16,52 @@
             android:layout_height="match_parent"
             android:layout_margin="16dp">
 
+            <ImageView
+                android:id="@+id/account_card_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_person_black_50dp" />
+
             <TextView
                 android:id="@+id/account_card_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:lines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView"
-                app:layout_constraintStart_toEndOf="@+id/imageView"
-                app:layout_constraintTop_toTopOf="@+id/imageView" />
+                app:layout_constraintBottom_toBottomOf="@+id/account_card_avatar"
+                app:layout_constraintEnd_toStartOf="@+id/account_card_remove_btn"
+                app:layout_constraintStart_toEndOf="@+id/account_card_avatar"
+                app:layout_constraintTop_toTopOf="@+id/account_card_avatar" />
 
             <Button
                 android:id="@+id/account_card_sync_btn"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:text="@string/main_sync_now"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/account_card_sync_progress"
-                app:layout_constraintTop_toBottomOf="@+id/imageView"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@+id/account_card_avatar" />
 
             <Button
                 android:id="@+id/account_card_remove_btn"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/ic_delete_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_person_black_50dp"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
 
             <ProgressBar
                 android:id="@+id/account_card_sync_progress"
@@ -67,8 +70,7 @@
                 android:layout_height="32dp"
                 app:layout_constraintBottom_toBottomOf="@+id/account_card_sync_btn"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/account_card_sync_btn"
-                app:layout_constraintVertical_bias="0.562" />
+                app:layout_constraintTop_toTopOf="@+id/account_card_sync_btn" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
