@@ -20,6 +20,7 @@ package cz.dvratil.fbeventsync
 import android.Manifest
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
@@ -36,6 +37,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
 
 import com.loopj.android.http.DataAsyncHttpResponseHandler
@@ -455,10 +457,21 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
     }
 
     private fun createAuthNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+           val channel = NotificationChannel(AuthenticatorActivity.AUTH_NOTIFICATION_CHANNEL_ID,
+                   context.getString(R.string.sync_ntf_needs_reauthentication_title),
+                   NotificationManager.IMPORTANCE_HIGH)
+            channel.description = context.getString(R.string.sync_ntf_needs_reauthentication_description)
+            context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+
         val builder = NotificationCompat.Builder(context, AuthenticatorActivity.AUTH_NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(context.getString(R.string.sync_ntf_needs_reauthentication_title))
                 .setContentText(context.getString(R.string.sync_ntf_needs_reauthentication_description))
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setAutoCancel(true)
 
         val intent = Intent(context, AuthenticatorActivity::class.java)
