@@ -43,14 +43,23 @@ class AccountAdapter(private var mContext: Context) : RecyclerView.Adapter<Accou
         var syncIndicator = view.findViewById<ProgressBar>(R.id.account_card_sync_progress)
     }
 
+    data class AccountData(var account: Account, var isSyncing: Boolean) {
+        fun id() = account.name.hashCode().toLong()
+    }
+
     private val mAccountManager = AccountManager.get(mContext)
-    private var mAccounts = mAccountManager.getAccountsByType(mContext.getString(R.string.account_type))
+    private var mAccounts: MutableList<AccountData>
 
     init {
+        setHasStableIds(true)
+
         ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE) {
             // FIXME: Is this safe?
             (mContext as Activity).runOnUiThread(Runnable { checkSyncStatus() })
         }
+
+        mAccounts = mutableListOf()
+        onAccountsUpdated(mAccountManager.getAccountsByType(mContext.getString(R.string.account_type)))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,32 +68,38 @@ class AccountAdapter(private var mContext: Context) : RecyclerView.Adapter<Accou
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val account = mAccounts[position]
-        val syncActive = ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY)
-        holder.name.text = account.name
-        holder.syncBtn.isEnabled = !syncActive
-        holder.syncIndicator.visibility = if (syncActive) View.VISIBLE else View.GONE
+        holder.name.text = account.account.name
+        holder.syncBtn.isEnabled = !account.isSyncing
+        holder.syncIndicator.visibility = if (account.isSyncing) View.VISIBLE else View.GONE
 
         holder.syncBtn.setOnClickListener {
-            CalendarSyncAdapter.requestSync(mContext, account)
+            CalendarSyncAdapter.requestSync(mContext, account.account)
         }
         holder.removeBtn.setOnClickListener{
-            Authenticator.removeAccount(mContext, account)
+            Authenticator.removeAccount(mContext, account.account)
         }
-    }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
-        super.onAttachedToRecyclerView(recyclerView)
     }
 
     override fun getItemCount(): Int = mAccounts.count()
 
     // OnAccountUpdateListener interface
     override fun onAccountsUpdated(accounts: Array<out Account>) {
-        mAccounts = accounts
+        mAccounts.clear()
+        for (account in accounts) {
+            mAccounts.add(AccountData(account, ContentResolver.isSyncActive(account, CalendarContract.AUTHORITY)))
+        }
         notifyDataSetChanged()
     }
 
     private fun checkSyncStatus() {
-        onAccountsUpdated(mAccountManager.getAccountsByType(mContext.getString(R.string.account_type)))
+        for (i in 0..(mAccounts.count() - 1)) {
+            val syncing = ContentResolver.isSyncActive(mAccounts[i].account, CalendarContract.AUTHORITY)
+            if (mAccounts[i].isSyncing != syncing) {
+                mAccounts[i].isSyncing = syncing
+                notifyItemChanged(i)
+            }
+        }
     }
+
+    override fun getItemId(position: Int): Long = mAccounts[position].id()
 }
