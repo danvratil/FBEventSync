@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><string name="app_name">Synchronisation d\'événements FB</string>
+    <string name="full_app_name">Synchronisation d\'événement pour Facebook</string>
+    <string name="main_version_label">Version : %s</string>
+    <string name="main_tagline">Maintenant avec la synchronisation des anniversaires. Aaawww yeah !</string>
+    <string name="main_add_account_btn">Ajouter un compte</string>
+    <string name="main_show_logs_btn">Voir les logs</string>
+    <string name="main_configure_calendars_btn">Configurer les calendriers</string>
+    <string name="main_configure_sync_btn">Configurer les préférences de synchronisation</string>
+    <string name="main_configure_misc_btn">Autres configurations</string>
+    <string name="main_sync_now">Synchroniser maintenant</string>
+    <string name="main_sync_in_progress">Synchronisation en cours...</string>
+
+    <string name="perms_activity_title">Demande de permissions</string>
+
+    <string name="log_activity_title">Logs</string>
+    <string name="log_clear_log_action">Effacer les logs</string>
+    <string name="log_send_to_dev_action">Envoyer au développeur</string>
+    <string name="log_send_email_action">Envoi de l\'email…</string>
+    <string name="log_email_template">[Décrivez votre problème ici, de préférence en anglais, merci]</string>
+    <string name="log_error_sending_log_toast">Échec lors de l\'envoi des logs : Impossible de lire le fichier de log</string>
+
+    <string name="auth_activity_title">S\'authentifier avec Facebook</string>
+    <string name="auth_account_creation_error_toast">Erreur lors de l\'authentification</string>
+    <string name="auth_account_creation_success_toast">Compte ajouté</string>
+    <string name="auth_rate_limiting_toast">L\'API Facebook rencontre actuellement des problèmes. Merci de réessayer plus tard.</string>
+    <string name="auth_progress_authenticating_with_fb">Authentification avec Facebook…</string>
+    <string name="auth_progress_retrieving_calendars">Récupération des calendriers…</string>
+    <string name="auth_progress_retrieving_userinfo">Récupération des informations de l\'utilisateur…</string>
+    <string name="auth_calendar_uri_error_toast">Échec lors de la récupération de l\'URI du calendrier</string>
+
+    <string name="calendar_not_responded_title">Événements auxquels je n\'ai pas répondu</string>
+    <string name="calendar_declined_title">Événements auxquels je ne participe pas</string>
+    <string name="calendar_tentative_title">Événements auxquels je vais peut-être participer</string>
+    <string name="calendar_attending_title">Événements auxquels je vais participer</string>
+    <string name="calendar_birthday_title">Anniversaires d\'Amis</string>
+    <string name="sync_ntf_needs_reauthentication_title">Event Sync for Facebook a besoin de se connecter</string>
+    <string name="sync_ntf_needs_reauthentication_description">Taper ici pour vous reconnecter avec Facebook</string>
+
+    <string name="pref_activity_title">Préférences</string>
+
+    <string name="pref_sync_settings_title">Préférences de Synchronisation</string>
+    <string name="pref_sync_settings_summary">Configurer à quelle fréquence et quand synchroniser les événements.</string>
+
+    <string name="pref_sync_frequency_title">Fréquence de synchronisation</string>
+    <string name="pref_sync_frequency_summary">A quelle fréquence les événements Facebook doivent-ils être synchronisés ?</string>
+    <string name="pref_sync_fblink_title">Ajouter un lien vers Facebook</string>
+    <string name="pref_sync_fblink_summary">Ajouter un lien vers Facebook sur les descriptions d\'événement.</string>
+
+    <string name="pref_language_title">Langage</string>
+    <string name="pref_language_summary">Langage pour les anniversaires et événements</string>
+    <string name="pref_language_default_entry">Langage de l\'appareil</string>
+    <string name="pref_misc_settings_title">Divers</string>
+    <string name="pref_misc_report_bug_title">Signaler un bug</string>
+    <string name="pref_misc_contact_developer_title">Contacter le développeur</string>
+    <string name="pref_misc_rate_app_title">Noter l\'application</string>
+
+
+    <string name="pref_calendar_settings_title">Calendriers</string>
+    <string name="pref_calendar_settings_summary">Choisir les calendriers, couleurs et rappels</string>
+
+    <string name="pref_calendar_enabled_title">Activé</string>
+    <string name="pref_calendar_reminders_title">Rappels</string>
+    <string name="pref_calendar_color_title">Couleur</string>
+
+    <string name="color_dlg_title">Choisir une couleur</string>
+    <string name="color_dlg_save_btn_title">Sauvegarder</string>
+    <string name="color_dlg_close_btn_title">Fermer</string>
+
+    <string name="pref_reminder_0minutes_entry">0 minutes</string>
+    <string name="pref_reminder_5minutes_entry">5 minutes</string>
+    <string name="pref_reminder_10minutes_entry">10 minutes</string>
+    <string name="pref_reminder_15minutes_entry">15 minutes</string>
+    <string name="pref_reminder_20minutes_entry">20 minutes</string>
+    <string name="pref_reminder_30minutes_entry">30 minutes</string>
+    <string name="pref_reminder_1hour_entry">1 heure</string>
+    <string name="pref_reminder_2hours_entry">2 heures</string>
+    <string name="pref_reminder_12hours_entry">12 heures</string>
+    <string name="pref_reminder_24hours_entry">24 heures</string>
+    <string name="pref_reminder_36hours_entry">36 heures</string>
+    <string name="pref_reminder_2days_entry">2 jours</string>
+    <string name="pref_reminder_1week_entry">1 semaine</string>
+    <string name="pref_sync_frequency_never_entry">Jamais</string>
+    <string name="pref_sync_frequency_1hour_entry">1 heure</string>
+    <string name="pref_sync_frequency_2hours_entry">2 heures</string>
+    <string name="pref_sync_frequency_4hours_entry">4 heures</string>
+    <string name="pref_sync_frequency_8hours_entry">8 heures</string>
+    <string name="pref_sync_frequency_12hours_entry">12 heures</string>
+    <string name="pref_sync_frequency_24hours_entry">24 heures</string>
+    <string name="pref_general_settings_title">Général</string>
+</resources>

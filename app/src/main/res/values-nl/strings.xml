@@ -85,4 +85,7 @@
     <string name="pref_sync_frequency_12hours_entry">12 uur</string>
     <string name="pref_sync_frequency_24hours_entry">24 uur</string>
     <string name="pref_general_settings_title">Algemeen</string>
-</resources>
+<string name="pref_sync_fblink_title">Facebook-link toevoegen</string>
+    <string name="pref_sync_fblink_summary">Een Facebook-link toevoegen naar evenement-omschrijvingen.</string>
+
+    </resources>
