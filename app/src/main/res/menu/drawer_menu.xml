@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group
+        android:id="@+id/nav_group_main"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_sync_all"
+            android:icon="@drawable/ic_sync"
+            android:title="@string/nav_sync_all" />
+
+        <item
+            android:id="@+id/nav_calendar_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/nav_configure_calendars" />
+
+        <item
+            android:id="@+id/nav_sync_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/nav_configure_sync" />
+    </group>
+
+    <group
+        android:id="@+id/nav_group_support"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_sync_logs"
+            android:icon="@drawable/ic_history"
+            android:title="@string/nav_sync_logs" />
+
+        <item
+            android:id="@+id/nav_report_bug"
+            android:icon="@drawable/ic_bug_report"
+            android:title="@string/nav_report_bug" />
+
+        <item
+            android:id="@+id/nav_faq"
+            android:icon="@drawable/ic_help"
+            android:title="@string/nav_faq" />
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info"
+            android:title="@string/nav_about" />
+    </group>
+</menu>

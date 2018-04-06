@@ -99,6 +99,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cz.dvratil.fbeventsync.SettingsActivity" />
         </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/about_activity_title"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName="cz.dvratil.fbeventsync.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cz.dvratil.fbeventsync.MainActivity" />
+        </activity>
 
         <!-- Providers //-->
         <provider

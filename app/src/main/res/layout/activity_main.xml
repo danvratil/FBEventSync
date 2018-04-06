@@ -1,165 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cz.dvratil.fbeventsync.MainActivity">
+    android:fitsSystemWindows="true">
 
-    <!--android.support.v7.widget.Toolbar
-        android:id="@+id/main_toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:minHeight="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" //-->
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/main_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/sync_layout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="0.0">
-
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/main_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/colorPrimary">
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp">
-
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="90dp"
-                    android:layout_height="89dp"
-                    android:contentDescription="@string/app_name"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@mipmap/ic_launcher" />
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/full_app_name"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView3"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/versionLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/main_version_label"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
-        </LinearLayout>
-
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="18dp"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/add_account_btn"
-                android:layout_width="match_parent"
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/add_acount_fab"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:layout_marginEnd="32dp"
+                android:clickable="true"
                 android:onClick="onAddAccountClicked"
-                android:text="@string/main_add_account_btn" />
+                app:layout_constraintBottom_toBottomOf="@+id/main_card_view"
+                app:layout_constraintEnd_toEndOf="@+id/main_card_view"
+                app:srcCompat="@drawable/ic_add_white" />
 
-            <Button
-                android:id="@+id/sync_now_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onSyncNowClicked"
-                android:text="@string/main_sync_now" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/main_card_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:scrollbars="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
 
-            <Button
-                android:id="@+id/calendar_prefs_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onConfigureCalendarsClicked"
-                android:text="@string/main_configure_calendars_btn" />
 
-            <Button
-                android:id="@+id/sync_prefs_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onConfigureSyncClicked"
-                android:text="@string/main_configure_sync_btn" />
+        </android.support.constraint.ConstraintLayout>
 
-            <Button
-                android:id="@+id/misc_prefs_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onConfigureMiscClicked"
-                android:text="@string/main_configure_misc_btn" />
 
-            <Button
-                android:id="@+id/show_logs_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onShowLogsClicked"
-                android:text="@string/main_show_logs_btn" />
-        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/sync_layout"
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/main_drawer_header"
+        app:menu="@menu/drawer_menu" />
 
-        <ProgressBar
-            android:layout_width="32dp"
-            android:layout_height="32dp" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_weight="1"
-            android:text="@string/main_sync_in_progress" />
-
-    </LinearLayout>
-
-
-</android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.DrawerLayout>

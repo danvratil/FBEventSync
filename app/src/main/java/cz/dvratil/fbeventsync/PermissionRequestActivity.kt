@@ -44,7 +44,7 @@ class PermissionRequestActivity : AppCompatActivity() {
             }
         }
 
-        CalendarSyncAdapter.requestSync(this)
+        CalendarSyncAdapter.requestSync(this, null)
         finish()
     }
 

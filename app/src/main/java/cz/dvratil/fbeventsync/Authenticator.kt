@@ -22,6 +22,7 @@ import android.accounts.Account
 import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
 import android.accounts.NetworkErrorException
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -104,6 +105,21 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
     }
 
     companion object {
+
+        fun removeAccount(context: Context, account: Account) {
+            AlertDialog.Builder(context)
+                    .setTitle(context.getString(R.string.auth_remove_account_title, account.name))
+                    .setMessage(R.string.auth_remove_account_text)
+                    .setPositiveButton(R.string.btn_remove, { dialog, _ ->
+                           AccountManager.get(context).removeAccount(account, null, null)
+                            dialog.dismiss()
+                        })
+                    .setNegativeButton(R.string.btn_cancel, { dialog, _ ->
+                            dialog.cancel()
+                        })
+                    .create()
+                    .show()
+        }
 
         private const val TAG = "AUTH"
 

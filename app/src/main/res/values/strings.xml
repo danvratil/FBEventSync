@@ -10,6 +10,8 @@
 
     <string name="btn_save">Save</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_remove">Remove</string>
+
 
     <!-- MAIN ACTIVITY //-->
     <string name="main_version_label">Version: %s</string>
@@ -20,6 +22,16 @@
     <string name="main_configure_misc_btn">Configure Miscellaneous</string>
     <string name="main_sync_now">Sync Now</string>
     <string name="main_sync_in_progress">Sync in progress...</string>
+
+    <!-- NAVIGATION DRAWER ACTIONS //-->
+    <string name="nav_sync_all">Sync All</string>
+    <string name="nav_configure_calendars">Configure Calendars</string>
+    <string name="nav_configure_sync">Configure Sync</string>
+    <string name="nav_sync_logs">Sync Logs</string>
+    <string name="nav_report_bug">Report Bug</string>
+    <string name="nav_faq">FAQ</string>
+    <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
+    <string name="nav_about">About</string>
 
     <!-- PERMISSIONS ACTIVITY //-->
     <string name="perms_activity_title">Permissions Request</string>
@@ -41,6 +53,23 @@
     <string name="auth_progress_retrieving_calendars">Retrieving calendars&#8230;</string>
     <string name="auth_progress_retrieving_userinfo">Retrieving user info&#8230;</string>
     <string name="auth_calendar_uri_error_toast">Failed to retrieve calendar URI</string>
+
+    <string name="auth_remove_account_title">Remove account %s?</string>
+    <string name="auth_remove_account_text">The account will only be removed from this app, your Facebook account and other apps will remain unaffected.</string>
+
+    <!-- ABOUT ACTIVITY //-->
+    <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
+    <string name="about_activity_title">About</string>
+    <string name="pref_about_rate_app" translatable="false">pref_about_rate_app</string>
+    <string name="pref_about_rate_app_title">Rate the app</string>
+    <string name="pref_about_privacy" translatable="false">pref_about_privacy</string>
+    <string name="pref_about_privacy_title">Privacy</string>
+    <string name="pref_about_license" translatable="false">pref_about_license</string>
+    <string name="pref_about_license_title">License</string>
+    <string name="pref_about_license_summary">GNU General Public License v3.0</string>
+    <string name="pref_about_version" translatable="false">pref_about_version</string>
+    <string name="pref_about_version_title">Version</string>
+
 
     <!-- CALENDAR SYNC //-->
     <string name="calendar_not_responded_title">Events I have not Responded To</string>
@@ -79,18 +108,6 @@
     <string-array name="pref_language_values">
         <item>@string/pref_language_default_value</item>
     </string-array>
-
-
-    <!-- Misc settings //-->
-    <string name="pref_misc_settings" translatable="false">pref_misc_settings</string>
-    <string name="pref_misc_settings_title">Miscellaneous</string>
-    <string name="pref_misc_report_bug" translatable="false">pref_misc_report_bug</string>
-    <string name="pref_misc_report_bug_title">Report a bug</string>
-    <string name="pref_misc_contact_developer" translatable="false">pref_misc_contact_developer</string>
-    <string name="pref_misc_contact_developer_title">Contact the developer</string>
-    <string name="pref_misc_rate_app" translatable="false">pref_misc_rate_app</string>
-    <string name="pref_misc_rate_app_title">Rate the app</string>
-
 
     <!-- Calendar settings //-->
     <string name="pref_calendar_settings" translatable="false">pref_calendar_settings</string>

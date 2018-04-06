@@ -24,14 +24,5 @@
             android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"
             android:targetPackage="cz.dvratil.fbeventsync" />
     </PreferenceScreen>
-
-    <PreferenceScreen
-        android:key="@string/pref_misc_settings"
-        android:title="@string/pref_misc_settings_title">
-        <intent
-            android:action="cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC"
-            android:targetClass="cz.dvratil.fbeventsync.SettingsActivity"
-            android:targetPackage="cz.dvratil.fbeventsync" />
-    </PreferenceScreen>
 </PreferenceScreen>
 

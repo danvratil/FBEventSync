@@ -58,10 +58,6 @@ class SettingsActivity : PreferenceActivity() {
                 fragment = SyncPreferenceFragment()
                 fragmentTitleId = R.string.pref_sync_settings_title
             }
-            CONFIGURE_MISC_ACTION -> {
-                fragment = MiscPreferenceFragment()
-                fragmentTitleId = R.string.pref_misc_settings_title
-            }
         }
 
         // API 21
@@ -90,7 +86,7 @@ class SettingsActivity : PreferenceActivity() {
             mShouldRescheduleSync = false
         }
         if (mShouldForceSync) {
-            CalendarSyncAdapter.requestSync(this)
+            CalendarSyncAdapter.requestSync(this, null)
             mShouldForceSync = false
         }
     }
@@ -188,17 +184,9 @@ class SettingsActivity : PreferenceActivity() {
         }
     }
 
-    class MiscPreferenceFragment : PreferenceFragment() {
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            addPreferencesFromResource(R.xml.misc_preferences)
-        }
-    }
-
     companion object {
         private const val TAG = "PREFS"
         const val CONFIGURE_CALENDARS = "cz.dvratil.fbeventsync.Settings.CONFIGURE_CALENDARS"
         const val CONFIGURE_SYNC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_SYNC"
-        const val CONFIGURE_MISC_ACTION = "cz.dvratil.fbeventsync.Settings.CONFIGURE_MISC"
     }
 }

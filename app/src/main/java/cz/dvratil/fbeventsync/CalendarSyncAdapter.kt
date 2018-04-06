@@ -480,10 +480,11 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
         private const val TAG = "SYNC"
 
-        fun requestSync(context: Context) {
-            val accountType = context.resources.getString(R.string.account_type)
+        fun requestSync(context: Context, account: Account?) {
             val logger = Logger.getInstance(context)
-            for (account in AccountManager.get(context).getAccountsByType(accountType)) {
+            val type = context.getString(R.string.account_type)
+            val accounts = if (account == null) AccountManager.get(context).getAccountsByType(type) else arrayOf(account)
+            accounts.forEach { account ->
                 val extras = Bundle()
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
