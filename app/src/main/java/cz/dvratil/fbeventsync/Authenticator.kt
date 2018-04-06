@@ -25,6 +25,7 @@ import android.accounts.NetworkErrorException
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 
@@ -111,9 +112,13 @@ class Authenticator(private val mContext: Context) : AbstractAccountAuthenticato
                     .setTitle(context.getString(R.string.auth_remove_account_title, account.name))
                     .setMessage(R.string.auth_remove_account_text)
                     .setPositiveButton(R.string.btn_remove, { dialog, _ ->
-                           AccountManager.get(context).removeAccount(account, null, null)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                            AccountManager.get(context).removeAccount(account, null, null, null)
+                        } else {
+                            AccountManager.get(context).removeAccount(account, null, null)
                             dialog.dismiss()
-                        })
+                        }
+                    })
                     .setNegativeButton(R.string.btn_cancel, { dialog, _ ->
                             dialog.cancel()
                         })

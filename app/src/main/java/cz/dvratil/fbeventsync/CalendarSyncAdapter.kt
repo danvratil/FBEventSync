@@ -507,12 +507,12 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             val logger = Logger.getInstance(context)
             val type = context.getString(R.string.account_type)
             val accounts = if (account == null) AccountManager.get(context).getAccountsByType(type) else arrayOf(account)
-            accounts.forEach { account ->
+            accounts.forEach { acc ->
                 val extras = Bundle()
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
-                ContentResolver.requestSync(account, CalendarContract.AUTHORITY, extras)
-                logger.info(TAG, "Explicitly requested sync for account ${account.name}")
+                ContentResolver.requestSync(acc, CalendarContract.AUTHORITY, extras)
+                logger.info(TAG, "Explicitly requested sync for account ${acc.name}")
             }
         }
 
