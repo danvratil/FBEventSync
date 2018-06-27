@@ -54,7 +54,7 @@ object PreferenceAccessor {
         context.contentResolver.insert(uri, values)
     }
 
-    private inline fun remove(context: Context, key: String, type: PreferencesProvider.ValueType) {
+    private fun remove(context: Context, key: String, type: PreferencesProvider.ValueType) {
         var uri = PreferencesProvider.buildUri(key, type)
         context.contentResolver.delete(uri, "(${PreferencesProvider.COLUMN_KEY} = ?)", arrayOf(key))
     }

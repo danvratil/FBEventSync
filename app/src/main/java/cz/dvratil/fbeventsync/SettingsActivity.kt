@@ -48,7 +48,7 @@ class SettingsActivity : FragmentActivity() {
 
         PreferencesMigrator.migrate(this)
 
-        var fragment: BasePreferenceFragment? = null
+        var fragment: BasePreferenceFragment?
         val action = intent.action
         var fragmentTitleId: Int
         when (action) {
