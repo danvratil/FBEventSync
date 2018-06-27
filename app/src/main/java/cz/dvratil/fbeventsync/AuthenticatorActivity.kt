@@ -373,7 +373,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         const val AUTH_NOTIFICATION_ID = 1
         const val AUTH_NOTIFICATION_CHANNEL_ID = "FBEventSync_Auth_NtfChannel"
 
-        const val TOKEN_SCOPE = "me,user_events"
+        const val TOKEN_SCOPE = "me"
 
         private const val PERMISSION_REQUEST_INTERNET = 1
     }
