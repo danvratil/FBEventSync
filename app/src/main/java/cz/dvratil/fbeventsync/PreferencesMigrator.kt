@@ -22,27 +22,35 @@ import android.content.SharedPreferences
 
 object PreferencesMigrator {
 
-    private const val PREFERENCES_VERSION = 1
+    private const val PREFERENCES_VERSION = 2
 
     @Synchronized
     fun migrate(context: Context) {
 
-        val prefs = context.getSharedPreferences(context.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE)
+        val prefs = Preferences(context)
+        val oldPrefs = context.getSharedPreferences(context.getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE)
+        val editor = oldPrefs.edit()
 
-        val version = prefs.getInt(context.getString(R.string.cfg_prefs_version), 0)
+        var version = prefs.prefsVersion()
+        if (version == 0) {
+            version = oldPrefs.getInt(context.getString(R.string.cfg_prefs_version), 0)
+        }
+
         // Nothing to do
         if (version == PREFERENCES_VERSION) {
             return
         }
 
-        val editor = prefs.edit()
-
         if (version < 1) {
-            updateToVersion1(prefs, editor, context)
+            updateToVersion1(oldPrefs, editor, context)
+        }
+        if (version < 2) {
+            updateToVersion2(prefs, oldPrefs, context)
         }
 
-        editor.putInt(context.getString(R.string.cfg_prefs_version), PREFERENCES_VERSION)
-        editor.apply()
+        // Store new version in both old and new config
+        editor.putInt(context.getString(R.string.cfg_prefs_version), PREFERENCES_VERSION).apply()
+        prefs.setPrefsVersion(PREFERENCES_VERSION)
     }
 
 
@@ -61,5 +69,74 @@ object PreferencesMigrator {
                 editor.putInt(context.getString(it), correctColor)
             }
         }
+    }
+
+    // Version 2 migrated from SharedPreferences to custom PreferencesProvider (hidden behind the
+    // Preferences class)
+    private fun updateToVersion2(new: Preferences, old: SharedPreferences, context: Context) {
+        new.setAttendingCalendarAllDayReminders(
+                old.getStringSet(
+                        context.getString(R.string.pref_calendar_attending_allday_reminders),
+                        new.attendingCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+        new.setAttendingCalendarColor(old.getInt(context.getString(R.string.pref_calendar_attending_color),
+                new.attendingCalendarColor()))
+        new.setAttendingCalendarEnabled(old.getBoolean(context.getString(R.string.pref_calendar_attending_enabled),
+                new.attendingCalendarEnabled()))
+        new.setAttendingCalendarReminders(old.getStringSet(
+                    context.getString(R.string.pref_calendar_attending_reminders),
+                    new.attendingCalendarReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+
+        new.setBirthdayCalendarAllDayReminders(old.getStringSet(
+                    context.getString(R.string.pref_calendar_birthday_allday_reminders),
+                    new.birthdayCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+        new.setBirthdayCalendarColor(old.getInt(context.getString(R.string.pref_calendar_birthday_color),
+                new.birthdayCalendarColor()))
+        new.setBirthdayCalendarEnabled(old.getBoolean(context.getString(R.string.pref_calendar_birthday_enabled),
+                new.birthdayCalendarEnabled()))
+
+        new.setDeclinedCalendarAllDayReminders(
+                    old.getStringSet(context.getString(R.string.pref_calendar_declined_allday_reminders),
+                    new.declinedCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+        new.setDeclinedCalendarColor(old.getInt(context.getString(R.string.pref_calendar_declined_color),
+                new.declinedCalendarColor()))
+        new.setDeclinedCalendarEnabled(old.getBoolean(context.getString(R.string.pref_calendar_declined_enabled),
+                new.declinedCalendarEnabled()))
+        new.setDeclinedCalendarReminders(
+                    old.getStringSet(context.getString(R.string.pref_calendar_declined_reminders),
+                    new.declinedCalendarReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+
+        new.setMaybeAttendingCalendarAllDayReminders(old.getStringSet(context.getString(R.string.pref_calendar_tentative_allday_reminders),
+                new.maybeAttendingCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+        new.setMaybeAttendingCalendarColor(old.getInt(context.getString(R.string.pref_calendar_tentative_color),
+                new.maybeAttendingCalendarColor()))
+        new.setMaybeAttendingCalendarEnabled(old.getBoolean(context.getString(R.string.pref_calendar_tentative_enabled),
+                new.maybeAttendingCalendarEnabled()))
+        new.setMaybeAttendingCalendarReminders(old.getStringSet(context.getString(R.string.pref_calendar_tentative_reminders),
+                new.maybeAttendingCalendarReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+
+        new.setNotRespondedCalendarAllDayReminders(old.getStringSet(context.getString(R.string.pref_calendar_not_responded_allday_reminders),
+                new.notRespondedCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+        new.setNotRespondedCalendarColor(old.getInt(context.getString(R.string.pref_calendar_not_responded_color),
+                new.notRespondedCalendarColor()))
+        new.setNotRespondedCalendarEnabled(old.getBoolean(context.getString(R.string.pref_calendar_not_responded_enabled),
+                new.notRespondedCalendarEnabled()))
+        new.setNotRespondedCalendarReminders(old.getStringSet(context.getString(R.string.pref_calendar_not_responded_reminders),
+                new.notRespondedCalendarReminders().map{ it.serialize() }.toSet())
+                .map{ FBReminder.fromString(it) })
+
+        new.setFbLink(old.getBoolean(context.getString(R.string.pref_sync_fblink), new.fbLink()))
+        new.setLanguage(old.getString(context.getString(R.string.pref_language), new.language()))
+        new.setLastSync(old.getLong(context.getString(R.string.cfg_last_sync), new.lastSync()))
+        new.setLastVersion(old.getInt(context.getString(R.string.cfg_last_version), new.lastVersion()))
+        new.setSyncsPerHour(old.getInt(context.getString(R.string.cfg_syncs_per_hour), new.syncsPerHour()))
+        new.setSyncFrequency(Integer.parseInt(old.getString(context.getString(R.string.pref_sync_frequency), new.syncFrequency().toString())))
     }
 }

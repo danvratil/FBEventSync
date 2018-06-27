@@ -22,7 +22,7 @@
                     android:value="@string/pref_calendar_attending_allday_reminders" />
             </intent>
         </PreferenceScreen>
-        <com.kizitonwose.colorpreference.ColorPreference
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
             android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_attending_color"
             android:title="@string/pref_calendar_color_title"
@@ -49,7 +49,7 @@
                     android:value="@string/pref_calendar_tentative_allday_reminders" />
             </intent>
         </PreferenceScreen>
-        <com.kizitonwose.colorpreference.ColorPreference
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
             android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_tentative_color"
             android:title="@string/pref_calendar_color_title"
@@ -76,7 +76,7 @@
                     android:value="@string/pref_calendar_not_responded_allday_reminders" />
             </intent>
         </PreferenceScreen>
-        <com.kizitonwose.colorpreference.ColorPreference
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
             android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_not_responded_color"
             android:title="@string/pref_calendar_color_title"
@@ -103,7 +103,7 @@
                     android:value="@string/pref_calendar_declined_allday_reminders" />
             </intent>
         </PreferenceScreen>
-        <com.kizitonwose.colorpreference.ColorPreference
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
             android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_declined_color"
             android:title="@string/pref_calendar_color_title"
@@ -124,7 +124,7 @@
                     android:value="@string/pref_calendar_birthday_allday_reminders" />
             </intent>
         </PreferenceScreen>
-        <com.kizitonwose.colorpreference.ColorPreference
+        <com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
             android:defaultValue="@color/colorFBBlue"
             android:key="@string/pref_calendar_birthday_color"
             android:title="@string/pref_calendar_color_title"

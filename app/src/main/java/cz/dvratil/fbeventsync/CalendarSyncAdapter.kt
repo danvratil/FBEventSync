@@ -37,7 +37,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
 
 import com.loopj.android.http.DataAsyncHttpResponseHandler

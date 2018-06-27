@@ -22,20 +22,22 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.res.XmlResourceParser
 import android.os.Bundle
-import android.preference.ListPreference
-import android.preference.Preference
-import android.preference.PreferenceActivity
-import android.preference.PreferenceFragment
-import android.preference.PreferenceManager
+import android.support.v4.app.FragmentActivity
+import android.support.v7.preference.ListPreference
+import android.support.v7.preference.Preference
+import android.support.v7.preference.PreferenceFragmentCompat
+import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.Toolbar
 
-import com.kizitonwose.colorpreference.ColorPreference
+import com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
 import com.larswerkman.lobsterpicker.LobsterPicker
 import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider
 
+import cz.dvratil.fbeventsync.preferences.Preferences as FBPreferences
+
 import java.util.Locale
 
-class SettingsActivity : PreferenceActivity() {
+class SettingsActivity : FragmentActivity() {
 
     private var mShouldForceSync = false
     private var mShouldRescheduleSync = false
@@ -46,9 +48,9 @@ class SettingsActivity : PreferenceActivity() {
 
         PreferencesMigrator.migrate(this)
 
-        var fragment: PreferenceFragment? = null
+        var fragment: BasePreferenceFragment? = null
         val action = intent.action
-        var fragmentTitleId = 0
+        var fragmentTitleId: Int
         when (action) {
             CONFIGURE_CALENDARS -> {
                 fragment = CalendarPreferenceFragment()
@@ -58,19 +60,23 @@ class SettingsActivity : PreferenceActivity() {
                 fragment = SyncPreferenceFragment()
                 fragmentTitleId = R.string.pref_sync_settings_title
             }
+            else -> throw Exception("Invalid action")
         }
+
+        fragment.preferences = FBPreferences(this)
 
         // API 21
         //String preferencesName = PreferenceManager.getDefaultSharedPreferencesName(this);
-        val prefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE)
-        prefs.registerOnSharedPreferenceChangeListener { _, key ->
+        val sharedPrefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE)
+        sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
             if (key == getString(R.string.pref_sync_frequency)) {
                 mShouldRescheduleSync = true
             }
             mShouldForceSync = true
         }
 
-        fragmentManager.beginTransaction().replace(R.id.settings_content, fragment).commit()
+
+        supportFragmentManager.beginTransaction().replace(R.id.settings_content, fragment).commit()
         findViewById<Toolbar>(R.id.settings_toolbar).title = getString(fragmentTitleId)
     }
 
@@ -101,7 +107,15 @@ class SettingsActivity : PreferenceActivity() {
         maybeSync()
     }
 
-    class CalendarPreferenceFragment : PreferenceFragment() {
+    open class BasePreferenceFragment : PreferenceFragmentCompat() {
+        var preferences : FBPreferences? = null
+
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            preferenceManager.preferenceDataStore = preferences!!
+        }
+    }
+
+    class CalendarPreferenceFragment : BasePreferenceFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.calendar_preferences)
@@ -122,7 +136,7 @@ class SettingsActivity : PreferenceActivity() {
         }
 
         private fun showColorDialog(key: String, preference: Preference) {
-            val inflater = activity.layoutInflater
+            val inflater = activity!!.layoutInflater
             @SuppressLint("InflateParams")
             val colorView = inflater.inflate(R.layout.color_dialog, null)
 
@@ -140,15 +154,13 @@ class SettingsActivity : PreferenceActivity() {
             AlertDialog.Builder(activity)
                     .setView(colorView)
                     .setTitle(getString(R.string.color_dlg_title))
-                    .setPositiveButton(getString(R.string.color_dlg_save_btn_title)) { _, _ -> (preference as ColorPreference).value = lobsterPicker.color }
+                    .setPositiveButton(getString(R.string.color_dlg_save_btn_title)) { _, _ -> (preference as ColorPreferenceCompat).value = lobsterPicker.color }
                     .setNegativeButton(getString(R.string.color_dlg_close_btn_title), null)
                     .show()
         }
-
-
     }
 
-    class SyncPreferenceFragment : PreferenceFragment() {
+    class SyncPreferenceFragment : BasePreferenceFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.sync_preferences)
@@ -174,8 +186,8 @@ class SettingsActivity : PreferenceActivity() {
             } catch (e: Exception) {
                 when (e) {
                     is org.xmlpull.v1.XmlPullParserException,
-                    is java.io.IOException -> Logger.getInstance(activity).error(TAG, "SyncPreferenceFragment: $e")
-                    else -> Logger.getInstance(activity).error(TAG, "SyncPreferenceFragment: unhandled $e")
+                    is java.io.IOException -> Logger.getInstance(context!!).error(TAG, "SyncPreferenceFragment: $e")
+                    else -> Logger.getInstance(context!!).error(TAG, "SyncPreferenceFragment: unhandled $e")
                 }
             }
 

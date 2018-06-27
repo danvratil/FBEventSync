@@ -211,6 +211,8 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
             FBCalendar.CalendarType.TYPE_BIRTHDAY -> mContext.preferences.birthdayCalendarEnabled()
         }
 
+        mContext.logger.debug(TAG, "Calendar ${name()} is enabled? $isEnabled")
+
         try {
             mLocalCalendarId = findLocalCalendar()
             if (mLocalCalendarId < 0) {
