@@ -109,7 +109,7 @@
     <string name="pref_about_rate_app_title">Vurder dette programmet</string>
     <string name="pref_about_privacy_title">Personvern</string>
     <string name="pref_about_license_title">Lisens</string>
-    <string name="pref_about_license_summary">GNU General Public lisens v3.0</string>
+    <string name="pref_about_license_summary">GNU General Public lisens v3.0+</string>
     <string name="pref_about_version_title">Versjon</string>
 
 
