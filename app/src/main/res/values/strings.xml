@@ -21,38 +21,38 @@
     <string name="main_configure_sync_btn">Configure Sync Preferences</string>
     <string name="main_configure_misc_btn">Configure Miscellaneous</string>
     <string name="main_sync_now">Sync Now</string>
-    <string name="main_sync_in_progress">Sync in progress...</string>
+    <string name="main_sync_in_progress">Sync in progress…</string>
 
     <!-- NAVIGATION DRAWER ACTIONS //-->
     <string name="nav_sync_all">Sync All</string>
     <string name="nav_configure_calendars">Configure Calendars</string>
     <string name="nav_configure_sync">Configure Sync</string>
-    <string name="nav_sync_logs">Sync Logs</string>
+    <string name="nav_sync_logs" comment="(Verb) Synchronize the logs">Sync Logs</string>
     <string name="nav_report_bug">Report Bug</string>
     <string name="nav_faq">FAQ</string>
     <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
     <string name="nav_about">About</string>
 
     <!-- PERMISSIONS ACTIVITY //-->
-    <string name="perms_activity_title">Permissions Request</string>
+    <string name="perms_activity_title">Permission Requests</string>
 
     <!-- LOGVIEW ACTIVITY //-->
     <string name="log_activity_title">Log View</string>
     <string name="log_clear_log_action">Clear Log</string>
     <string name="log_send_to_dev_action">Send to Developer</string>
     <string name="log_send_email_action">Send Email&#8230;</string>
-    <string name="log_email_template">[Please, describe your problem here, preferably in English]</string>
+    <string name="log_email_template">[Please describe your problem, preferably in English]</string>
     <string name="log_error_sending_log_toast">Failed to send logs: Cannot read the log file</string>
 
     <!-- AUTHENTICATION ACTIVITY //-->
     <string name="auth_activity_title">Authenticate with Facebook</string>
-    <string name="auth_account_creation_error_toast">Error during authentication</string>
+    <string name="auth_account_creation_error_toast">Could not authenticate</string>
     <string name="auth_account_creation_success_toast">Account added</string>
-    <string name="auth_rate_limiting_toast">Facebook API is currently experiencing problems. Please try again later.</string>
+    <string name="auth_rate_limiting_toast">The Facebook API is unresponsive. Please try again later.</string>
     <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook&#8230;</string>
     <string name="auth_progress_retrieving_calendars">Retrieving calendars&#8230;</string>
     <string name="auth_progress_retrieving_userinfo">Retrieving user info&#8230;</string>
-    <string name="auth_calendar_uri_error_toast">Failed to retrieve calendar URI</string>
+    <string name="auth_calendar_uri_error_toast">Could not retrieve calendar URI</string>
 
     <string name="auth_remove_account_title">Remove account %s?</string>
     <string name="auth_remove_account_text">The account will only be removed from this app, your Facebook account and other apps will remain unaffected.</string>
@@ -66,18 +66,18 @@
     <string name="pref_about_privacy_title">Privacy</string>
     <string name="pref_about_license" translatable="false">pref_about_license</string>
     <string name="pref_about_license_title">License</string>
-    <string name="pref_about_license_summary">GNU General Public License v3.0</string>
+    <string name="pref_about_license_summary">GNU General Public License v3.0+.</string>
     <string name="pref_about_version" translatable="false">pref_about_version</string>
     <string name="pref_about_version_title">Version</string>
 
 
     <!-- CALENDAR SYNC //-->
-    <string name="calendar_not_responded_title">Events I have not Responded To</string>
-    <string name="calendar_declined_title">Events I\'m not Attending</string>
-    <string name="calendar_tentative_title">Events I May Be Attending</string>
-    <string name="calendar_attending_title">Events I\'m Attending</string>
+    <string name="calendar_not_responded_title">Unanswered</string>
+    <string name="calendar_declined_title">Not Attending</string>
+    <string name="calendar_tentative_title">Undecided</string>
+    <string name="calendar_attending_title">Attending</string>
     <string name="calendar_birthday_title">Friends\' Birthdays</string>
-    <string name="sync_ntf_needs_reauthentication_title">Event Sync for Facebook needs to log in</string>
+    <string name="sync_ntf_needs_reauthentication_title">Log in to Event Sync with Facebook</string>
     <string name="sync_ntf_needs_reauthentication_description">Tap here to re-authenticate with Facebook</string>
 
     <!-- PREFERENCES //-->
@@ -85,7 +85,7 @@
 
     <!-- Sync settings //-->
     <string name="pref_sync_settings" translatable="false">pref_sync_settings</string>
-    <string name="pref_sync_settings_title">Sync Settings</string>
+    <string name="pref_sync_settings_title" comment="Settings for synchronization">Sync Settings</string>
     <string name="pref_sync_settings_summary">Configure how often and when to sync events.</string>
 
     <string name="pref_sync_frequency" translatable="false">pref_sync_frequency</string>
@@ -95,13 +95,13 @@
 
     <string name="pref_sync_fblink" translatable="false">pref_sync_fblink</string>
     <string name="pref_sync_fblink_title">Add link to Facebook</string>
-    <string name="pref_sync_fblink_summary">Add a link to Facebook to event descriptions.</string>
+    <string name="pref_sync_fblink_summary">Add a link to event description on Facebook.</string>
 
     <string name="pref_language" translatable="false">pref_language</string>
     <string name="pref_language_title">Language</string>
-    <string name="pref_language_summary">Language for birthdays and events</string>
+    <string name="pref_language_summary">Language for birthdays and events.</string>
     <string name="pref_language_default_value" translatable="false">device</string>
-    <string name="pref_language_default_entry">Device language</string>
+    <string name="pref_language_default_entry">System language</string>
     <string-array name="pref_language_entries">
         <item>@string/pref_language_default_entry</item>
     </string-array>
@@ -112,7 +112,7 @@
     <!-- Calendar settings //-->
     <string name="pref_calendar_settings" translatable="false">pref_calendar_settings</string>
     <string name="pref_calendar_settings_title">Calendars</string>
-    <string name="pref_calendar_settings_summary">Set calendars, colors and reminders</string>
+    <string name="pref_calendar_settings_summary">Set calendars, colors and reminders.</string>
 
     <string name="pref_calendar_attending_enabled" translatable="false">pref_attending_enabled</string>
     <string name="pref_calendar_attending_reminders" translatable="false">pref_attending_reminders</string>
@@ -136,7 +136,7 @@
 
     <string name="pref_calendar_enabled_title">Enabled</string>
     <string name="pref_calendar_reminders_title">Reminders</string>
-    <string name="pref_calendar_allday_reminders_title">All-day Events Reminders</string>
+    <string name="pref_calendar_allday_reminders_title">All-day Event Reminders</string>
     <string name="pref_calendar_color_title">Color</string>
 
     <string name="color_dlg_title">Choose Color</string>
@@ -149,11 +149,11 @@
 
     <!-- N day(s) before at HH:MM //-->
     <plurals name="pref_reminder_allday_description">
-        <item quantity="one">%d day before at %s</item>
-        <item quantity="other">%d days before at %s</item>
+        <item quantity="one">%d day before, at %s</item>
+        <item quantity="other">%d days before, at %s</item>
     </plurals>
     <!-- [ number picker ] days before at [ time picker ] //-->
-    <string name="allday_reminder_daysBeforeAt">days before at</string>
+    <string name="allday_reminder_daysBeforeAt">days before, at</string>
 
     <!-- Minutes,allday, see FBReminder.fromString for details //-->
     <string-array name="pref_allday_reminders_default_value">
@@ -165,21 +165,21 @@
         <item quantity="other">%d minutes</item>
     </plurals>
 
-    <string name="pref_reminder_0minutes_entry">0 minutes</string>
+    <string name="pref_reminder_0minutes_entry">Right away</string>
     <string name="pref_reminder_0minutes_value" translatable="false">0</string>
-    <string name="pref_reminder_5minutes_entry">5 minutes</string>
+    <string name="pref_reminder_5minutes_entry">Five minutes</string>
     <string name="pref_reminder_5minutes_value" translatable="false">5</string>
-    <string name="pref_reminder_10minutes_entry">10 minutes</string>
+    <string name="pref_reminder_10minutes_entry">Ten minutes</string>
     <string name="pref_reminder_10minutes_value" translatable="false">10</string>
     <string name="pref_reminder_15minutes_entry">15 minutes</string>
     <string name="pref_reminder_15minutes_value" translatable="false">15</string>
     <string name="pref_reminder_20minutes_entry">20 minutes</string>
     <string name="pref_reminder_20minutes_value" translatable="false">20</string>
-    <string name="pref_reminder_30minutes_entry">30 minutes</string>
+    <string name="pref_reminder_30minutes_entry">Half an hour</string>
     <string name="pref_reminder_30minutes_value" translatable="false">30</string>
-    <string name="pref_reminder_1hour_entry">1 hour</string>
+    <string name="pref_reminder_1hour_entry">One hour</string>
     <string name="pref_reminder_1hour_value" translatable="false">60</string>
-    <string name="pref_reminder_2hours_entry">2 hours</string>
+    <string name="pref_reminder_2hours_entry">Two hours</string>
     <string name="pref_reminder_2hours_value" translatable="false">120</string>
     <string name="pref_reminder_12hours_entry">12 hours</string>
     <string name="pref_reminder_12hours_value" translatable="false">720</string>
@@ -187,9 +187,9 @@
     <string name="pref_reminder_24hours_value" translatable="false">1440</string>
     <string name="pref_reminder_36hours_entry">36 hours</string>
     <string name="pref_reminder_36hours_value" translatable="false">2160</string>
-    <string name="pref_reminder_2days_entry">2 days</string>
+    <string name="pref_reminder_2days_entry">Two days</string>
     <string name="pref_reminder_2days_value" translatable="false">2880</string>
-    <string name="pref_reminder_1week_entry">1 week</string>
+    <string name="pref_reminder_1week_entry">One week</string>
     <string name="pref_reminder_1week_value" translatable="false">10080</string>
 
     <string-array name="pref_reminders_entries">
@@ -228,13 +228,13 @@
 
     <string name="pref_sync_frequency_never_entry">Never</string>
     <string name="pref_sync_frequency_never_value" translatable="false">0</string>
-    <string name="pref_sync_frequency_1hour_entry">1 hour</string>
+    <string name="pref_sync_frequency_1hour_entry">One hour</string>
     <string name="pref_sync_frequency_1hour_value" translatable="false">3600</string>
-    <string name="pref_sync_frequency_2hours_entry">2 hours</string>
+    <string name="pref_sync_frequency_2hours_entry">Two hours</string>
     <string name="pref_sync_frequency_2hours_value" translatable="false">7200</string>
-    <string name="pref_sync_frequency_4hours_entry">4 hours</string>
+    <string name="pref_sync_frequency_4hours_entry">Four hours</string>
     <string name="pref_sync_frequency_4hours_value" translatable="false">14400</string>
-    <string name="pref_sync_frequency_8hours_entry">8 hours</string>
+    <string name="pref_sync_frequency_8hours_entry">Eight hours</string>
     <string name="pref_sync_frequency_8hours_value" translatable="false">28800</string>
     <string name="pref_sync_frequency_12hours_entry">12 hours</string>
     <string name="pref_sync_frequency_12hours_value" translatable="false">43200</string>
@@ -258,5 +258,5 @@
         <item>@string/pref_sync_frequency_12hours_value</item>
         <item>@string/pref_sync_frequency_24hours_value</item>
     </string-array>
-    <string name="pref_general_settings_title">General</string>
+    <string name="pref_general_settings_title">Settings</string>
 </resources>
