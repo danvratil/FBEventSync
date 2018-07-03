@@ -169,7 +169,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
             android.database.sqlite.SQLiteException::class)
     private fun fetchLocalPastEvents(): HashMap<String /* FBID */, Long>/* local ID */ {
         return fetchLocalEvents(
-                "((${CalendarContract.Events.CALENDAR_ID} = ?) AND (${CalendarContract.Events.DTSTART} < ?))",
+                "((${CalendarContract.Events.CALENDAR_ID} = ?) AND (${CalendarContract.Events.DTEND} < ?))",
                 arrayOf(mLocalCalendarId.toString(), Calendar.getInstance().timeInMillis.toString()))
     }
 
