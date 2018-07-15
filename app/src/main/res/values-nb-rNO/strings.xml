@@ -89,4 +89,40 @@
     <string name="pref_sync_fblink_title">Legg til lenke til Facebook</string>
     <string name="pref_sync_fblink_summary">Legg til en Facebook-lenke til hendelsesbeskrivelser.</string>
 
+    <string name="btn_save">Lagre</string>
+    <string name="btn_cancel">Avbryt</string>
+    <string name="btn_remove">Fjern</string>
+
+
+    <string name="nav_sync_all">Synkroniser alt</string>
+    <string name="nav_configure_calendars">Sett opp kalendere</string>
+    <string name="nav_configure_sync">Sett opp synkronisering</string>
+    <string name="nav_sync_logs">Synkroniser logg</string>
+    <string name="nav_report_bug">Innrapporter feil</string>
+    <string name="nav_faq">O-S-S</string>
+    <string name="nav_about">Om</string>
+
+    <string name="auth_remove_account_title">Fjern kontoen %s?</string>
+    <string name="auth_remove_account_text">Kontoen vil kun fjernes fra dette programmet, vil ikke ha innvirkning på Facebook-kontoen din eller andre programmer.</string>
+
+    <string name="about_activity_title">Om</string>
+    <string name="pref_about_rate_app_title">Vurder dette programmet</string>
+    <string name="pref_about_privacy_title">Personvern</string>
+    <string name="pref_about_license_title">Lisens</string>
+    <string name="pref_about_license_summary">GNU General Public lisens v3.0+</string>
+    <string name="pref_about_version_title">Versjon</string>
+
+
+    <string name="pref_calendar_allday_reminders_title">Heldagspåminnelser</string>
+    <plurals name="pref_reminder_allday_description">
+	<item quantity="one">%d dag før, klokka %s</item>
+	<item quantity="other">%d dager før, klokka %s</item>
+</plurals>
+    <string name="allday_reminder_daysBeforeAt">dager før, klokka</string>
+
+    <plurals name="pref_reminder_anyminutes">
+	<item quantity="one">%d minutt</item>
+	<item quantity="other">%d minutter</item>
+</plurals>
+
     </resources>

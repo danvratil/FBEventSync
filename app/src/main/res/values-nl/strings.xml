@@ -88,4 +88,41 @@
 <string name="pref_sync_fblink_title">Facebook-link toevoegen</string>
     <string name="pref_sync_fblink_summary">Een Facebook-link toevoegen naar evenement-omschrijvingen.</string>
 
+    <string name="btn_save">Opslaan</string>
+    <string name="btn_cancel">Annuleren</string>
+    <string name="btn_remove">Verwijderen</string>
+
+
+    <string name="nav_sync_all">Alles synchroniseren</string>
+    <string name="nav_configure_calendars">Kalenders configureren</string>
+    <string name="nav_configure_sync">Synchronisatie configureren</string>
+    <string name="nav_sync_logs">Logbestanden synchroniseren</string>
+    <string name="nav_report_bug">Bug rapporteren</string>
+    <string name="nav_faq">Veelgestelde vragen</string>
+    <string name="nav_about">Over</string>
+
+    <string name="auth_remove_account_title">Wil je het account \'%s\' verwijderen?</string>
+    <string name="auth_remove_account_text">Het account wordt alleen verwijderd uit deze app; je Facebook-account en andere apps blijven ongemoeid.</string>
+
+    <string name="about_activity_title">Over</string>
+    <string name="pref_about_rate_app_title">App beoordelen</string>
+    <string name="pref_about_privacy_title">Privacy</string>
+    <string name="pref_about_license_title">Licentie</string>
+    <string name="pref_about_license_summary">GNU General Public License v3.0
+\n</string>
+    <string name="pref_about_version_title">Versie</string>
+
+
+    <string name="pref_calendar_allday_reminders_title">Herinneringen over gehele dag-gebeurtenissen</string>
+    <plurals name="pref_reminder_allday_description">
+	<item quantity="one">%d dag voor %s</item>
+	<item quantity="other">%d dagen voor %s</item>
+</plurals>
+    <string name="allday_reminder_daysBeforeAt">dagen voor</string>
+
+    <plurals name="pref_reminder_anyminutes">
+	<item quantity="one">%d minuut</item>
+	<item quantity="other">$d minuten</item>
+</plurals>
+
     </resources>

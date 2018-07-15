@@ -99,4 +99,42 @@
     <string name="pref_sync_fblink_title">Přidat odkaz na Facebook</string>
     <string name="pref_sync_fblink_summary">Přidat odkaz na Facebook do popisku události.</string>
 
+    <string name="btn_save">Uložit</string>
+    <string name="btn_cancel">Zrušit</string>
+    <string name="btn_remove">Odstranit</string>
+
+
+    <string name="nav_sync_all">Synchronizovat vše</string>
+    <string name="nav_configure_calendars">Nastavení kalendářů</string>
+    <string name="nav_configure_sync">Nastavení synchronizace</string>
+    <string name="nav_sync_logs">Logy</string>
+    <string name="nav_report_bug">Nahlásit chybu</string>
+    <string name="nav_faq">FAQ</string>
+    <string name="nav_about">O Aplikaci</string>
+
+    <string name="auth_remove_account_title">Odebrat účet %s?</string>
+    <string name="auth_remove_account_text">Účet bude odstraněn pouze z této aplikace. Váš Facebookový účet i ostatní aplikace zůstanou nedotčeny.</string>
+
+    <string name="about_activity_title">O aplikaci</string>
+    <string name="pref_about_rate_app_title">Ohodnotit aplikaci</string>
+    <string name="pref_about_privacy_title">Soukromí</string>
+    <string name="pref_about_license_title">Licence</string>
+    <string name="pref_about_license_summary">GNU General Public License v3.0</string>
+    <string name="pref_about_version_title">Verze</string>
+
+
+    <string name="pref_calendar_allday_reminders_title">Upomínky celodenních událostí</string>
+    <plurals name="pref_reminder_allday_description">
+	<item quantity="one">%d den předem v %s</item>
+	<item quantity="few">%d dny předem v %s</item>
+	<item quantity="other">%d dní předem v %s</item>
+</plurals>
+    <string name="allday_reminder_daysBeforeAt">dní předem v</string>
+
+    <plurals name="pref_reminder_anyminutes">
+	<item quantity="one">%d minuta</item>
+	<item quantity="few">%d minuty</item>
+	<item quantity="other">%d minut</item>
+</plurals>
+
     </resources>
