@@ -183,9 +183,12 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
     protected open fun fetchLocalFutureEvents(): HashMap<String /* FBID */, Long>/* local ID */ {
+        val now = Calendar.getInstance().timeInMillis.toString()
         return fetchLocalEvents(
-                "((${CalendarContract.Events.CALENDAR_ID} = ?) AND (${CalendarContract.Events.DTSTART} >= ?))",
-                arrayOf(mLocalCalendarId.toString(), Calendar.getInstance().timeInMillis.toString()))
+                "((${CalendarContract.Events.CALENDAR_ID} = ?) AND (" +
+                        "(${CalendarContract.Events.DTEND} IS NOT NULL AND ${CalendarContract.Events.DTEND} > ?)" +
+                        "OR (${CalendarContract.Events.DTEND} IS NULL AND ${CalendarContract.Events.DTSTART} >= ?)))",
+                arrayOf(mLocalCalendarId.toString(), now, now))
     }
 
     @Throws(android.os.RemoteException::class,
