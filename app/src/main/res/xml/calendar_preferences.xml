@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory android:title="@string/calendar_attending_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_calendar_attending_enabled"
             android:title="@string/pref_calendar_enabled_title" />
@@ -30,7 +30,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_tentative_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_calendar_tentative_enabled"
             android:title="@string/pref_calendar_enabled_title" />
@@ -57,7 +57,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_not_responded_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_calendar_not_responded_enabled"
             android:title="@string/pref_calendar_enabled_title" />
@@ -84,7 +84,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_declined_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_calendar_declined_enabled"
             android:title="@string/pref_calendar_enabled_title" />
@@ -111,7 +111,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/calendar_birthday_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="@string/pref_calendar_birthday_enabled"
             android:title="@string/pref_calendar_enabled_title" />
