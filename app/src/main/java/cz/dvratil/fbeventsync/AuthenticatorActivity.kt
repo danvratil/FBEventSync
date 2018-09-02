@@ -336,7 +336,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         setAccountAuthenticatorResult(result.extras)
         setResult(Activity.RESULT_OK, result)
 
-        CalendarSyncAdapter.updateSync(this)
+        CalendarSyncAdapter.updateSync(this, account)
 
         Toast.makeText(this, R.string.auth_account_creation_success_toast, Toast.LENGTH_SHORT)
                 .show()

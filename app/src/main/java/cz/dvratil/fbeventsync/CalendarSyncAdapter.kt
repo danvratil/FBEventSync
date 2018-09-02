@@ -516,39 +516,37 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             }
         }
 
-        fun updateSync(context: Context) {
+        fun updateSync(context: Context, account : Account?) {
             val accountType = context.resources.getString(R.string.account_type)
 
             val pref = Preferences(context)
             val syncInterval = pref.syncFrequency()
             val logger = Logger.getInstance(context)
-
-            for (account in AccountManager.get(context).getAccountsByType(accountType)) {
+            val accounts = if (account == null) AccountManager.get(context).getAccountsByType(accountType) else arrayOf(account)
+            accounts.forEach { acc ->
                 val extras = Bundle()
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
 
-                ContentResolver.cancelSync(account, CalendarContract.AUTHORITY)
-                if (syncInterval == 0) {
-                    continue
-                }
-
-                // Schedule periodic sync based on current configuration
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    // we can enable inexact timers in our periodic sync
-                    val request = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        SyncRequest.Builder()
-                                .syncPeriodic(syncInterval.toLong(), (syncInterval / 3).toLong())
-                                .setSyncAdapter(account, CalendarContract.AUTHORITY)
-                                .setExtras(Bundle()).build()
+                ContentResolver.cancelSync(acc, CalendarContract.AUTHORITY)
+                if (syncInterval > 0) {
+                    // Schedule periodic sync based on current configuration
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        // we can enable inexact timers in our periodic sync
+                        val request = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            SyncRequest.Builder()
+                                    .syncPeriodic(syncInterval.toLong(), (syncInterval / 3).toLong())
+                                    .setSyncAdapter(acc, CalendarContract.AUTHORITY)
+                                    .setExtras(Bundle()).build()
+                        } else {
+                            null
+                        }
+                        ContentResolver.requestSync(request!!)
+                        logger.info(TAG, "Scheduled periodic sync using requestSync, interval: $syncInterval")
                     } else {
-                        null
+                        ContentResolver.addPeriodicSync(acc, CalendarContract.AUTHORITY, Bundle(), syncInterval.toLong())
+                        logger.info(TAG, "Scheduled periodic sync using addPeriodicSync, interval: $syncInterval")
                     }
-                    ContentResolver.requestSync(request!!)
-                    logger.info(TAG, "Scheduled periodic sync using requestSync, interval: $syncInterval")
-                } else {
-                    ContentResolver.addPeriodicSync(account, CalendarContract.AUTHORITY, Bundle(), syncInterval.toLong())
-                    logger.info(TAG, "Scheduled periodic sync using addPeriodicSync, interval: $syncInterval")
                 }
             }
         }

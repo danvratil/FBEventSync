@@ -114,6 +114,8 @@ class MainActivity : AppCompatActivity() {
             adapter = AccountAdapter(context)
             layoutManager = LinearLayoutManager(context)
         }
+
+        registerSyncIfNeeded();
     }
 
     override fun onResume() {
@@ -142,6 +144,16 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun registerSyncIfNeeded() {
+        val syncs = ContentResolver.getCurrentSyncs()
+        val accounts = AccountManager.get(this).getAccountsByType(getString(R.string.account_type));
+        accounts.forEach { account ->
+            if (syncs.find { it.account == account } == null) {
+                CalendarSyncAdapter.updateSync(this, account)
+            }
         }
     }
 }

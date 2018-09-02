@@ -92,7 +92,7 @@ class SettingsActivity : FragmentActivity() {
 
     private fun maybeSync() {
         if (mShouldRescheduleSync) {
-            CalendarSyncAdapter.updateSync(this)
+            CalendarSyncAdapter.updateSync(this, null)
             mShouldRescheduleSync = false
         }
         if (mShouldForceSync) {
