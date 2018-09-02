@@ -1,4 +1,5 @@
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -23,5 +24,13 @@
 
     <style name="SettingsTheme" parent="AppTheme.NoActionBar">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:textSize">16sp</item>
+        <!-- fontFamily is only supported from API level 16, using typeFace on 14-15 -->
+        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">sans-serif-medium</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:listPreferredItemPaddingStart">5dp</item>
+        <item name="android:listPreferredItemPaddingEnd">5dp</item>
+        <item name="android:listPreferredItemHeight">58dp</item>
     </style>
 </resources>

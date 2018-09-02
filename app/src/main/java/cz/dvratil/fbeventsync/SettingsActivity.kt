@@ -46,6 +46,8 @@ class SettingsActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        setTheme(R.style.SettingsTheme)
+
         PreferencesMigrator.migrate(this)
 
         var fragment: BasePreferenceFragment?
