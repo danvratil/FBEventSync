@@ -61,8 +61,9 @@ object PreferenceAccessor {
 
 
     fun getString(context: Context, key: String, defaultValue: String?): String?
-            = query(context, key, defaultValue, PreferencesProvider.ValueType.STRING,
-                { cursor, column -> cursor.getString(column) })
+            = query(context, key, defaultValue, PreferencesProvider.ValueType.STRING) {
+                cursor, column -> cursor.getString(column)
+            }
 
     fun putString(context: Context, key: String, value: String?)
             = update(context, key, value, PreferencesProvider.ValueType.STRING)
@@ -72,8 +73,9 @@ object PreferenceAccessor {
 
 
     fun getStringSet(context: Context, key: String, defaultValue: Set<String>?)
-            = query(context, key, defaultValue, PreferencesProvider.ValueType.STRINGSET,
-                  { cursor, column -> Utils.stringToSet(cursor.getString(column)) })
+            = query(context, key, defaultValue, PreferencesProvider.ValueType.STRINGSET) {
+                cursor, column -> Utils.stringToSet(cursor.getString(column))
+            }
 
     fun putStringSet(context: Context, key: String, value: Set<String>?)
             = update(context, key, Utils.setToString(value), PreferencesProvider.ValueType.STRINGSET)
@@ -83,8 +85,9 @@ object PreferenceAccessor {
 
 
     fun getInteger(context: Context, key: String, defaultValue: Int)
-            = query(context, key, defaultValue, PreferencesProvider.ValueType.INTEGER,
-                    { cursor, column -> cursor.getInt(column) })
+            = query(context, key, defaultValue, PreferencesProvider.ValueType.INTEGER) {
+                cursor, column -> cursor.getInt(column)
+           }
 
     fun putInteger(context: Context, key: String, value: Int)
             = update(context, key, value, PreferencesProvider.ValueType.INTEGER)
@@ -94,8 +97,9 @@ object PreferenceAccessor {
 
 
     fun getLong(context: Context, key: String, defaultValue: Long)
-            = query(context, key, defaultValue, PreferencesProvider.ValueType.LONG,
-                  { cursor, column -> cursor.getLong(column) })
+            = query(context, key, defaultValue, PreferencesProvider.ValueType.LONG) {
+                cursor, column -> cursor.getLong(column)
+            }
 
     fun putLong(context: Context, key: String, value: Long)
             = update(context, key, value, PreferencesProvider.ValueType.LONG)
@@ -105,8 +109,9 @@ object PreferenceAccessor {
 
 
     fun getBoolean(context: Context, key: String, defaultValue: Boolean)
-            = query(context, key, defaultValue, PreferencesProvider.ValueType.BOOLEAN,
-                  { cursor, column -> (cursor.getInt(column) == 1) })
+            = query(context, key, defaultValue, PreferencesProvider.ValueType.BOOLEAN) {
+                cursor, column -> (cursor.getInt(column) == 1)
+            }
 
     fun putBoolean(context: Context, key: String, value: Boolean)
             = update(context, key, if (value) 1 else 0, PreferencesProvider.ValueType.BOOLEAN)
@@ -116,8 +121,9 @@ object PreferenceAccessor {
 
 
     fun getFloat(context: Context, key: String, defaultValue: Float)
-            = query(context, key, defaultValue, PreferencesProvider.ValueType.FLOAT,
-                { cursor, column -> cursor.getFloat(column) })
+            = query(context, key, defaultValue, PreferencesProvider.ValueType.FLOAT) {
+                cursor, column -> cursor.getFloat(column)
+            }
 
     fun putFloat(context: Context, key: String, value: Float)
             = update(context, key, value, PreferencesProvider.ValueType.FLOAT)
