@@ -21,6 +21,8 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.res.XmlResourceParser
+import android.database.ContentObserver
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.preference.ListPreference
@@ -28,6 +30,7 @@ import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.Toolbar
+import android.util.Log
 
 import com.kizitonwose.colorpreferencecompat.ColorPreferenceCompat
 import com.larswerkman.lobsterpicker.LobsterPicker
@@ -41,6 +44,14 @@ class SettingsActivity : FragmentActivity() {
 
     private var mShouldForceSync = false
     private var mShouldRescheduleSync = false
+    private var mObserver = object: Preferences.PreferencesObserver() {
+        override fun onChange(selfChange: Boolean, uri: Uri) {
+            if (uri.pathSegments.last() == getString(R.string.pref_sync_frequency)) {
+                mShouldRescheduleSync = true
+            }
+            mShouldForceSync = true
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,16 +78,7 @@ class SettingsActivity : FragmentActivity() {
 
         fragment.preferences = FBPreferences(this)
 
-        // API 21
-        //String preferencesName = PreferenceManager.getDefaultSharedPreferencesName(this);
-        val sharedPrefs = getSharedPreferences(getString(R.string.cz_dvratil_fbeventsync_preferences), Context.MODE_PRIVATE)
-        sharedPrefs.registerOnSharedPreferenceChangeListener { _, key ->
-            if (key == getString(R.string.pref_sync_frequency)) {
-                mShouldRescheduleSync = true
-            }
-            mShouldForceSync = true
-        }
-
+        Preferences(this).registerChangeListener(mObserver)
 
         supportFragmentManager.beginTransaction().replace(R.id.settings_content, fragment).commit()
         findViewById<Toolbar>(R.id.settings_toolbar).title = getString(fragmentTitleId)
@@ -102,11 +104,18 @@ class SettingsActivity : FragmentActivity() {
     override fun onPause() {
         super.onPause()
         maybeSync()
+        Preferences(this).unregisterChangeListener(mObserver)
     }
 
     override fun onStop() {
         super.onStop()
         maybeSync()
+        Preferences(this).unregisterChangeListener(mObserver)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Preferences(this).registerChangeListener(mObserver)
     }
 
     open class BasePreferenceFragment : PreferenceFragmentCompat() {

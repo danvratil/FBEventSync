@@ -18,6 +18,7 @@
 package cz.dvratil.fbeventsync.preferences
 
 import android.content.ContentProvider
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
@@ -79,6 +80,7 @@ class PreferencesProvider: ContentProvider() {
         val db = mStoreHelper.writableDatabase
         val table = matchTable(uri) ?: return null
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+        context.contentResolver.notifyChange(uri, null)
         return uri
     }
 
@@ -91,13 +93,17 @@ class PreferencesProvider: ContentProvider() {
     override fun update(uri: Uri, values: ContentValues, selection: String?, selectionArgs: Array<out String>?): Int {
         val db = mStoreHelper.writableDatabase
         val table = matchTable(uri) ?: return -1
-        return db.update(table, values, selection, selectionArgs)
+        var res = db.update(table, values, selection, selectionArgs)
+        context.contentResolver.notifyChange(uri, null)
+        return res
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
         val db = mStoreHelper.writableDatabase
         val table = matchTable(uri) ?: return -1
-        return db.delete(table, selection, selectionArgs)
+        var res = db.delete(table, selection, selectionArgs)
+        context.contentResolver.notifyChange(uri, null)
+        return res
     }
 
     override fun getType(uri: Uri?): String? = null

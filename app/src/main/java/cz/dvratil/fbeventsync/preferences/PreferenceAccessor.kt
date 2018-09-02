@@ -19,6 +19,7 @@ package cz.dvratil.fbeventsync.preferences
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.ContentObserver
 import android.database.Cursor
 
 object PreferenceAccessor {
@@ -58,7 +59,6 @@ object PreferenceAccessor {
         var uri = PreferencesProvider.buildUri(key, type)
         context.contentResolver.delete(uri, "(${PreferencesProvider.COLUMN_KEY} = ?)", arrayOf(key))
     }
-
 
     fun getString(context: Context, key: String, defaultValue: String?): String?
             = query(context, key, defaultValue, PreferencesProvider.ValueType.STRING) {

@@ -18,10 +18,16 @@
 package cz.dvratil.fbeventsync
 
 import android.content.Context
+import android.database.ContentObserver
+import android.net.Uri
+import android.os.Handler
 import android.support.v7.preference.PreferenceDataStore
+import cz.dvratil.fbeventsync.preferences.PreferencesProvider
 import cz.dvratil.fbeventsync.preferences.Preferences as FBPrefs
 
 class Preferences(private var mContext: Context){
+
+    open class PreferencesObserver : ContentObserver(null)
 
     private var mPrefs : PreferenceDataStore = FBPrefs(mContext)
 
@@ -270,4 +276,10 @@ class Preferences(private var mContext: Context){
     internal fun setPrefsVersion(version: Int) {
         mPrefs.putInt(mContext.getString(R.string.cfg_prefs_version), version)
     }
+
+    internal fun registerChangeListener(observer: PreferencesObserver) =
+        mContext.contentResolver.registerContentObserver(Uri.parse("content://${PreferencesProvider.AUTHORITY}"), true, observer)
+
+    internal fun unregisterChangeListener(observer: PreferencesObserver) =
+        mContext.contentResolver.unregisterContentObserver(observer)
 }
