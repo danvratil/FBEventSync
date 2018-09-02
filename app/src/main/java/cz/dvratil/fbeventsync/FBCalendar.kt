@@ -169,14 +169,14 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
             android.database.sqlite.SQLiteException::class)
     private fun fetchLocalPastEvents(): HashMap<String /* FBID */, Long>/* local ID */ {
         val now = Calendar.getInstance().timeInMillis.toString()
-        val tomorrow = Calendar.getInstance()
-        tomorrow.add(Calendar.DAY_OF_MONTH, -1)
+        val yesterday = Calendar.getInstance()
+        yesterday.add(Calendar.DAY_OF_MONTH, -1)
         return fetchLocalEvents(
                 "((${CalendarContract.Events.CALENDAR_ID} = ?) AND (" +
                         "(allDay = 0 AND ${CalendarContract.Events.DTEND} IS NOT NULL AND ${CalendarContract.Events.DTEND} < ?) " +
                         "OR (allDay = 1 AND ${CalendarContract.Events.DTEND} IS NOT NULL AND ${CalendarContract.Events.DTEND} < ?) " +
                         "OR (allDay = 1 AND ${CalendarContract.Events.DTEND} IS NULL AND ${CalendarContract.Events.DTSTART} < ?)))",
-                arrayOf(mLocalCalendarId.toString(), now, now, tomorrow.toString()))
+                arrayOf(mLocalCalendarId.toString(), now, now, yesterday.toString()))
 
     }
 
