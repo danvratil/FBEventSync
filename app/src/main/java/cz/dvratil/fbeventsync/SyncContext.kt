@@ -29,8 +29,8 @@ class SyncContext(val context: Context,
                   val accessToken: String,
                   val contentProviderClient: ContentProviderClient,
                   val syncResult: SyncResult,
+                  val preferences: Preferences,
                   val logger: Logger) {
-    val preferences = Preferences(context)
 
     internal fun contentUri(provider: Uri): Uri {
         return provider.buildUpon()

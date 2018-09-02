@@ -143,7 +143,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             }
         }
 
-        val syncContext = SyncContext(context, account, accessToken, provider, syncResult, logger)
+        val preferences = Preferences(context)
+        val syncContext = SyncContext(context, account, accessToken, provider, syncResult, preferences, logger)
         mSyncContext = syncContext
 
         val calendars = FBCalendar.Set()

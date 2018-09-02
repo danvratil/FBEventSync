@@ -18,12 +18,16 @@
 package cz.dvratil.fbeventsync
 
 import android.content.Context
-import org.apache.commons.lang3.BooleanUtils
+import android.support.v7.preference.PreferenceDataStore
 import cz.dvratil.fbeventsync.preferences.Preferences as FBPrefs
 
-class Preferences(private var mContext: Context) {
+class Preferences(private var mContext: Context){
 
-    private var mPrefs = FBPrefs(mContext)
+    private var mPrefs : PreferenceDataStore = FBPrefs(mContext)
+
+    fun setDataStore(store: PreferenceDataStore) {
+        mPrefs = store
+    }
 
     private fun getStringArray(id: Int): Set<String> {
         return mContext.resources.getStringArray(id).toSet()

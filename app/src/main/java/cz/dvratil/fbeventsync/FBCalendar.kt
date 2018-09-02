@@ -84,11 +84,11 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
     class Set : HashMap<CalendarType, FBCalendar>() {
         fun initialize(ctx: SyncContext) {
             clear()
-            put(CalendarType.TYPE_ATTENDING, FBCalendar(ctx, CalendarType.TYPE_ATTENDING))
-            put(CalendarType.TYPE_MAYBE, FBCalendar(ctx, CalendarType.TYPE_MAYBE))
-            put(CalendarType.TYPE_DECLINED, FBCalendar(ctx, CalendarType.TYPE_DECLINED))
-            put(CalendarType.TYPE_NOT_REPLIED, FBCalendar(ctx, CalendarType.TYPE_NOT_REPLIED))
-            put(CalendarType.TYPE_BIRTHDAY, FBBirthdayCalendar(ctx))
+            put(CalendarType.TYPE_ATTENDING, FBCalendar(ctx, CalendarType.TYPE_ATTENDING).apply{ init() })
+            put(CalendarType.TYPE_MAYBE, FBCalendar(ctx, CalendarType.TYPE_MAYBE).apply{ init() })
+            put(CalendarType.TYPE_DECLINED, FBCalendar(ctx, CalendarType.TYPE_DECLINED).apply{ init() })
+            put(CalendarType.TYPE_NOT_REPLIED, FBCalendar(ctx, CalendarType.TYPE_NOT_REPLIED).apply{ init() })
+            put(CalendarType.TYPE_BIRTHDAY, FBBirthdayCalendar(ctx).apply{ init() })
         }
 
         fun getCalendarForEvent(event: FBEvent) = get(event.rsvp)
@@ -97,7 +97,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class,
             NumberFormatException::class)
-    private fun createLocalCalendar(): Long {
+    protected open fun createLocalCalendar(): Long {
         val account = mContext.account
         val values = ContentValues()
         values.put(CalendarContract.Calendars.ACCOUNT_NAME, account.name)
@@ -129,7 +129,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
 
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    private fun updateLocalCalendar() {
+    protected open fun updateLocalCalendar() {
         val values = ContentValues()
         values.put(CalendarContract.Calendars.CALENDAR_COLOR, calendarColor)
         mContext.contentProviderClient.update(
@@ -141,7 +141,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
 
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    private fun findLocalCalendar(): Long {
+    protected open fun findLocalCalendar(): Long {
         val cur = mContext.contentProviderClient.query(
                 mContext.contentUri(CalendarContract.Calendars.CONTENT_URI),
                 arrayOf(CalendarContract.Calendars._ID),
@@ -158,7 +158,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
 
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    fun deleteLocalCalendar() {
+    open fun deleteLocalCalendar() {
         mContext.contentProviderClient.delete(
                 mContext.contentUri(CalendarContract.Calendars.CONTENT_URI),
                 "(${CalendarContract.Calendars._ID} = ?)",
@@ -167,7 +167,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
 
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    private fun fetchLocalPastEvents(): HashMap<String /* FBID */, Long>/* local ID */ {
+    protected open fun fetchLocalPastEvents(): HashMap<String /* FBID */, Long>/* local ID */ {
         val now = Calendar.getInstance().timeInMillis.toString()
         val yesterday = Calendar.getInstance()
         yesterday.add(Calendar.DAY_OF_MONTH, -1)
@@ -182,7 +182,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
 
     @Throws(android.os.RemoteException::class,
             android.database.sqlite.SQLiteException::class)
-    private fun fetchLocalFutureEvents(): HashMap<String /* FBID */, Long>/* local ID */ {
+    protected open fun fetchLocalFutureEvents(): HashMap<String /* FBID */, Long>/* local ID */ {
         return fetchLocalEvents(
                 "((${CalendarContract.Events.CALENDAR_ID} = ?) AND (${CalendarContract.Events.DTSTART} >= ?))",
                 arrayOf(mLocalCalendarId.toString(), Calendar.getInstance().timeInMillis.toString()))
@@ -209,7 +209,7 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
     }
 
 
-    init {
+    fun init() {
         isEnabled = when (mType) {
             FBCalendar.CalendarType.TYPE_ATTENDING -> mContext.preferences.attendingCalendarEnabled()
             FBCalendar.CalendarType.TYPE_MAYBE -> mContext.preferences.maybeAttendingCalendarEnabled()
