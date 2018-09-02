@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <group
         android:id="@+id/nav_group_main"
-        android:checkableBehavior="single">
+        android:checkableBehavior="none">
 
         <item
             android:id="@+id/nav_sync_all"
@@ -22,7 +22,7 @@
 
     <group
         android:id="@+id/nav_group_support"
-        android:checkableBehavior="single">
+        android:checkableBehavior="none">
 
         <item
             android:id="@+id/nav_sync_logs"
