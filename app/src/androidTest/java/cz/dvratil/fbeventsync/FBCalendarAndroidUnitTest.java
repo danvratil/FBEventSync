@@ -25,12 +25,14 @@ import android.content.pm.PackageManager;
 import android.provider.CalendarContract;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.content.ContextCompat;
 
 import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -46,6 +48,11 @@ import biweekly.property.Organizer;
 public class FBCalendarAndroidUnitTest {
 
     private static String TEST_ACCOUNT_NAME = "testAccount";
+
+    @Rule
+    public GrantPermissionRule mGrantPermission = GrantPermissionRule.grant(
+            Manifest.permission.READ_CALENDAR,
+            Manifest.permission.WRITE_CALENDAR);
 
     private SyncContext prepareSyncContext() {
         ContentResolver contentResolver = InstrumentationRegistry.getContext().getContentResolver();
