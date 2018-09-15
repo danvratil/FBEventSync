@@ -20,6 +20,6 @@ package cz.dvratil.fbeventsync.preferences
 object Utils {
 
     fun setToString(set: Set<String>?) = set?.joinToString(",", transform = {it.replace(",", ",,")})
-    fun stringToSet(s: String) = s.split(Regex("((?<!,)|(?<=(?<!,),,)),(?!,)")).map{ it.replace(",,", ",") }.toSet()
+    fun stringToSet(s: String) = if (s.isEmpty()) HashSet() else s.split(Regex("((?<!,)|(?<=(?<!,),,)),(?!,)")).map{ it.replace(",,", ",") }.toSet()
 
 }

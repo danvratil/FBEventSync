@@ -51,7 +51,7 @@ class FBReminder(var minutesOffset: Int = -1, var allDay: Boolean = false) : Com
 
     override fun compareTo(other: FBReminder): Int = other.minutesOffset - minutesOffset
 
-    fun isvalid() = minutesOffset > -1
+    fun isValid() = minutesOffset > -1
     fun serialize() = if (allDay) "$minutesOffset,$allDay" else "$minutesOffset"
 
     override fun toString(): String {
