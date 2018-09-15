@@ -35,6 +35,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.R.attr.button
+import android.graphics.drawable.Drawable
+import android.widget.Button
 
 
 class MainActivity : AppCompatActivity() {
@@ -115,7 +118,14 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        registerSyncIfNeeded();
+        // Try to convince me that Android does not suck...
+        findViewById<Button>(R.id.nav_like).apply {
+            val img =  resources.getDrawable(R.drawable.ic_like)
+            img.setBounds(0, 0, 64 ,64)
+            setCompoundDrawables(img, null, null, null)
+        }
+
+        registerSyncIfNeeded()
     }
 
     override fun onResume() {

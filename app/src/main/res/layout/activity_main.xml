@@ -68,7 +68,20 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:paddingBottom="48dp"
+        android:clipToPadding="false"
         app:headerLayout="@layout/main_drawer_header"
-        app:menu="@menu/drawer_menu" />
+        app:menu="@menu/drawer_menu">
+
+        <Button
+            android:id="@+id/nav_like"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="-48dp"
+            android:drawableStart="@drawable/ic_like"
+            android:text="@string/nav_like" />
+
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
