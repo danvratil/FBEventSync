@@ -102,4 +102,28 @@
     <string name="nav_about">O aplikacji</string>
 
     <string name="auth_remove_account_title">Usunąć konto %s?</string>
+    <string name="auth_remove_account_text">Konto zostanie usunięte tylko z aplikacji. Twoje konto Facebook zostanie nie ruszone.</string>
+
+    <string name="about_activity_title">O aplikacji</string>
+    <string name="pref_about_rate_app_title">Oceń aplikację</string>
+    <string name="pref_about_privacy_title">Polityka prywatności</string>
+    <string name="pref_about_license_title">Licencja</string>
+    <string name="pref_about_license_summary">Licencja publiczna GNU v3.0</string>
+    <string name="pref_about_version_title">Wersja aplikacji</string>
+
+
+    <string name="pref_calendar_allday_reminders_title">Przypomnienia o całodniowych wydarzeniach</string>
+    <plurals name="pref_reminder_allday_description">
+	<item quantity="one">%d dzień przed wydarzeniem o %s</item>
+	<item quantity="few"></item>
+	<item quantity="many">%d dni przed wydarzeniem o %s</item>
+</plurals>
+    <string name="allday_reminder_daysBeforeAt">dni przed wydarzeniem o</string>
+
+    <plurals name="pref_reminder_anyminutes">
+	<item quantity="one">%d minut</item>
+	<item quantity="few"></item>
+	<item quantity="many">"%d minut "</item>
+</plurals>
+
     </resources>
