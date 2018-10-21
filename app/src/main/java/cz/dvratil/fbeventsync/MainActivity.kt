@@ -123,7 +123,11 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.fbpage_link_textview).apply {
             movementMethod = LinkMovementMethod.getInstance()
-            text = Html.fromHtml(getString(R.string.main_fbpage_link));
+            text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(getString(R.string.main_fbpage_link), Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                Html.fromHtml(getString(R.string.main_fbpage_link))
+            }
         }
 
         registerSyncIfNeeded();
