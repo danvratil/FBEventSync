@@ -17,14 +17,12 @@
 
 package cz.dvratil.fbeventsync
 
-import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.CalendarContract
 import android.provider.Settings
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -34,7 +32,10 @@ import android.view.View
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.MenuItem
+import android.widget.TextView
 
 
 class MainActivity : AppCompatActivity() {
@@ -105,6 +106,11 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, AboutActivity::class.java))
                     true
                 }
+                R.id.nav_homepage -> {
+                    mDrawerLayout.closeDrawers()
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/294071114749578")))
+                    true
+                }
                 else -> false
             }
         }
@@ -113,6 +119,11 @@ class MainActivity : AppCompatActivity() {
             setHasFixedSize(true)
             adapter = AccountAdapter(context)
             layoutManager = LinearLayoutManager(context)
+        }
+
+        findViewById<TextView>(R.id.fbpage_link_textview).apply {
+            movementMethod = LinkMovementMethod.getInstance()
+            text = Html.fromHtml(getString(R.string.main_fbpage_link));
         }
 
         registerSyncIfNeeded();

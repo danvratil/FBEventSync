@@ -22,6 +22,7 @@
     <string name="main_configure_misc_btn">Configure Miscellaneous</string>
     <string name="main_sync_now">Sync Now</string>
     <string name="main_sync_in_progress">Sync in progress...</string>
+    <string name="main_fbpage_link">Follow our &lt;a href=https://www.facebook.com/294071114749578>Facebook page&lt;/a> to get the latest news and information about updates!</string>
 
     <!-- NAVIGATION DRAWER ACTIONS //-->
     <string name="nav_sync_all">Sync All</string>
@@ -32,6 +33,7 @@
     <string name="nav_faq">FAQ</string>
     <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
     <string name="nav_about">About</string>
+    <string name="nav_homepage">Homepage</string>
 
     <!-- PERMISSIONS ACTIVITY //-->
     <string name="perms_activity_title">Permissions Request</string>
