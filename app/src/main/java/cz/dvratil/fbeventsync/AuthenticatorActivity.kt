@@ -52,18 +52,19 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
     private lateinit var mAccountManager: AccountManager
     private var mAccessToken = String()
-    private var mBDayCalendar = String()
     private var mCookies = Cookies()
+    private var mUserId = String()
+    private var mKey = String()
 
     private lateinit var mWebView: WebView
     private lateinit var mProgressBar: ProgressBar
     private lateinit var mProgressLabel: TextView
     private lateinit var mLogger: Logger
 
-    private fun onBirthdayLinkExtracted(s: String) {
-        mLogger.debug("AUTH", "Found iCal URL")
+    private fun onKeyExtracted(s: String) {
+        mLogger.debug("AUTH", "Key extraction done")
 
-        if (!s.startsWith("\"webcal")) {
+        if (s.startsWith("Failed")) {
             mLogger.debug("AUTH", "Failed to find iCal, debug: $s")
             Toast.makeText(this, "Authentication error: failed to retrieve birthday calendar", Toast.LENGTH_LONG)
                     .show()
@@ -72,7 +73,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         }
 
         // Remove opening and trailing quotes that come from JavaScript
-        mBDayCalendar = s.substring(1, s.length - 1)
+        mKey = s.substring(1, s.length - 1)
         mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
         fetchUserInfo(mAccessToken)
     }
@@ -131,57 +132,59 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                     mCookies = Cookies(CookieManager.getInstance().getCookie(url), url)
                     mAccessToken = token
 
-                    // Use a desktop user-agent to make sure we get a desktop version - otherwise we
-                    // won't be able to get to the birthday link
+                    var cuser = mCookies.cookies
+                            .split(';')
+                            .find { it.trim().startsWith("c_user=") }
+                            ?.split("=")
+                            ?.getOrNull(1)
+                    if (cuser == null) {
+                        mLogger.error("AUTH", "Failed to extract userId from cookies string")
+                        Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
+                                .show()
+                        finish()
+                        return
+                    }
+
+                    mUserId = cuser
+
+                    // Use a desktop user-agent to make sure we get a desktop version, otherwise who
+                    // knows what response we might get...
                     mWebView.settings.userAgentString = "Mozilla/5.0 (X11;Linux x86_64;rv:58.0) Gecko/20100101 Firefox/58.0"
-                    mWebView.loadUrl("https://www.facebook.com/events")
-                } else if (uri?.path == "/events/") {
-                    mLogger.debug("AUTH", "Reached /events/ page, extracting iCal link")
+                    mWebView.loadUrl("https://www.facebook.com/ajax/events/export.php?eid=$EXPORT_EVENT_FBID&ref=2&source=1&__asyncDialog=1&__user=$mUserId&__a=1")
+                } else if (uri?.path == "/ajax/events/export.php") {
+                    mLogger.debug("AUTH", "Reached export.php page, extracting iCal link")
+
+                    val innerJS = "(function() {" +
+                            "  var ct = document.body.innerText;" +
+                            "  var uriStart = ct.indexOf(\"webcal:\");" +
+                            "  if (uriStart == -1) { return \"Failed to find webcal\"; }" +
+                            "  var keyStart = ct.indexOf(\"key=\", uriStart);" +
+                            "  if (keyStart == -1) { return \"Failed to find key in substring '\" + ct.substr(uriStart, 50) + \"...'\"; }" +
+                            "  keyStart += 4;" + // skip past "key="
+                            "  var keyEnd = ct.indexOf(\"\\\"\", keyStart);" +
+                            "  if (keyEnd == -1) { return \"Failed to find key end in substring '\" + ct.substr(keyStart, 50) + \"...'\"; }" +
+                            "  return ct.substr(keyStart, keyEnd - keyStart - 1);" +
+                            "})"
+
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                         class JSObject {
                             @Suppress("unused")
                             @JavascriptInterface
-                            fun linkExtracted(s: String) {
-                                onBirthdayLinkExtracted(s)
+                            fun keyExtracted(s: String) {
+                                onKeyExtracted(s)
                             }
                         }
-
                         view.addJavascriptInterface(JSObject(), "fbeventsync")
                         view.loadUrl(
                                 "javascript:(function() { " +
-                                        "  var dash = document.getElementById(\"events_dashboard_export\");" +
-                                        "  if (dash === null) {" +
-                                        "    fbeventsync.linkExtracted(\"\");" +
-                                        "  } else {" +
-                                        "    var elems = dash.getElementsByTagName(\"a\");" +
-                                        "    for (var i = 0; i < elems.length; i++) {" +
-                                        "      var link = elems[i];" +
-                                        "      if (link.href.startsWith(\"webcal://\")) {" +
-                                        "        fbeventsync.linkExtracted(link.href); " +
-                                        "        return;" +
-                                        "      }" +
-                                        "    }" +
-                                        "    fbeventsync.linkExtracted(dash.outerHTML);" +
-                                        "  }" +
+                                        "  fbeventsync.keyExtracted(" + innerJS + "());" +
                                         "})();")
                     } else {
                         view.evaluateJavascript(
                                 "(function() { " +
-                                        "  var dash = document.getElementById(\"events_dashboard_export\");" +
-                                        "  if (dash === null) {" +
-                                        "    return \"\";" +
-                                        "  } else {" +
-                                        "    var elems = dash.getElementsByTagName(\"a\");" +
-                                        "    for (var i = 0; i < elems.length; i++) {" +
-                                        "      var link = elems[i];" +
-                                        "      if (link.href.startsWith(\"webcal://\")) {" +
-                                        "        return link.href;" +
-                                        "      }" +
-                                        "    }" +
-                                        "    return dash.outerHTML;" +
-                                        "  }" +
+                                        "  return " + innerJS + "();" +
                                         "})();"
-                        ) { s -> onBirthdayLinkExtracted(s) }
+                        ) { s -> onKeyExtracted(s) }
                     }
                 } else {
                     // likely 2FA Auth flow, ignore
@@ -305,11 +308,8 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true)
         }
 
-        val icalUri = Uri.parse(mBDayCalendar)
-        val key = icalUri.getQueryParameter("key")
-        val uid = icalUri.getQueryParameter("uid")
-        if (key == null || key.isEmpty() || uid == null || uid.isEmpty()) {
-            mLogger.error("AUTH", "Failed to retrieve iCal URL! The raw URL was \"$mBDayCalendar\"")
+        if (mKey.isEmpty() || mUserId.isEmpty()) {
+            mLogger.error("AUTH", "Failed to retrieve UID ($mUserId) or KEY ($mKey)")
             Toast.makeText(this, getString(R.string.auth_calendar_uri_error_toast), Toast.LENGTH_SHORT)
                     .show()
             finish()
@@ -317,8 +317,8 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         }
         mAccountManager.setUserData(account, Authenticator.DATA_BDAY_URI, null) // clear the legacy storage
         mAccountManager.setAuthToken(account, Authenticator.FB_OAUTH_TOKEN, accessToken)
-        mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, key)
-        mAccountManager.setAuthToken(account, Authenticator.FB_UID_TOKEN, uid)
+        mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, mKey)
+        mAccountManager.setAuthToken(account, Authenticator.FB_UID_TOKEN, mUserId)
         mAccountManager.setUserData(account, Authenticator.FB_COOKIES, mCookies.cookies)
 
         val result = Intent()
@@ -326,9 +326,9 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
         val authTokenType = intent.getStringExtra(AuthenticatorActivity.ARG_AUTH_TOKEN_TYPE)
         if (authTokenType != null && authTokenType == Authenticator.FB_KEY_TOKEN) {
-            result.putExtra(AccountManager.KEY_AUTHTOKEN, key)
+            result.putExtra(AccountManager.KEY_AUTHTOKEN, mKey)
         } else if (authTokenType != null && authTokenType == Authenticator.FB_UID_TOKEN) {
-            result.putExtra(AccountManager.KEY_AUTHTOKEN, uid)
+            result.putExtra(AccountManager.KEY_AUTHTOKEN, mUserId)
         } else {
             result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken)
         }
@@ -376,5 +376,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         const val TOKEN_SCOPE = "me"
 
         private const val PERMISSION_REQUEST_INTERNET = 1
+
+        const val EXPORT_EVENT_FBID = "258046665055853"
     }
 }
