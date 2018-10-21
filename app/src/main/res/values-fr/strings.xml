@@ -88,4 +88,40 @@
     <string name="pref_sync_frequency_12hours_entry">12 heures</string>
     <string name="pref_sync_frequency_24hours_entry">24 heures</string>
     <string name="pref_general_settings_title">Général</string>
-</resources>
+<string name="btn_save">Enregistrer</string>
+    <string name="btn_cancel">Annuler</string>
+    <string name="btn_remove">Supprimer</string>
+
+
+    <string name="nav_sync_all">Tout Synchroniser</string>
+    <string name="nav_configure_calendars">Configurer les calendriers</string>
+    <string name="nav_configure_sync">Configurer la synchronisation</string>
+    <string name="nav_sync_logs">Synchronisation des Journaux</string>
+    <string name="nav_report_bug">Signaler un Bug</string>
+    <string name="nav_faq">FAQ</string>
+    <string name="nav_about">À propos</string>
+
+    <string name="auth_remove_account_title">Supprimer le compte %s ?</string>
+    <string name="auth_remove_account_text">Le compte ne sera supprimé que de cette application, votre compte Facebook et les autres applications ne seront pas affectés.</string>
+
+    <string name="about_activity_title">À propos</string>
+    <string name="pref_about_rate_app_title">Noter l\'application</string>
+    <string name="pref_about_privacy_title">Confidentialité</string>
+    <string name="pref_about_license_title">Licence</string>
+    <string name="pref_about_license_summary">GNU General Public License v3.0</string>
+    <string name="pref_about_version_title">Version</string>
+
+
+    <string name="pref_calendar_allday_reminders_title">Rappels d\'événements chaque jours</string>
+    <plurals name="pref_reminder_allday_description">
+	<item quantity="one">%d jour avant à %s</item>
+	<item quantity="other">%d jours avant à %s</item>
+</plurals>
+    <string name="allday_reminder_daysBeforeAt">"jours avant "</string>
+
+    <plurals name="pref_reminder_anyminutes">
+	<item quantity="one">%d minute</item>
+	<item quantity="other">%d minutes</item>
+</plurals>
+
+    </resources>
