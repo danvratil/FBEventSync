@@ -19,6 +19,7 @@ package cz.dvratil.fbeventsync
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AlertDialog
@@ -90,16 +91,20 @@ class AllDayReminderPreferenceActivity : AppCompatActivity()
             }
             AlertDialog.Builder(this)
                     .setView(view)
-                    .setPositiveButton(R.string.btn_save, { dialog, _ ->
+                    .setPositiveButton(R.string.btn_save) { dialog, _ ->
                         val currentReminders = getReminders().toMutableList()
-                        currentReminders.add(FBReminder(dayPicker.value, timePicker.hour, timePicker.minute, true))
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            currentReminders.add(FBReminder(dayPicker.value, timePicker.hour, timePicker.minute, true))
+                        } else {
+                            currentReminders.add(FBReminder(dayPicker.value, timePicker.currentHour, timePicker.currentMinute, true))
+                        }
                         setReminders(currentReminders)
 
                         dialog.dismiss()
-                    })
-                    .setNegativeButton(R.string.btn_cancel, { dialog, _ ->
+                    }
+                    .setNegativeButton(R.string.btn_cancel) { dialog, _ ->
                         dialog.cancel()
-                    })
+                    }
                     .create()
                     .show()
         }
