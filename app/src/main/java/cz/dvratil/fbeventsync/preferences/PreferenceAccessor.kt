@@ -19,8 +19,9 @@ package cz.dvratil.fbeventsync.preferences
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.ContentObserver
 import android.database.Cursor
+import android.util.Log
+import cz.dvratil.fbeventsync.Logger
 
 object PreferenceAccessor {
 
@@ -52,7 +53,13 @@ object PreferenceAccessor {
                 PreferencesProvider.ValueType.FLOAT -> put(PreferencesProvider.COLUMN_VALUE, value as Float)
             }
         }
-        context.contentResolver.insert(uri, values)
+
+        try {
+            context.contentResolver.insert(uri, values)
+        } catch (e: java.lang.IllegalArgumentException) {
+            Logger.getInstance(context).error("PREF", "Caught IllegalArgumentException: $e for uri $uri")
+            throw e
+        }
     }
 
     private fun remove(context: Context, key: String, type: PreferencesProvider.ValueType) {
