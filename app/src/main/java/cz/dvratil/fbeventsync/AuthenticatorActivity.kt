@@ -157,7 +157,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
                     val innerJS = "(function() {" +
                             "  var ct = document.body.innerText;" +
-                            "  var uriStart = ct.indexOf(\"webcal:\");" +
+                            "  var uriStart = ct.indexOf(\"https:\\\\/\\\\/www.facebook.com\\\\/events\\\\/ical\\\\/upcoming\");" +
                             "  if (uriStart == -1) { return \"Failed to find webcal\"; }" +
                             "  var keyStart = ct.indexOf(\"key=\", uriStart);" +
                             "  if (keyStart == -1) { return \"Failed to find key in substring '\" + ct.substr(uriStart, 50) + \"...'\"; }" +

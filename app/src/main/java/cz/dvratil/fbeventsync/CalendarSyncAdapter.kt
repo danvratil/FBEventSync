@@ -321,7 +321,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         }
 
         return Uri.parse("https://www.facebook.com").buildUpon()
-                .path(if (uriType == ICalURIType.EVENTS) "/ical/u.php" else "/ical/b.php")
+                .path(if (uriType == ICalURIType.EVENTS) "/events/ical/upcoming/" else "/events/ical/birthdays/")
                 .appendQueryParameter("uid", uid)
                 .appendQueryParameter("key", key)
                 .appendQueryParameter("locale", userLocale)
