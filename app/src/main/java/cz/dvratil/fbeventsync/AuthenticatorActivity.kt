@@ -64,7 +64,8 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     private fun onKeyExtracted(s: String) {
         mLogger.debug("AUTH", "Key extraction done")
 
-        if (s.startsWith("Failed")) {
+        val str = s.substring(1, s.length - 1)
+        if (str.startsWith("Failed")) {
             mLogger.debug("AUTH", "Failed to find iCal, debug: $s")
             Toast.makeText(this, "Authentication error: failed to retrieve birthday calendar", Toast.LENGTH_LONG)
                     .show()
@@ -73,7 +74,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         }
 
         // Remove opening and trailing quotes that come from JavaScript
-        mKey = s.substring(1, s.length - 1)
+        mKey = str
         mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
         fetchUserInfo(mAccessToken)
     }
