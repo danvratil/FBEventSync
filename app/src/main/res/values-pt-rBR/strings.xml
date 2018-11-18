@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources><string name="app_name">Eventos FB</string>
-    <string name="full_app_name">Sincronização de Eventos para Facebook</string>
+    <string name="full_app_name">Eventos para Facebook</string>
     <string name="btn_save">Salvar</string>
     <string name="btn_cancel">Cancelar</string>
     <string name="btn_remove">Remover</string>
