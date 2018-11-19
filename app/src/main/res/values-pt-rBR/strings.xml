@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><string name="app_name">Eventos FB</string>
+    <string name="full_app_name">Eventos para Facebook</string>
+    <string name="btn_save">Salvar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_remove">Remover</string>
+
+
+    <string name="main_version_label">Versão: %s</string>
+    <string name="main_add_account_btn">Adicionar Conta</string>
+    <string name="main_show_logs_btn">Mostrar Registros</string>
+    <string name="main_configure_calendars_btn">Configurar Calendários</string>
+    <string name="main_configure_sync_btn">Configurações de Sincronização</string>
+    <string name="main_configure_misc_btn">Outras Configurações</string>
+    <string name="main_sync_now">Sincronizar</string>
+    <string name="main_sync_in_progress">Sincronizando...</string>
+
+    <string name="nav_sync_all">Sincronizar Todos</string>
+    <string name="nav_configure_calendars">Configurar Calendários</string>
+    <string name="nav_configure_sync">Opções de Sincronização</string>
+    <string name="nav_sync_logs">Registros da Sincronização</string>
+    <string name="nav_report_bug">Relatar Bug</string>
+    <string name="nav_faq">FAQ</string>
+    <string name="nav_about">Sobre</string>
+
+    <string name="perms_activity_title">Permissões Necessárias</string>
+
+    <string name="log_activity_title">Ver Registro</string>
+    <string name="log_clear_log_action">Limpar Registro</string>
+    <string name="log_send_to_dev_action">Enviar ao Desenvolvedor</string>
+    <string name="log_send_email_action">Enviar E-mail…</string>
+    <string name="log_email_template">[Descreva seu problema aqui, de preferência, em INGLÊS]</string>
+    <string name="log_error_sending_log_toast">Falha ao enviar registros: Erro de leitura</string>
+
+    <string name="auth_activity_title">Autenticar com o Facebook</string>
+    <string name="auth_account_creation_error_toast">Erro durante a autenticação</string>
+    <string name="auth_account_creation_success_toast">Conta adicionada</string>
+    <string name="auth_rate_limiting_toast">A API do Facebook está enfrentando problemas. Tente de novo mais tarde.</string>
+    <string name="auth_progress_authenticating_with_fb">Autenticando com o Facebook…</string>
+    <string name="auth_progress_retrieving_calendars">Obtendo calendários…</string>
+    <string name="auth_progress_retrieving_userinfo">Obtendo informações do usuário…</string>
+    <string name="auth_calendar_uri_error_toast">Falha ao obter URI do calendário</string>
+
+    <string name="auth_remove_account_title">Remover a conta %s\?</string>
+    <string name="auth_remove_account_text">A conta será removida apenas deste app, sua conta no Facebook e em outros apps não será afetada.</string>
+
+    <string name="about_activity_title">Sobre</string>
+    <string name="pref_about_rate_app_title">Avaliar o app</string>
+    <string name="pref_about_privacy_title">Privacidade</string>
+    <string name="pref_about_license_title">Licença</string>
+    <string name="pref_about_license_summary">GNU Licença Pública Geral v3.0</string>
+    <string name="pref_about_version_title">Versão</string>
+
+
+    <string name="calendar_not_responded_title">Eventos Não Respondidos</string>
+    <string name="calendar_declined_title">Eventos Sem Interesse</string>
+    <string name="calendar_tentative_title">Eventos Com Interesse</string>
+    <string name="calendar_attending_title">Eventos Que Comparecerei</string>
+    <string name="calendar_birthday_title">Aniversários de Amigos</string>
+    <string name="sync_ntf_needs_reauthentication_title">Event Sync for Facebook precisa fazer login</string>
+    <string name="sync_ntf_needs_reauthentication_description">Toque aqui para refazer o login no Facebook</string>
+
+    <string name="pref_activity_title">Configurações</string>
+
+    <string name="pref_sync_settings_title">Opções de Sincronização</string>
+    <string name="pref_sync_settings_summary">Definir a frequência e quando sincronizar eventos.</string>
+
+    <string name="pref_sync_frequency_title">Frequência de Sincronização</string>
+    <string name="pref_sync_frequency_summary">Com que frequência os eventos devem ser sincronizados\?</string>
+    <string name="pref_sync_fblink_title">Adicionar link para o FB</string>
+    <string name="pref_sync_fblink_summary">Adiciona um link para a descrição do evento no Facebook.</string>
+
+    <string name="pref_language_title">Idioma</string>
+    <string name="pref_language_summary">Idioma dos aniversários e eventos</string>
+    <string name="pref_language_default_entry">Idioma do dispositivo</string>
+    <string name="pref_calendar_settings_title">Calendários</string>
+    <string name="pref_calendar_settings_summary">Definir calendários, cores e lembretes</string>
+
+    <string name="pref_calendar_enabled_title">Ativado</string>
+    <string name="pref_calendar_reminders_title">Lembretes</string>
+    <string name="pref_calendar_allday_reminders_title">Lembretes de Eventos de Dia Inteiro</string>
+    <string name="pref_calendar_color_title">Cor</string>
+
+    <string name="color_dlg_title">Escolher Cor</string>
+    <string name="color_dlg_save_btn_title">Salvar</string>
+    <string name="color_dlg_close_btn_title">Fechar</string>
+
+    <plurals name="pref_reminder_allday_description">
+	<item quantity="one">%d dia antes, às %s</item>
+	<item quantity="other">%d dias antes, às %s</item>
+</plurals>
+    <string name="allday_reminder_daysBeforeAt">dias antes às</string>
+
+    <plurals name="pref_reminder_anyminutes">
+	<item quantity="one">%d minuto</item>
+	<item quantity="other">%d minutos</item>
+</plurals>
+
+    <string name="pref_reminder_0minutes_entry">0 minutos</string>
+    <string name="pref_reminder_5minutes_entry">5 minutos</string>
+    <string name="pref_reminder_10minutes_entry">10 minutos</string>
+    <string name="pref_reminder_15minutes_entry">15 minutos</string>
+    <string name="pref_reminder_20minutes_entry">20 minutos</string>
+    <string name="pref_reminder_30minutes_entry">30 minutos</string>
+    <string name="pref_reminder_1hour_entry">1 hora</string>
+    <string name="pref_reminder_2hours_entry">2 horas</string>
+    <string name="pref_reminder_12hours_entry">12 horas</string>
+    <string name="pref_reminder_24hours_entry">24 horas</string>
+    <string name="pref_reminder_36hours_entry">36 horas</string>
+    <string name="pref_reminder_2days_entry">2 dias</string>
+    <string name="pref_reminder_1week_entry">1 semana</string>
+    <string name="pref_sync_frequency_never_entry">Nunca</string>
+    <string name="pref_sync_frequency_1hour_entry">1 hora</string>
+    <string name="pref_sync_frequency_2hours_entry">2 horas</string>
+    <string name="pref_sync_frequency_4hours_entry">4 horas</string>
+    <string name="pref_sync_frequency_8hours_entry">8 horas</string>
+    <string name="pref_sync_frequency_12hours_entry">12 horas</string>
+    <string name="pref_sync_frequency_24hours_entry">24 horas</string>
+    <string name="pref_general_settings_title">Geral</string>
+</resources>
