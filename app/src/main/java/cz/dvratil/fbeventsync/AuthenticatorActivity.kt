@@ -59,6 +59,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     private var mKey = String()
 
     private lateinit var mWebView: WebView
+    private lateinit var mWebClient: AuthenticatorWebView
     private lateinit var mProgressBar: ProgressBar
     private lateinit var mProgressLabel: TextView
     private lateinit var mLogger: Logger
@@ -67,8 +68,11 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         mLogger.debug("AUTH", "Link extraction failed: $s")
         Toast.makeText(this, "Authentication error: $s", Toast.LENGTH_LONG)
                 .show()
-        if (!DEBUG_WEBVIEW) {
-            finish()
+
+        mWebClient.unsubscribeFromEvent(mWebView) {
+            if (!DEBUG_WEBVIEW) {
+                finish()
+            }
         }
     }
 
@@ -80,17 +84,12 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         if (key == null || key.isEmpty()) {
             linkExtractionFailed("Failed to parse calendar URI.")
         } else {
-            mKey = key
-            mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
-            fetchUserInfo(mAccessToken)
+            mWebClient.unsubscribeFromEvent(mWebView) {
+                mKey = key
+                mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
+                fetchUserInfo(mAccessToken)
+            }
         }
-    }
-
-    private fun loadUrl(url: String) {
-        if (DEBUG_WEBVIEW) {
-            mLogger.info("AUTH", "Loading $url")
-        }
-        mWebView.loadUrl(url)
     }
 
     override fun onCreate(bundle: Bundle?) {
@@ -112,29 +111,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
         mAccountManager = AccountManager.get(baseContext)
 
-        mWebView.webViewClient = object : WebViewClient() {
-
-            private var mLastUri: String? = null
-
-            private fun runJS(code: String, cb: (s: String) -> Unit)
-            {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                    class JSObject {
-                        @Suppress("unused")
-                        @JavascriptInterface
-                        fun callCallback(s: String) {
-                            cb(s)
-                        }
-                    }
-                    mWebView.addJavascriptInterface(JSObject(), "fbeventsync")
-                    loadUrl("javascript:(function() { fbeventsync.callCallback($code()); })();")
-                } else {
-                    mWebView.evaluateJavascript(
-                            "(function() { return $code(); })();"
-                    ) { cb(it as String) }
-                }
-
-            }
+        mWebClient = object : AuthenticatorWebView(activity) {
 
             // Deprecated in API level 23
             @Suppress("OverridingDeprecatedMember")
@@ -143,150 +120,60 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                         .show()
             }
 
-            override fun onPageFinished(view: WebView, url: String) {
-                super.onPageFinished(view, url)
-                if (DEBUG_WEBVIEW) {
-                    mLogger.info("AUTH", "Loaded $url")
-                }
-                if (activity.isFinishing) {
+            override fun onLoginPageReached(webView: WebView, uri: Uri) {
+                mLogger.debug("AUTH", "Reached login.php")
+                mWebView.visibility = View.VISIBLE
+                mProgressBar.visibility = View.GONE
+                mProgressLabel.visibility = View.GONE
+            }
+
+            override fun onLoginSuccess(webView: WebView, uri: Uri) {
+                mLogger.debug("AUTH", "Reached login_success with token")
+                mWebView.visibility = if (DEBUG_WEBVIEW) View.VISIBLE else View.GONE
+                mProgressBar.visibility = if (DEBUG_WEBVIEW) View.GONE else View.VISIBLE
+                mProgressLabel.visibility = if (DEBUG_WEBVIEW) View.GONE else View.VISIBLE
+                mProgressLabel.text = getString(R.string.auth_progress_retrieving_calendars)
+
+                val token = Uri.parse("http://localhost/?${uri.fragment}")?.getQueryParameter("access_token")
+                if (token == null) {
+                    mLogger.error("AUTH", "Failed to extract access_token, the URI was '$uri'")
+                    Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
+                            .show()
+                    if (!DEBUG_WEBVIEW) {
+                        finish()
+                    }
                     return
                 }
-                if (mLastUri == url || url.endsWith('#')) { // internal navigation does not concern us
+                mCookies = Cookies(CookieManager.getInstance().getCookie(uri.toString()), uri.toString())
+                mAccessToken = token
+
+                var cuser = mCookies.cookies
+                        .split(';')
+                        .find { it.trim().startsWith("c_user=") }
+                        ?.split("=")
+                        ?.getOrNull(1)
+                if (cuser == null) {
+                    mLogger.error("AUTH", "Failed to extract userId from cookies string")
+                    Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
+                            .show()
+                    if (!DEBUG_WEBVIEW) {
+                        finish()
+                    }
                     return
                 }
-                mLastUri = url
 
-                val uri = Uri.parse(url)
-                if (uri?.path?.contains("/login.php") == true) {
-                    mLogger.debug("AUTH", "Reached login.php")
-                    mWebView.visibility = View.VISIBLE
-                    mProgressBar.visibility = View.GONE
-                    mProgressLabel.visibility = View.GONE
-                } else if (uri?.path == "/connect/login_success.html") {
-                    // TODO: Check if all privileges were granted
-                    mLogger.debug("AUTH", "Reached login_success with token")
-                    mWebView.visibility = if (DEBUG_WEBVIEW) View.VISIBLE else View.GONE
-                    mProgressBar.visibility = if (DEBUG_WEBVIEW) View.GONE else View.VISIBLE
-                    mProgressLabel.visibility = if (DEBUG_WEBVIEW) View.GONE else View.VISIBLE
-                    mProgressLabel.text = getString(R.string.auth_progress_retrieving_calendars)
+                mUserId = cuser
+            }
 
-                    val token = Uri.parse("http://localhost/?${uri.fragment}")?.getQueryParameter("access_token")
-                    if (token == null) {
-                        mLogger.error("AUTH", "Failed to extract access_token, the URI was '$uri'")
-                        Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
-                                .show()
-                        if (!DEBUG_WEBVIEW) {
-                            finish()
-                        }
-                        return
-                    }
-                    mCookies = Cookies(CookieManager.getInstance().getCookie(url), url)
-                    mAccessToken = token
-
-                    var cuser = mCookies.cookies
-                            .split(';')
-                            .find { it.trim().startsWith("c_user=") }
-                            ?.split("=")
-                            ?.getOrNull(1)
-                    if (cuser == null) {
-                        mLogger.error("AUTH", "Failed to extract userId from cookies string")
-                        Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
-                                .show()
-                        if (!DEBUG_WEBVIEW) {
-                            finish()
-                        }
-                        return
-                    }
-
-                    mUserId = cuser
-
-                    // Use a desktop user-agent to make sure we get a desktop version, otherwise who
-                    // knows what response we might get...
-                    mWebView.settings.userAgentString = "Mozilla/5.0 (X11;Linux x86_64;rv:58.0) Gecko/20100101 Firefox/58.0"
-                    loadUrl("https://www.facebook.com/events/$EXPORT_EVENT_FBID")
-                } else if (uri?.path == "/events/$EXPORT_EVENT_FBID") {
-                    fun findExportLink(attempts: Int) {
-                        runJS("(function() {" +
-                                "  if (link = document.querySelector(\"a[href^='https://www.facebook.com/events/ical/upcoming']\")) {" +
-                                "    return link.href;" +
-                                "  } else {" +
-                                "    return false;" +
-                                "  }" +
-                                "})"
-                        ) { s: String ->
-                            if (s.isEmpty() || s == "false") {
-                                if (attempts == 0) {
-                                    linkExtractionFailed("Timeout while waiting for calendar export link.")
-                                } else {
-                                    Handler().postDelayed({ findExportLink(attempts - 1); }, 500)
-                                }
-                            } else {
-                                linkExtracted(s.removeSurrounding("\""))
-                            }
-                        }
-                    }
-
-                    fun findExportDialog(attempts: Int) {
-                        runJS("(function() {" +
-                                "  var elem = document.querySelector(\"a[ajaxify^='/ajax/events/export.php']\");" +
-                                "  if (elem == null) { return false; }" +
-                                "  var event = document.createEvent('Events');" +
-                                "  event.initEvent('click', true, false);" +
-                                "  elem.dispatchEvent(event);" +
-                                "  return true;" +
-                                "})"
-                        ) { result: String ->
-                            if (result == "false") {
-                                if (attempts == 0) {
-                                    linkExtractionFailed("Failed to retrieve calendar export link.")
-                                } else {
-                                    Handler().postDelayed({ findExportDialog(attempts - 1) }, 200)
-                                }
-                            } else {
-                                Handler().postDelayed({ findExportLink(10) }, 500)
-                            }
-                        }
-                    }
-
-                    fun findMenuLink() {
-                        runJS("(function() {" +
-                                "  function findButton(group) {" +
-                                "    if (elems = document.querySelectorAll(group + \" a[role='button']\")) {" +
-                                "      for (var i = 0; i < elems.length; i++) {" +
-                                "        if (elems[i].innerText === '') {" +
-                                "          return elems[i];" +
-                                "        }" +
-                                "      }" +
-                                "    }" +
-                                "    return null;" +
-                                "  }" +
-                                "  var btn = findButton(\"#admin_button_bar\");" +
-                                "  if (btn === null) {" +
-                                "    btn = findButton(\"#event_button_bar\");" +
-                                "  }" +
-                                "  if (btn === null) {" +
-                                "    return false;" +
-                                "  }" +
-                                "  var event = document.createEvent('Events');" +
-                                "  event.initEvent('click', true, false);" +
-                                "  btn.dispatchEvent(event);" +
-                                "  return true;" +
-                                "})"
-                        ){ s: String ->
-                            if (s == "false") {
-                                linkExtractionFailed("Failed to find event export menu.");
-                            } else {
-                                Handler().postDelayed({ findExportDialog(10); }, 200)
-                            }
-                        }
-                    }
-
-                    Handler().postDelayed({ findMenuLink() }, 200)
-                } else {
-                    // likely 2FA Auth flow, ignore
-                }
+            override fun onEventPageReached(webView: WebView, uri: Uri) {
+                subscribeToEvent(webView,
+                        { findExportUri(webView, { linkExtracted(it)}, { linkExtractionFailed(it) }) },
+                        { linkExtractionFailed(it) }
+                )
             }
         }
+
+        mWebView.webViewClient = mWebClient
 
         // Once the check is finished it will call startLogin()
         checkInternetPermission()
@@ -310,15 +197,15 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             }
         }
 
-        loadUrl(Uri.Builder()
-                .scheme("https")
-                .authority("www.facebook.com")
-                .path("/v2.9/dialog/oauth")
-                .appendQueryParameter("client_id", getString(R.string.facebook_app_id))
-                .appendQueryParameter("redirect_uri", "https://www.facebook.com/connect/login_success.html")
-                .appendQueryParameter("response_type", "token")
-                .appendQueryParameter("scopes", TOKEN_SCOPE)
-                .build().toString())
+        mWebView.loadUrl(Uri.Builder()
+                    .scheme("https")
+                    .authority("www.facebook.com")
+                    .path("/v2.9/dialog/oauth")
+                    .appendQueryParameter("client_id", getString(R.string.facebook_app_id))
+                    .appendQueryParameter("redirect_uri", "https://www.facebook.com/connect/login_success.html")
+                    .appendQueryParameter("response_type", "token")
+                    .appendQueryParameter("scopes", TOKEN_SCOPE)
+                    .build().toString())
     }
 
     private fun fetchUserInfo(accessToken: String) {
