@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources><string name="app_name">Facebook 事件同步</string>
+    <string name="full_app_name">Facebook 的活動同步</string>
+    <string name="btn_save">儲存</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_remove">移除</string>
+    <string name="main_version_label">版本：%s</string>
+    <string name="main_add_account_btn">新增帳戶</string>
+    <string name="main_show_logs_btn">顯示日誌</string>
+    <string name="main_configure_calendars_btn">配置行事曆</string>
+</resources>
