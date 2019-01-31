@@ -1,6 +1,11 @@
 # Event Sync for Facebook
 
-[<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width=200>](https://play.google.com/store/apps/details?id=cz.dvratil.fbeventsync)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=cz.dvratil.fbeventsync)
+[<img src="https://f-droid.org/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/cz.dvratil.fbeventsync/)
 
 Sync your Facebook Events into your Android calendar.
 
