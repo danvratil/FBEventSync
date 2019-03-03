@@ -167,8 +167,15 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
             override fun onEventPageReached(webView: WebView, uri: Uri) {
                 subscribeToEvent(webView,
-                        { findExportUri(webView, { linkExtracted(it)}, { linkExtractionFailed(it) }) },
+                        { findExportUri(webView, { linkExtracted(it) }, { linkExtractionFailed(it) }) },
                         { linkExtractionFailed(it) }
+                )
+            }
+
+            override fun onEventsPageReached(webView: WebView, uri: Uri) {
+                findWebCalUri(webView,
+                        { linkExtracted(it) },
+                        { webView.loadUrl("https://www.facebook.com/events/${AuthenticatorActivity.EXPORT_EVENT_FBID}") }
                 )
             }
         }
