@@ -25,6 +25,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.NavigationView
+import android.support.v4.content.FileProvider
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
@@ -36,6 +37,8 @@ import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -85,15 +88,27 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_report_bug -> {
                     mDrawerLayout.closeDrawers()
-                    startActivity(
-                            Intent(Intent.ACTION_SENDTO).apply {
+                    val logFile = File(filesDir, Logger.LOG_FILE)
+                    if (!logFile.exists() || !logFile.canRead()) {
+                        Toast.makeText(this, R.string.log_error_sending_log_toast, Toast.LENGTH_SHORT).show()
+                        true
+                    }
+
+                    val contentUri = FileProvider.getUriForFile(
+                            this, getString(R.string.fileprovider_authority), logFile)
+                    startActivity(Intent.createChooser(
+                            Intent(Intent.ACTION_SEND).apply {
                                 type = "message/rfc822"
-                                data = Uri.parse("mailto:me@dvratil.cz")
                                 putExtra(Intent.EXTRA_EMAIL, arrayOf("me@dvratil.cz"))
                                 putExtra(Intent.EXTRA_SUBJECT, "FBEventSync Issue")
-                                putExtra(Intent.EXTRA_TEXT, getString(R.string.log_email_template))
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            })
+                                putExtra(Intent.EXTRA_TEXT,
+                                        "${getString(R.string.log_email_template)}\n\n\n" +
+                                                "App ID: ${BuildConfig.APPLICATION_ID}\n" +
+                                                "App version: ${BuildConfig.VERSION_CODE} (${BuildConfig.VERSION_NAME})\n" +
+                                                "App build: ${BuildConfig.BUILD_TYPE}\n" +
+                                                "OS: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})\n")
+                                putExtra(Intent.EXTRA_STREAM, contentUri)
+                            }, resources.getString(R.string.log_send_email_action)))
                     true
                 }
                 R.id.nav_faq -> {
