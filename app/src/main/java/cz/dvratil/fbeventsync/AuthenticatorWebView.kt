@@ -137,6 +137,8 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
                 "(function() {" +
                         "  if (link = document.querySelector(\"a[href^='https://www.facebook.com/events/ical/upcoming']\")) {" +
                         "    return link.href;" +
+                        "  } else if (link = document.querySelector(\"a[href^='https://web.facebook.com/events/ical/upcoming']\")) {" +
+                        "    return link.href;" +
                         "  } else {" +
                         "    return false;" +
                         "  }" +
