@@ -1,49 +1,60 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources><string name="app_name">FB Event Sync</string>
-    <string name="full_app_name">"Event Sync für Facebook  (Veranstaltungen/Geburtstage)"</string>
+    <string name="full_app_name">"Event Sync für Facebook (Veranstaltungen/Geburtstage)"</string>
+
     <string name="btn_save">Speichern</string>
     <string name="btn_cancel">Abbrechen</string>
     <string name="btn_remove">Entfernen</string>
 
 
+    <!-- MAIN ACTIVITY //-->
     <string name="main_version_label">Version: %s</string>
     <string name="main_add_account_btn">Konto hinzufügen</string>
     <string name="main_show_logs_btn">Logdatei anzeigen</string>
     <string name="main_configure_calendars_btn">Kalender konfigurieren</string>
     <string name="main_configure_sync_btn">Sync-Einstellungen konfigurieren</string>
     <string name="main_configure_misc_btn">Sonstige Einstellungen</string>
-    <string name="main_sync_now">Jetzt syncronisieren</string>
-    <string name="main_sync_in_progress">Sync wird durchgeführt...</string>
+    <string name="main_sync_now">Jetzt synchronisieren</string>
+    <string name="main_sync_in_progress">Sync wird durchgeführt…</string>
+    <string name="main_fbpage_link">Folge unserer &lt;a href=https://www.facebook.com/294071114749578>Facebook-Seite&lt;/a> für Neuigkeiten und Infos über Updates!</string>
 
-    <string name="nav_sync_all">Alles syncronisieren</string>
+    <!-- NAVIGATION DRAWER ACTIONS //-->
+    <string name="nav_sync_all">Alles synchronisieren</string>
     <string name="nav_configure_calendars">Kalender konfigurieren</string>
-    <string name="nav_configure_sync">Syncronisation konfigurieren</string>
-    <string name="nav_sync_logs">Syncronisations-Log</string>
+    <string name="nav_configure_sync">Synchronisation konfigurieren</string>
+    <string name="nav_sync_logs">Synchronisations-Log</string>
     <string name="nav_report_bug">Programm-Fehler melden</string>
     <string name="nav_faq">FAQ (oft gestellte Fragen)</string>
+    <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
     <string name="nav_about">Über</string>
+    <string name="nav_homepage">Homepage</string>
 
+    <!-- PERMISSIONS ACTIVITY //-->
     <string name="perms_activity_title">Berechtigungs-Anfrage</string>
 
+    <!-- LOGVIEW ACTIVITY //-->
     <string name="log_activity_title">Log ansehen</string>
     <string name="log_clear_log_action">Log-Datei löschen</string>
     <string name="log_send_to_dev_action">An den Entwickler senden</string>
     <string name="log_send_email_action">Sende Email…</string>
-    <string name="log_email_template">[Bitte beschreiben Sie Ihr Problem hier - möglichst auf Englisch]</string>
+    <string name="log_email_template">[Bitte beschreibe dein Problem hier,https://github.com/sindresorhus/refined-github/issues/1123 möglichst auf Englisch]</string>
     <string name="log_error_sending_log_toast">Log senden fehlgeschlagen: Auf Logdatei kann nicht zugegriffen werden</string>
 
+    <!-- AUTHENTICATION ACTIVITY //-->
     <string name="auth_activity_title">Facebook-Authentifizierung</string>
     <string name="auth_account_creation_error_toast">Fehler bei der Authentifizierung</string>
     <string name="auth_account_creation_success_toast">Konto hinzugefügt</string>
-    <string name="auth_rate_limiting_toast">Es kommt im Moment zu Problemen bei der Facebook API. Bitte später nochmal versuchen.</string>
+    <string name="auth_rate_limiting_toast">Es kommt im Moment zu Problemen bei der Facebook-API. Bitte versuche es später nochmal.</string>
     <string name="auth_progress_authenticating_with_fb">Authentifizierung bei Facebook…</string>
     <string name="auth_progress_retrieving_calendars">Hole Kalender…</string>
     <string name="auth_progress_retrieving_userinfo">Hole Benutzer-Informationen…</string>
     <string name="auth_calendar_uri_error_toast">Fehler beim Abruf des Kalender-URI</string>
 
     <string name="auth_remove_account_title">Konto %s entfernen?</string>
-    <string name="auth_remove_account_text">Das Konto wird nur aus dieser App entfernt - Ihr Facebook-Konto selbst und andere Apps werden damit nicht verändert.</string>
+    <string name="auth_remove_account_text">Das Konto wird nur aus dieser App entfernt - dein Facebook-Konto selbst und andere Apps werden damit nicht verändert.</string>
 
+    <!-- ABOUT ACTIVITY //-->
+    <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
     <string name="about_activity_title">Über</string>
     <string name="pref_about_rate_app_title">Bewerte die App</string>
     <string name="pref_about_privacy_title">Datenschutz</string>
@@ -52,49 +63,58 @@
     <string name="pref_about_version_title">Version</string>
 
 
-    <string name="calendar_not_responded_title">Veranstaltungen auf die ich nicht reagiert habe</string>
-    <string name="calendar_declined_title">Veranstaltungen an denen ich nicht teilnehme</string>
-    <string name="calendar_tentative_title">Veranstaltungen an denen ich vielleicht teilnehme</string>
-    <string name="calendar_attending_title">Veranstaltungen bei denen ich die Teilnahme zugesagt habe</string>
+    <!-- CALENDAR SYNC //-->
+    <string name="calendar_not_responded_title">Veranstaltungen, auf die ich nicht reagiert habe</string>
+    <string name="calendar_declined_title">Veranstaltungen, an denen ich nicht teilnehme</string>
+    <string name="calendar_tentative_title">Veranstaltungen, an denen ich vielleicht teilnehme</string>
+    <string name="calendar_attending_title">Veranstaltungen, zu denen ich zugesagt habe</string>
     <string name="calendar_birthday_title">Geburtstage von Freunden</string>
     <string name="sync_ntf_needs_reauthentication_title">Event Sync für Facebook muss sich einloggen</string>
-    <string name="sync_ntf_needs_reauthentication_description">Hier drücken um die Facebook-Authentifizierung zu erneuern</string>
+    <string name="sync_ntf_needs_reauthentication_description">Hier tippen, um die Facebook-Authentifizierung zu erneuern</string>
 
+    <!-- PREFERENCES //-->
     <string name="pref_activity_title">Einstellungen</string>
 
-    <string name="pref_sync_settings_title">Sync Einstellungen</string>
-    <string name="pref_sync_settings_summary">Einstellen wie oft und wann Events syncronisiert werden.</string>
+    <!-- Sync settings //-->
+    <string name="pref_sync_settings_title">Sync-Einstellungen</string>
+    <string name="pref_sync_settings_summary">Häufigkeit und Zeitpunkt der Synchronisation einstellen.</string>
 
     <string name="pref_sync_frequency_title">Intervall zwischen Synchronisationen</string>
-    <string name="pref_sync_frequency_summary">Wie oft sollen die Facebook Events übertragen (synchronisiert) werden?</string>
+    <string name="pref_sync_frequency_summary">Wie oft sollen deine Facebook-Veranstaltungen synchronisiert werden?</string>
+
     <string name="pref_sync_fblink_title">Link zur Facebook-Veranstaltung hinzufügen</string>
     <string name="pref_sync_fblink_summary">Im Beschreibungstext des Kalender-Eintrags einen Link zur jeweiligen Veranstaltungsseite bei Facebook eintragen.</string>
 
     <string name="pref_language_title">Sprache</string>
     <string name="pref_language_summary">Sprache für Geburtstage und Veranstaltungen</string>
     <string name="pref_language_default_entry">Sprache des Geräts</string>
+
+    <!-- Calendar settings //-->
     <string name="pref_calendar_settings_title">Kalender</string>
     <string name="pref_calendar_settings_summary">Einstellungen für Kalender, Farben und Erinnerungsnachrichten</string>
 
-    <string name="pref_calendar_enabled_title">An</string>
+
+    <string name="pref_calendar_enabled_title">Aktiviert</string>
     <string name="pref_calendar_reminders_title">Erinnerungen</string>
-    <string name="pref_calendar_allday_reminders_title">Erinnerungsmitteilungen für ganztägige Einträge</string>
+    <string name="pref_calendar_allday_reminders_title">Erinnerungen für ganztägige Veranstaltungen</string>
     <string name="pref_calendar_color_title">Farbe</string>
 
     <string name="color_dlg_title">Farbe wählen</string>
     <string name="color_dlg_save_btn_title">Speichern</string>
     <string name="color_dlg_close_btn_title">Schließen</string>
 
+    <!-- N day(s) before at HH:MM //-->
     <plurals name="pref_reminder_allday_description">
-	<item quantity="one">%d Tag vorher um %s</item>
-	<item quantity="other">%d Tage vorher um %s</item>
-</plurals>
-    <string name="allday_reminder_daysBeforeAt">"Tage vorher um "</string>
+        <item quantity="one">%d Tag vorher um %s</item>
+        <item quantity="other">%d Tage vorher um %s</item>
+    </plurals>
+    <!-- [ number picker ] days before at [ time picker ] //-->
+    <string name="allday_reminder_daysBeforeAt">Tage vorher um</string>
 
     <plurals name="pref_reminder_anyminutes">
-	<item quantity="one">%d Minute</item>
-	<item quantity="other">%d Minuten</item>
-</plurals>
+        <item quantity="one">%d Minute</item>
+        <item quantity="other">%d Minuten</item>
+    </plurals>
 
     <string name="pref_reminder_0minutes_entry">0 Minuten</string>
     <string name="pref_reminder_5minutes_entry">5 Minuten</string>
@@ -109,6 +129,7 @@
     <string name="pref_reminder_36hours_entry">36 Stunden</string>
     <string name="pref_reminder_2days_entry">2 Tage</string>
     <string name="pref_reminder_1week_entry">1 Woche</string>
+
     <string name="pref_sync_frequency_never_entry">Gar nicht</string>
     <string name="pref_sync_frequency_1hour_entry">1 Stunde</string>
     <string name="pref_sync_frequency_2hours_entry">2 Stunden</string>
@@ -116,5 +137,6 @@
     <string name="pref_sync_frequency_8hours_entry">8 Stunden</string>
     <string name="pref_sync_frequency_12hours_entry">12 Stunden</string>
     <string name="pref_sync_frequency_24hours_entry">24 Stunden</string>
+
     <string name="pref_general_settings_title">Allgemein</string>
 </resources>
