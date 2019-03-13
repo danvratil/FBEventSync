@@ -68,6 +68,8 @@ object Graph {
 
     fun fetchBirthdayICal(birthdayICalUri: String, handler: AsyncHttpResponseHandler): RequestHandle {
         val client = SyncHttpClient()
+        client.connectTimeout = 30000 // 30 seconds
+        client.responseTimeout = 60000 // 60 seconds
         // Pretend we are cURL, so that Facebook does not redirect us to facebook.com/unsupportedbrowser
         client.setUserAgent("curl/7.55.1")
         return client.get(birthdayICalUri, handler)
