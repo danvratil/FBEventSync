@@ -77,7 +77,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     }
 
     private fun linkExtracted(s: String) {
-        mLogger.debug("AUTH", "Key extraction done: $s")
+        mLogger.debug("AUTH", "Key extraction done!")
 
         val link = Uri.parse(s)
         val key = link.getQueryParameter("key")
