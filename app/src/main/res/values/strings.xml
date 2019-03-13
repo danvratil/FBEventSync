@@ -145,7 +145,7 @@
     <string name="color_dlg_save_btn_title">Save</string>
     <string name="color_dlg_close_btn_title">Close</string>
 
-    <string name="cfg_last_sync" translatable="false">lastSync</string>
+    <string name="cfg_last_sync_time" translatable="false">lastSyncTime</string>
     <string name="cfg_syncs_per_hour" translatable="false">syncPerHour</string>
     <string name="cfg_last_version" translatable="false">lastVersion</string>
 

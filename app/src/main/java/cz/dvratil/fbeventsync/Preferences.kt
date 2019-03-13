@@ -272,12 +272,12 @@ class Preferences(private var mContext: Context){
         mPrefs.putInt(mContext.getString(R.string.pref_calendar_birthday_color), color)
     }
 
-    internal fun lastSync(): Long {
-        return mPrefs.getLong(mContext.getString(R.string.cfg_last_sync), 0)
+    internal fun lastSyncTime(): Int {
+        return mPrefs.getInt(mContext.getString(R.string.cfg_last_sync_time), 0)
     }
 
-    internal fun setLastSync(lastSync: Long) {
-        mPrefs.putLong(mContext.getString(R.string.cfg_last_sync), lastSync)
+    internal fun setLastSyncTime(lastSync: Int) {
+        mPrefs.putInt(mContext.getString(R.string.cfg_last_sync_time), lastSync)
     }
 
     internal fun syncsPerHour(): Int {

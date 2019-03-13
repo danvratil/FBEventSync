@@ -83,22 +83,22 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         val prefs = Preferences(context)
 
         // Don't sync more often than every minute
-        val calendar = Calendar.getInstance()
-        val lastSync = prefs.lastSync()
+        val now = (Calendar.getInstance().timeInMillis / 1000).toInt()
+        val lastSync = prefs.lastSyncTime()
         if (!BuildConfig.DEBUG) {
-            if (calendar.timeInMillis - lastSync < 60 * 1000) {
-                logger.info(TAG, "Skipping sync, last sync was only ${(calendar.timeInMillis - lastSync) / 1000} seconds ago")
+            if (now - lastSync < 60) {
+                logger.info(TAG, "Skipping sync, last sync was only ${(now - lastSync)} seconds ago")
                 return
             }
-            prefs.setLastSync(Calendar.getInstance().timeInMillis)
+            prefs.setLastSyncTime(now)
         }
 
         // Allow up to 5 syncs per hour
         var syncsPerHour = prefs.syncsPerHour()
         if (!BuildConfig.DEBUG) {
-            if (calendar.timeInMillis - lastSync < 3600 * 1000) {
+            if (now - lastSync < 3600) {
+                val calendar = Calendar.getInstance()
                 val hour = calendar.get(Calendar.HOUR)
-                calendar.timeInMillis = lastSync
                 logger.debug(TAG, "Lasy sync hour: ${calendar.get(Calendar.HOUR)}, now sync hour: $hour")
                 if (calendar.get(Calendar.HOUR) != hour) {
                     syncsPerHour = 1

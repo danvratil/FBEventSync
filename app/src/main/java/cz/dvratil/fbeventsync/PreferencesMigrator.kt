@@ -134,7 +134,6 @@ object PreferencesMigrator {
 
         new.setFbLink(old.getBoolean(context.getString(R.string.pref_sync_fblink), new.fbLink()))
         new.setLanguage(old.getString(context.getString(R.string.pref_language), new.language()))
-        new.setLastSync(old.getLong(context.getString(R.string.cfg_last_sync), new.lastSync()))
         new.setLastVersion(old.getInt(context.getString(R.string.cfg_last_version), new.lastVersion()))
         new.setSyncsPerHour(old.getInt(context.getString(R.string.cfg_syncs_per_hour), new.syncsPerHour()))
         new.setSyncFrequency(Integer.parseInt(old.getString(context.getString(R.string.pref_sync_frequency), new.syncFrequency().toString())))
