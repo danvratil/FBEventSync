@@ -34,8 +34,8 @@ android {
         applicationId "cz.dvratil.fbeventsync"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 39
-        versionName "0.35"
+        versionCode 40
+        versionName "0.36"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
