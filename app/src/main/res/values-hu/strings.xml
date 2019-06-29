@@ -1,2 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">FB Esemény Szinkronizáló</string>
+    <string name="full_app_name">Esemény szinkronizáló Facebook-hoz</string>
+    <string name="btn_save">Mentés</string>
+    <string name="btn_cancel">Mégse</string>
+    <string name="btn_remove">Eltávolítás</string>
+    <string name="main_version_label">Verzió: %s</string>
+    <string name="main_add_account_btn">Fiók Hozzáadása</string>
+    <string name="main_show_logs_btn">Napló Mutatása</string>
+    <string name="main_configure_calendars_btn">Naptárak Beállítása</string>
+    <string name="main_configure_sync_btn">Szinkronizálási Beállítások</string>
+    <string name="main_configure_misc_btn">Egyéb Beállítások</string>
+    <string name="main_sync_now">Szinkronizálás Most</string>
+    <string name="main_sync_in_progress">A szinkronizálás folyik...</string>
+    <string name="main_fbpage_link">Kövesd a &lt;a href=https://www.facebook.com/294071114749578&gt;Facebook oldalunk&lt;/a&gt;, hogy értesülj a legújabb hírekről és új frissítésekről!</string>
+    <string name="nav_sync_all">Összes Szinkronizálása</string>
+    <string name="nav_configure_calendars">Naptárak Beállítása</string>
+    <string name="nav_configure_sync">Szinkronizálás Beállítása</string>
+    <string name="nav_sync_logs">Szinkronizálási Naplók</string>
+    <string name="nav_report_bug">Hiba Bejelentése</string>
+    <string name="nav_faq">GyIK</string>
+    <string name="nav_about">Névjegy</string>
+    <string name="nav_homepage">Weboldal</string>
+    <string name="perms_activity_title">Jogosultsági Kérelem</string>
+    <string name="log_activity_title">Napló Nézet</string>
+    <string name="log_clear_log_action">Napló Törlése</string>
+    <string name="log_send_to_dev_action">Elküldés a Fejlesztőnek</string>
+    <string name="log_send_email_action">Email küldése…</string>
+    <string name="log_email_template">[Kérem, írja le ide problémáját, lehetőleg angolul]</string>
+    <string name="log_error_sending_log_toast">Naplók küldése sikertelen: Naplófájl nem olvasható</string>
+    <string name="auth_activity_title">Bejelentkezés Facebookkal</string>
+    <string name="auth_account_creation_error_toast">Bejelentkezési hiba</string>
+    <string name="auth_account_creation_success_toast">Fiók hozzáadva</string>
+    <string name="auth_rate_limiting_toast">A Facebook szerverei problémát jeleztek. Próbálja meg később.</string>
+    <string name="auth_progress_authenticating_with_fb">Bejelentkezés Facebookkal…</string>
+    <string name="auth_progress_retrieving_calendars">Naptárak letöltése…</string>
+    <string name="auth_progress_retrieving_userinfo">Felhasználói adatok beszerzése…</string>
+    <string name="auth_calendar_uri_error_toast">Sikertelen volt a naptár URL-jének beszerzése</string>
+    <string name="auth_remove_account_title">Biztosan eltávolítja a következő fiókot: %s\?</string>
+    <string name="auth_remove_account_text">A fiók csak az alkalmazásból törlődik, egyéb alkalmazások és az Ön Facebook fiókja érintetlen marad.</string>
+    <string name="about_activity_title">Névjegy</string>
+    <string name="pref_about_rate_app_title">Alkalmazás értékelése</string>
+    <string name="pref_about_privacy_title">Adatvédelem</string>
+    <string name="pref_about_license_title">Licensz</string>
+    <string name="pref_about_license_summary">GNU General Public License v3.0</string>
+    <string name="pref_about_version_title">Verzió</string>
+    <string name="calendar_not_responded_title">Események amikre nem reagáltam</string>
+    <string name="calendar_declined_title">Események amikre nem megyek el</string>
+    <string name="calendar_tentative_title">Események amikre talán elmegyek</string>
+    <string name="calendar_attending_title">Események amikre elmegyek</string>
+    <string name="calendar_birthday_title">Barátok Születésnapjai</string>
+    <string name="sync_ntf_needs_reauthentication_description">Érintse meg a Facebookkal való újra-bejelentkezéshez</string>
+    <string name="pref_activity_title">Beállítások</string>
+    <string name="pref_sync_settings_title">Szinkronizálási Beállítások</string>
+    <string name="pref_sync_settings_summary">Beállíthatja, hogy milyen gyakran és mikor akar eseményeket szinkronizálni.</string>
+    <string name="pref_sync_frequency_title">Szinkronizálás Gyakorisága</string>
+    <string name="pref_sync_frequency_summary">Milyen gyakran szeretné, hogy eseményei szinkronizálva legyenek\?</string>
+    <string name="pref_sync_fblink_title">Facebook-link hozzáadása</string>
+    <string name="pref_sync_fblink_summary">Hozzáad egy linket az esemény leírásához, mely a Facebookra mutat.</string>
+    <string name="pref_language_title">Nyelv</string>
+    <string name="pref_language_summary">Születésnapok és események megjelenési nyelve</string>
+    <string name="pref_language_default_entry">Eszköz nyelve</string>
+    <string name="pref_calendar_settings_title">Naptárak</string>
+    <string name="pref_calendar_settings_summary">Naptárak, színek és emlékeztetők beállítása</string>
+</resources>
