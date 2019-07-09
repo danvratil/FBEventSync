@@ -49,12 +49,6 @@ object Graph {
         return AsyncHttpClient().get(BASE_URL + "/me/picture", params, handler)
     }
 
-    fun events(accessToken: String, params: RequestParams, handler: AsyncHttpResponseHandler): RequestHandle {
-        val client = SyncHttpClient()
-        params.add(ACCESS_TOKEN_PARAM, accessToken)
-        return client.get(BASE_URL + "/me/events", params, handler)
-    }
-
     fun refreshTokens(context: Context, scopes: String, handler: AsyncHttpResponseHandler): RequestHandle {
         val client = SyncHttpClient()
         val params = RequestParams().apply {

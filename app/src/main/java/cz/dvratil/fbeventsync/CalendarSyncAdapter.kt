@@ -40,13 +40,9 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 
 import com.loopj.android.http.DataAsyncHttpResponseHandler
-import com.loopj.android.http.RequestParams
-
-import org.json.JSONObject
 
 import java.util.Calendar
 import java.util.Locale
-import java.util.TimeZone
 
 import biweekly.Biweekly
 import cz.msebera.android.httpclient.Header
@@ -177,8 +173,6 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             calendars.initialize(syncContext)
         }
 
-        // Sync via iCal only - not avoiding Graph calls, but it gives us access to private group
-        // events which are otherwise missing from Graph
         if (syncEventsViaICal(calendars)) {
             calendars.forEach {
                 if (it.value.type() != FBCalendar.CalendarType.TYPE_BIRTHDAY) {
@@ -196,84 +190,6 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         mSyncContext = null
 
         logger.info(TAG, "Sync for ${account.name} done")
-    }
-
-    @Suppress("unused")
-    private fun syncEventsViaGraph(calendars: FBCalendar.Set) {
-        val syncContext = mSyncContext ?: return
-        var cursor: String? = null
-        do {
-            val response = fetchEvents(cursor) ?: continue
-            try {
-                if (response.has("data")) {
-                    val data = response.getJSONArray("data")
-                    val len = data.length()
-                    var lastEvent: FBEvent? = null
-                    for (i in 0 until len) {
-                        val event = FBEvent.parse(data.getJSONObject(i)!!, syncContext)
-                        val calendar = calendars.getCalendarForEvent(event)
-                        if (calendar == null) {
-                            logger.error(TAG, "Failed to find calendar for event!")
-                            continue
-                        }
-                        event.setCalendar(calendar)
-                        calendar.syncEvent(event)
-                        lastEvent = event
-                    }
-
-                    // Only sync events back one year, don't go any further in the past to save
-                    // bandwidth
-                    if (lastEvent != null) {
-                        val cal = Calendar.getInstance(TimeZone.getDefault())
-                        cal.add(Calendar.YEAR, -1)
-                        val lastEventStart = lastEvent.values.getAsLong(CalendarContract.Events.DTSTART)
-                        if (lastEventStart < cal.timeInMillis) {
-                            break
-                        }
-                    }
-                }
-                cursor = getNextCursor(response)
-            } catch (e: Exception) {
-                when (e) {
-                    is java.text.ParseException,
-                    is org.json.JSONException -> {
-                        cursor = null
-                        logger.error(TAG, "syncEventsViaGraph: $e")
-                    }
-                    else -> {
-                        logger.error(TAG, "syncEventsViaGraph: unhandled $e")
-                        throw e
-                    }
-                }
-            }
-        } while (cursor != null)
-    }
-
-    private fun fetchEvents(cursor: String?): JSONObject? {
-        val syncContext = mSyncContext ?: return null
-        val params = RequestParams()
-        params.add(Graph.FIELDS_PARAM, "id,name,description,place,start_time,end_time,owner,is_canceled,rsvp_status")
-        params.add(Graph.LIMIT_PARAM, "100")
-        if (cursor != null) {
-            params.add(Graph.AFTER_PARAM, cursor)
-        }
-
-        val handler = GraphResponseHandler(syncContext.context)
-
-        logger.debug(TAG, "Sending Graph request...")
-        Graph.events(syncContext.accessToken, params, handler)
-        logger.debug(TAG, "Graph response received")
-
-        return handler.response
-    }
-
-    private fun getNextCursor(obj: JSONObject): String? {
-        return try {
-            obj.getJSONObject("paging")?.getJSONObject("cursors")?.getString("after")
-        } catch (e: org.json.JSONException) {
-            null
-        }
-
     }
 
     private enum class ICalURIType {

@@ -21,8 +21,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.provider.CalendarContract
 
-import org.json.JSONObject
-
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -153,38 +151,6 @@ class FBEvent private constructor() {
     }
 
     companion object {
-        @Throws(org.json.JSONException::class)
-        fun parsePlace(event: JSONObject): String {
-            val placeStr = arrayListOf<String>()
-            if (event.has("place")) {
-                val place = event.getJSONObject("place")!!
-                if (place.has("name")) {
-                    placeStr.add(place.getString("name")!!)
-                }
-                if (place.has("location")) {
-                    val locationStr = ArrayList<String>()
-                    val location = place.getJSONObject("location")!!
-                    arrayOf("street", "city", "zip", "country").forEach {
-                        if (location.has(it)) {
-                            locationStr.add(location.getString(it)!!)
-                        }
-                    }
-
-                    if (locationStr.isEmpty()) {
-                        if (location.has("longitude")) {
-                            locationStr.add(location.getDouble("longitude").toString())
-                        }
-                        if (location.has("latitude")) {
-                            locationStr.add(location.getDouble("latitude").toString())
-                        }
-                    }
-                    placeStr.addAll(locationStr)
-                }
-            }
-
-            return placeStr.joinToString(", ")
-        }
-
         @Throws(java.text.ParseException::class)
         fun parseDateTime(dt: String): Long {
             val format: SimpleDateFormat
@@ -198,53 +164,6 @@ class FBEvent private constructor() {
                 date = format.parse(dt + " +0000")
             }
             return date.time
-        }
-
-        @Throws(org.json.JSONException::class,
-                java.text.ParseException::class)
-        fun parse(event: org.json.JSONObject, context: SyncContext): FBEvent {
-            val fbEvent = FBEvent()
-            val values = fbEvent.values
-
-            // FIXME: Right now we are abusing UID_2445 to store the Facebook ID - maybe there's a
-            // better field for that (ideally an integer-based one)?
-            values.put(CalendarContract.Events.UID_2445, event.getString("id"))
-            if (event.has("owner")) {
-                values.put(CalendarContract.Events.ORGANIZER, event.getJSONObject("owner")!!.getString("name"))
-            }
-            values.put(CalendarContract.Events.TITLE, event.getString("name")!!)
-            if (event.has("place")) {
-                values.put(CalendarContract.Events.EVENT_LOCATION, parsePlace(event))
-            }
-            if (event.has("description")) {
-                var description = event.getString("description")!!
-                if (context.preferences.fbLink()) {
-                    description += "\n\nhttps://www.facebook.com/events/${event.getString("id")!!}"
-                }
-                values.put(CalendarContract.Events.DESCRIPTION, description)
-            }
-            values.put(CalendarContract.Events.DTSTART, parseDateTime(event.getString("start_time")!!))
-            values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
-            if (event.has("end_time")) {
-                values.put(CalendarContract.Events.DTEND, parseDateTime(event.getString("end_time")!!))
-                values.put(CalendarContract.Events.EVENT_END_TIMEZONE, TimeZone.getDefault().id)
-            } else {
-                // If there's no dt_end, assume 1 hour duration
-                values.put(CalendarContract.Events.DURATION, "P1H")
-            }
-            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=${event.getString("id")!!}")
-
-            if (event.has("rsvp_status")) {
-                val status = event.getString("rsvp_status")!!
-                when (status) {
-                    "attending" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_ATTENDING
-                    "unsure" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_MAYBE
-                    "declined" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_DECLINED
-                    "not_replied" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_NOT_REPLIED
-                    else -> context.logger.warning("SYNC.EVENT", "Unknown RSVP status '$status'")
-                }
-            }
-            return fbEvent
         }
 
         fun parse(vevent: VEvent, context: SyncContext): FBEvent {
