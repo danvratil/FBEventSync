@@ -168,10 +168,16 @@ open class FBEvent protected constructor() {
         }
 
         data class FancyDateResult(val dtStart: Long, val dtEnd: Long)
-        fun parseFancyDate(dt_: String, timezone: TimeZone = TimeZone.getDefault()): FancyDateResult {
-            fun parseInner(dt: String, hourFormat: SimpleDateFormat, minuteFormat: SimpleDateFormat): Long {
-                return (if (dt.contains(':')) minuteFormat.parse(dt) else hourFormat.parse(dt)).time
+        fun parseFancyDate(dt_: String, timezone: TimeZone = TimeZone.getDefault(), context: SyncContext? = null): FancyDateResult {
+            fun parseInner(dt: String, hourFormat: SimpleDateFormat, minuteFormat: SimpleDateFormat, context: SyncContext?): Long {
+                try {
+                    return (if (dt.contains(':')) minuteFormat.parse(dt) else hourFormat.parse(dt)).time
+                } catch (e: java.text.ParseException) {
+                    context?.logger?.error("SYNC.EVENT", e.toString())
+                    throw e
+                }
             }
+
             fun dateFormat(format: String, timezone: TimeZone): SimpleDateFormat {
                 return SimpleDateFormat(format, Locale.US).apply {
                     timeZone = timezone
@@ -184,30 +190,30 @@ open class FBEvent protected constructor() {
             val dtEnd: Long
             if (dt[3] == ' ') { // 3 letters of month at the beginning indicate multi-day event
                 if (dt.contains(",")) { // If there's comma, then the string contains a year
-                    val hourFormat = dateFormat("MMM d, yyyy 'at' h a", timezone)
+                    val hourFormat = dateFormat("MMM d, yyyyy 'at' h a", timezone)
                     val minuteFormat = dateFormat("MMM d, yyyy 'at' h:mm a", timezone)
                     val ds = dt.split(" – ")
-                    dtStart = parseInner(ds[0], hourFormat, minuteFormat)
-                    dtEnd = parseInner(ds[1], hourFormat, minuteFormat)
+                    dtStart = parseInner(ds[0], hourFormat, minuteFormat, context)
+                    dtEnd = parseInner(ds[1], hourFormat, minuteFormat, context)
                 } else { // no comma means no year information - implies current year
                     val hourFormat = dateFormat("yyyy MMM d 'at' h a", timezone)
                     val minuteFormat = dateFormat("yyyy MMM d 'at' h:mm a", timezone)
                     val ds = dt.split(" – ")
                     val currentYear = Calendar.getInstance(Locale.US).get(Calendar.YEAR)
-                    dtStart = parseInner("$currentYear ${ds[0]}", hourFormat, minuteFormat)
-                    dtEnd = parseInner("$currentYear ${ds[1]}", hourFormat, minuteFormat)
+                    dtStart = parseInner("$currentYear ${ds[0]}", hourFormat, minuteFormat, context)
+                    dtEnd = parseInner("$currentYear ${ds[1]}", hourFormat, minuteFormat, context)
                 }
             } else { // single day event
                 val hourFormat = dateFormat("EEEEE, MMMMM d, yyyy 'at' h a", timezone)
                 val minuteFormat = dateFormat("EEEEE, MMMMM d, yyyy 'at' h:mm a", timezone)
                 if (dt.contains(" – ")) { // if the event has start and end
                     val ds = dt.split(" – ")
-                    dtStart = parseInner(ds[0], hourFormat, minuteFormat)
+                    dtStart = parseInner(ds[0], hourFormat, minuteFormat, context)
                     val pos = ds[0].indexOf(" at ") // replace the start time by the end time
                     val endStr = ds[0].substring(0, pos + 4 /* len of " at " */) + ds[1]
-                    dtEnd = parseInner(endStr, hourFormat, minuteFormat)
+                    dtEnd = parseInner(endStr, hourFormat, minuteFormat, context)
                 } else {
-                    dtStart = parseInner(dt, hourFormat, minuteFormat)
+                    dtStart = parseInner(dt, hourFormat, minuteFormat, context)
                     // for events without end time, the webcal uses default duration of 3 hours
                     dtEnd = dtStart + (3 * 60 * 60 * 1000) // 3 hours in milliseconds
                 }
@@ -233,7 +239,7 @@ open class FBEvent protected constructor() {
             val detail = content.child(1) ?: return null
 
             val date = detail.child(0)?.text() ?: return null
-            val (dtStart, dtEnd) = parseFancyDate(date)
+            val (dtStart, dtEnd) = parseFancyDate(date, TimeZone.getDefault(), context)
             values.put(CalendarContract.Events.DTSTART, dtStart)
             values.put(CalendarContract.Events.DTEND, dtEnd)
             values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)

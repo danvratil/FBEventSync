@@ -8,13 +8,18 @@ import java.util.*
 class FBBirthdayEvent: FBEvent() {
 
     companion object {
-        private fun parseFancyBirthdayDate(dt: String): Date {
-            return if (dt.count { it == ',' } == 2) {
-                SimpleDateFormat("EEEEE, MMMMM d, yyyy", Locale.US).parse(dt)
-            } else { // handle fancy dates like "Tomorrow, July 11"
-                val ds = dt.split(", ")
-                val year = Calendar.getInstance().get(Calendar.YEAR)
-                SimpleDateFormat("MMMMM d yyyy", Locale.US).parse("${ds[1]} $year")
+        private fun parseFancyBirthdayDate(dt: String, context: SyncContext): Date {
+            try {
+                return if (dt.count { it == ',' } == 2) {
+                    SimpleDateFormat("EEEEE, MMMMM d, yyyy", Locale.US).parse(dt)
+                } else { // handle fancy dates like "Tomorrow, July 11"
+                    val ds = dt.split(", ")
+                    val year = Calendar.getInstance().get(Calendar.YEAR)
+                    SimpleDateFormat("MMMMM d yyyy", Locale.US).parse("${ds[1]} $year")
+                }
+            } catch (e: java.text.ParseException) {
+                context.logger.error("SYNC.BIRTHDAYEVENT", e.toString())
+                throw e
             }
         }
 
@@ -25,7 +30,7 @@ class FBBirthdayEvent: FBEvent() {
             var link = event.select("a")?.first() ?: return null
             var uri = link.attr("href")
             var name = link.child(0)?.text() ?: return null
-            var date = parseFancyBirthdayDate(link.child(2)?.text() ?: return null)
+            var date = parseFancyBirthdayDate(link.child(2)?.text() ?: return null, context)
 
             values.put(CalendarContract.Events.UID_2445, uri.substring(1))
             values.put(CalendarContract.Events.TITLE, context.context.resources.getString(R.string.birthday_event_title, name))
