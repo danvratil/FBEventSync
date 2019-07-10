@@ -28,8 +28,9 @@ import java.util.Locale
 import java.util.TimeZone
 
 import biweekly.component.VEvent
+import org.jsoup.nodes.Element
 
-class FBEvent private constructor() {
+open class FBEvent protected constructor() {
 
     var values = ContentValues()
     var rsvp: FBCalendar.CalendarType? = null
@@ -164,6 +165,105 @@ class FBEvent private constructor() {
                 date = format.parse(dt + " +0000")
             }
             return date.time
+        }
+
+        data class FancyDateResult(val dtStart: Long, val dtEnd: Long)
+        fun parseFancyDate(dt_: String, timezone: TimeZone = TimeZone.getDefault()): FancyDateResult {
+            fun parseInner(dt: String, hourFormat: SimpleDateFormat, minuteFormat: SimpleDateFormat): Long {
+                return (if (dt.contains(':')) minuteFormat.parse(dt) else hourFormat.parse(dt)).time
+            }
+            fun dateFormat(format: String, timezone: TimeZone): SimpleDateFormat {
+                return SimpleDateFormat(format, Locale.US).apply {
+                    timeZone = timezone
+                }
+            }
+
+            // FIXME: This code is ugly!
+            val dt = dt_.trim()
+            val dtStart: Long
+            val dtEnd: Long
+            if (dt[3] == ' ') { // 3 letters of month at the beginning indicate multi-day event
+                if (dt.contains(",")) { // If there's comma, then the string contains a year
+                    val hourFormat = dateFormat("MMM d, yyyy 'at' h a", timezone)
+                    val minuteFormat = dateFormat("MMM d, yyyy 'at' h:mm a", timezone)
+                    val ds = dt.split(" – ")
+                    dtStart = parseInner(ds[0], hourFormat, minuteFormat)
+                    dtEnd = parseInner(ds[1], hourFormat, minuteFormat)
+                } else { // no comma means no year information - implies current year
+                    val hourFormat = dateFormat("yyyy MMM d 'at' h a", timezone)
+                    val minuteFormat = dateFormat("yyyy MMM d 'at' h:mm a", timezone)
+                    val ds = dt.split(" – ")
+                    val currentYear = Calendar.getInstance(Locale.US).get(Calendar.YEAR)
+                    dtStart = parseInner("$currentYear ${ds[0]}", hourFormat, minuteFormat)
+                    dtEnd = parseInner("$currentYear ${ds[1]}", hourFormat, minuteFormat)
+                }
+            } else { // single day event
+                val hourFormat = dateFormat("EEEEE, MMMMM d, yyyy 'at' h a", timezone)
+                val minuteFormat = dateFormat("EEEEE, MMMMM d, yyyy 'at' h:mm a", timezone)
+                if (dt.contains(" – ")) { // if the event has start and end
+                    val ds = dt.split(" – ")
+                    dtStart = parseInner(ds[0], hourFormat, minuteFormat)
+                    val pos = ds[0].indexOf(" at ") // replace the start time by the end time
+                    val endStr = ds[0].substring(0, pos + 4 /* len of " at " */) + ds[1]
+                    dtEnd = parseInner(endStr, hourFormat, minuteFormat)
+                } else {
+                    dtStart = parseInner(dt, hourFormat, minuteFormat)
+                    // for events without end time, the webcal uses default duration of 3 hours
+                    dtEnd = dtStart + (3 * 60 * 60 * 1000) // 3 hours in milliseconds
+                }
+            }
+
+            return FancyDateResult(dtStart, dtEnd)
+        }
+
+        fun parse(event: Element, context: SyncContext, rsvp: FBCalendar.CalendarType? = null): FBEvent? {
+            val fbEvent = FBEvent()
+            val values = fbEvent.values
+
+            val uri = event.select("a")?.attr("href") ?: return null
+            val start = uri.indexOf('/', 1)
+            val end = uri.indexOf('?')
+            val uid = uri.substring(start + 1, end)
+            values.put(CalendarContract.Events.UID_2445, uid)
+
+            val title = event.select("h4")?.text() ?: return null
+            values.put(CalendarContract.Events.TITLE, title)
+
+            val content = event.child(0) ?: return null
+            val detail = content.child(1) ?: return null
+
+            val date = detail.child(0)?.text() ?: return null
+            val (dtStart, dtEnd) = parseFancyDate(date)
+            values.put(CalendarContract.Events.DTSTART, dtStart)
+            values.put(CalendarContract.Events.DTEND, dtEnd)
+            values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
+
+            val location = detail.child(1)?.text() ?: return null
+            values.put(CalendarContract.Events.EVENT_LOCATION, location)
+
+            if (context.preferences.fbLink()) {
+                values.put(CalendarContract.Events.DESCRIPTION, "https://www.facebook.com/$uid")
+            }
+
+            if (rsvp != null) {
+                fbEvent.rsvp = rsvp
+            } else {
+                // This abuses an apparent bug(?) in Facebook when events with "Going" presence contain the
+                // dot symbol, which is (only sometimes) followed by "Interested" link to toggle the presence.
+                // Events with the "Interested" presence do not have the dot, so this is how we can
+                // distinguish them.
+                // Unfortunately this seems extremely fragile, but right now it is the only way if
+                // we want to avoid scraping event details page.
+                if (detail.child(2).select("div")?.text()?.contains("·") == true) {
+                    fbEvent.rsvp = FBCalendar.CalendarType.TYPE_ATTENDING
+                } else {
+                    fbEvent.rsvp = FBCalendar.CalendarType.TYPE_MAYBE
+                }
+            }
+
+            values.put(CalendarContract.Events.CUSTOM_APP_URI, "fb://event?id=$uid")
+
+            return fbEvent
         }
 
         fun parse(vevent: VEvent, context: SyncContext): FBEvent {

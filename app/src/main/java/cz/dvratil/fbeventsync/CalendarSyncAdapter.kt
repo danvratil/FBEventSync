@@ -173,6 +173,21 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             calendars.initialize(syncContext)
         }
 
+        if (syncEventsViaWeb(calendars, syncContext)) {
+            calendars.forEach {
+                if (it.value.type() != FBCalendar.CalendarType.TYPE_BIRTHDAY) {
+                    it.value.finalizeSync()
+                }
+            }
+        }
+
+        if (calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]?.isEnabled == true) {
+            if (syncBirthdaysViaWeb(calendars)) {
+                calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]!!.finalizeSync()
+            }
+        }
+
+        /*
         if (syncEventsViaICal(calendars)) {
             calendars.forEach {
                 if (it.value.type() != FBCalendar.CalendarType.TYPE_BIRTHDAY) {
@@ -186,6 +201,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]!!.finalizeSync()
             }
         }
+        */
 
         mSyncContext = null
 
@@ -261,6 +277,56 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             "<URI parsing error>"
         }
 
+    }
+
+    private fun syncEventsViaWeb(calendars: FBCalendar.Set, context: SyncContext): Boolean {
+        val accountManager = AccountManager.get(context.context)
+        val cookies = accountManager.getUserData(context.account, Authenticator.FB_COOKIES)
+
+        val calendar = calendars.get(FBCalendar.CalendarType.TYPE_NOT_REPLIED) ?: return false
+        var invites = emptyList<FBEvent>()
+        if (calendar.isEnabled) {
+            invites = EventScraper().fetchInvites(context, cookies)
+            invites.forEach {
+                it.setCalendar(calendar)
+                calendar.syncEvent(it)
+            }
+        }
+
+        EventScraper().fetchEvents(invites.map { it.values.getAsString(CalendarContract.Events.UID_2445) }, context, cookies).forEach {
+            val calendar = calendars.getCalendarForEvent(it) ?: return false
+            if (calendar.isEnabled) {
+                it.setCalendar(calendar)
+                calendar.syncEvent(it)
+            }
+        }
+
+        val declinedCalendar = calendars.get(FBCalendar.CalendarType.TYPE_DECLINED) ?: return false
+        if (declinedCalendar.isEnabled) {
+            EventScraper().fetchDeclined(context, cookies).forEach {
+                it.setCalendar(declinedCalendar)
+                declinedCalendar.syncEvent(it)
+            }
+        }
+
+        logger.debug(TAG, "Web sync done")
+        return true
+    }
+
+    private fun syncBirthdaysViaWeb(calendars: FBCalendar.Set): Boolean {
+        val context = mSyncContext ?: return false
+        val accountManager = AccountManager.get(context.context)
+        val cookies = accountManager.getUserData(context.account, Authenticator.FB_COOKIES)
+        val events = EventScraper().fetchBirthdays(context, cookies)
+        events.forEach {
+            val calendar = calendars.getCalendarForEvent(it) ?: return false
+            if (calendar.isEnabled) {
+                it.setCalendar(calendar)
+                calendar.syncEvent(it)
+            }
+        }
+        logger.debug(TAG, "Web sync of birthdays done")
+        return true
     }
 
     private fun syncEventsViaICal(calendars: FBCalendar.Set): Boolean {

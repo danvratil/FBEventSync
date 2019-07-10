@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test>
+    <testcase name="multiday">
+        <input>Oct 5 at 10 AM – Oct 6 at 5 PM</input>
+        <output>1570262400000,1570374000000</output>
+    </testcase>
+
+    <testcase name="multiday_start_minute">
+        <input>Oct 10 at 3:30 AM – Oct 11 at 5 PM</input>
+        <output>1570671000000,1570806000000</output>
+    </testcase>
+
+    <testcase name="multiday_end_minute">
+        <input>Oct 10 at 4 PM – Oct 12 at 10:30 AM</input>
+        <output>1570716000000,1570869000000</output>
+    </testcase>
+
+    <testcase name="multiday_start_end_minute">
+        <input>Nov 14 at 7:30 PM – Nov 15 at 5:45 PM</input>
+        <output>1573756200000,1573836300000</output>
+    </testcase>
+
+    <testcase name="multiday_with_year">
+        <input>Feb 14, 2020 at 2 PM – Feb 17, 2020 at 5 AM</input>
+        <output>1581685200000,1581912000000</output>
+    </testcase>
+
+    <testcase name="single_day_hour_no_end">
+        <input>Saturday, July 27, 2019 at 5 PM</input>
+        <output>1564239600000,1564250400000</output>
+    </testcase>
+
+    <testcase name="single_day_minute_no_end">
+        <input>Saturday, July 27, 2019 at 3:30 PM</input>
+        <output>1564234200000,1564245000000</output>
+    </testcase>
+
+    <testcase name="single_day_hour_start_hour_end">
+        <input>Tuesday, July 30, 2019 at 6 PM – 11 PM</input>
+        <output>1564502400000,1564520400000</output>
+    </testcase>
+
+    <testcase name="single_day_minute_start_hour_end">
+        <input>Tuesday, July 30, 2019 at 4:30 PM – 11 PM</input>
+        <output>1564497000000,1564520400000</output>
+    </testcase>
+
+    <testcase name="single_day_hour_start_minute_end">
+        <input>Tuesday, July 30, 2019 at 10 AM – 6:15 PM</input>
+        <output>1564473600000,1564503300000</output>
+    </testcase>
+
+    <testcase name="single_day_minute_start_minute_end">
+        <input>Monday, July 29, 2019 at 11:15 AM – 4:45 PM</input>
+        <output>1564391700000,1564411500000</output>
+    </testcase>
+</test>

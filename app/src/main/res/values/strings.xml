@@ -12,6 +12,7 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_remove">Remove</string>
 
+    <string name="birthday_event_title">%1$s\'s Birthday</string>
 
     <!-- MAIN ACTIVITY //-->
     <string name="main_version_label">Version: %s</string>

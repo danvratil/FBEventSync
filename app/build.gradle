@@ -84,6 +84,7 @@ dependencies {
     implementation 'net.sf.biweekly:biweekly:0.6.1'
     implementation 'com.github.kizitonwose.colorpreference:support:1.0.6'
     implementation 'com.larswerkman:lobsterpicker:1.0.1'
+    implementation 'org.jsoup:jsoup:1.12.1'
 
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.1'
 
