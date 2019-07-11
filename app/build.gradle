@@ -29,11 +29,11 @@ android {
         }
     }
 
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "cz.dvratil.fbeventsync"
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 41
         versionName "0.37"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
