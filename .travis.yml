@@ -1,17 +1,16 @@
 language: android
+dist: trusty
 jdk: oraclejdk8
 env:
   global:
     - ANDROID_ABI=armeabi-v7a
   matrix:
     - ANDROID_TARGET=android-17
-    - ANDROID_TARGET=android-20
-    - ANRDOID_TARGET=android-21
     - ANDROID_TARGET=android-27
 android:
   components:
     # The BuildTools used by us
-    - build-tools-26.0.2
+    - build-tools-28.0.3
 
     # The SDK we build against
     - ${ANDROID_TARGET}
@@ -20,6 +19,10 @@ android:
     - 'android-sdk-preview-license-.+'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
+
+
+before_install:
+  - yes | sdkmanager "platforms;android-28"
 
 script:
   - ./gradlew lint
