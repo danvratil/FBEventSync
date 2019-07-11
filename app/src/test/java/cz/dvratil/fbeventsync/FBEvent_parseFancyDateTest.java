@@ -35,7 +35,7 @@ public class FBEvent_parseFancyDateTest {
     public void test(String name, String input, String expectedOutput) {
         String[] expected = expectedOutput.split(",");
         Assert.assertEquals(2, expected.length);
-        FBEvent.Companion.FancyDateResult result = FBEvent.Companion.parseFancyDate(input.trim(), TimeZone.getTimeZone("Europe/Prague"));
+        FBEvent.Companion.FancyDateResult result = FBEvent.Companion.parseFancyDate(input.trim(), TimeZone.getTimeZone("Europe/Prague"), null);
 
         Assert.assertEquals(Long.parseLong(expected[0]), result.getDtStart());
         Assert.assertEquals(Long.parseLong(expected[1]), result.getDtEnd());
