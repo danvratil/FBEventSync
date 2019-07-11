@@ -55,9 +55,10 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
 
     abstract fun onLoginPageReached(webView: WebView, uri: Uri)
     abstract fun onLoginSuccess(webView: WebView, uri: Uri)
+    /*
     abstract fun onEventPageReached(webView: WebView, uri: Uri)
     abstract fun onEventsPageReached(webView: WebView, uri: Uri)
-
+    */
 
     // Deprecated in API level 23
     @Suppress("OverridingDeprecatedMember")
@@ -83,7 +84,7 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
             onLoginPageReached(view, uri)
         } else if (uri?.path == "/connect/login_success.html") {
             onLoginSuccess(view, uri)
-
+/*
             // Use a desktop user-agent to make sure we get a desktop version, otherwise who
             // knows what response we might get...
             view.settings.userAgentString = "Mozilla/5.0 (X11;Linux x86_64;rv:58.0) Gecko/20100101 Firefox/58.0"
@@ -92,12 +93,13 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
             onEventsPageReached(view, uri)
         } else if (uri?.path == "/events/${AuthenticatorActivity.EXPORT_EVENT_FBID}") {
             onEventPageReached(view, uri)
+*/
         } else {
             // 2FA flow, likely
         }
     }
 
-
+/*
     fun subscribeToEvent(view: WebView, success: () -> Unit, failure: (String) -> Unit) {
         fun joinEvent() {
             mLogger.debug("AUTH", "Attempting to subscribe to Auth event.")
@@ -281,4 +283,5 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
         mLogger.debug("AUTH", "Finding webcal link...")
         findExportLink(10, webView, success, failure)
     }
+*/
 }

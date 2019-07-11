@@ -64,6 +64,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     private lateinit var mProgressLabel: TextView
     private lateinit var mLogger: Logger
 
+    /*
     private fun linkExtractionFailed(s: String) {
         mLogger.debug("AUTH", "Link extraction failed: $s")
         Toast.makeText(this, "Authentication error: $s", Toast.LENGTH_LONG)
@@ -91,6 +92,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             }
         }
     }
+    */
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
@@ -163,8 +165,11 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                 }
 
                 mUserId = cuser
-            }
 
+                mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
+                fetchUserInfo(mAccessToken)
+            }
+/*
             override fun onEventPageReached(webView: WebView, uri: Uri) {
                 subscribeToEvent(webView,
                         { findExportUri(webView, { linkExtracted(it) }, { linkExtractionFailed(it) }) },
@@ -178,6 +183,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                         { webView.loadUrl("https://www.facebook.com/events/${AuthenticatorActivity.EXPORT_EVENT_FBID}") }
                 )
             }
+*/
         }
 
         mWebView.webViewClient = mWebClient
@@ -298,8 +304,8 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true)
         }
 
-        if (mKey.isEmpty() || mUserId.isEmpty()) {
-            mLogger.error("AUTH", "Failed to retrieve UID ($mUserId) or KEY ($mKey)")
+        if (/*mKey.isEmpty() ||*/ mUserId.isEmpty()) {
+            mLogger.error("AUTH", "Failed to retrieve UID ($mUserId)")
             Toast.makeText(this, getString(R.string.auth_calendar_uri_error_toast), Toast.LENGTH_SHORT)
                     .show()
             if (!DEBUG_WEBVIEW) {
@@ -308,19 +314,22 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             return
         }
         mAccountManager.setUserData(account, Authenticator.DATA_BDAY_URI, null) // clear the legacy storage
-        mAccountManager.setAuthToken(account, Authenticator.FB_OAUTH_TOKEN, accessToken)
-        mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, mKey)
+        /*mAccountManager.setAuthToken(account, Authenticator.FB_OAUTH_TOKEN, accessToken)
+        mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, mKey)*/
         mAccountManager.setAuthToken(account, Authenticator.FB_UID_TOKEN, mUserId)
         mAccountManager.setUserData(account, Authenticator.FB_COOKIES, mCookies.cookies)
 
         val result = Intent()
         result.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountName)
         result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
-        val authTokenType = intent.getStringExtra(AuthenticatorActivity.ARG_AUTH_TOKEN_TYPE)
-        if (authTokenType != null && authTokenType == Authenticator.FB_KEY_TOKEN) {
+        val authTokenType = intent.getStringExtra(ARG_AUTH_TOKEN_TYPE)
+        /*if (authTokenType != null && authTokenType == Authenticator.FB_KEY_TOKEN) {
             result.putExtra(AccountManager.KEY_AUTHTOKEN, mKey)
-        } else if (authTokenType != null && authTokenType == Authenticator.FB_UID_TOKEN) {
+        } else */
+        if (authTokenType != null && authTokenType == Authenticator.FB_UID_TOKEN) {
             result.putExtra(AccountManager.KEY_AUTHTOKEN, mUserId)
+        } else if (authTokenType != null && authTokenType == Authenticator.FB_COOKIES) {
+            result.putExtra(AccountManager.KEY_AUTHTOKEN, mCookies.cookies)
         } else {
             result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken)
         }

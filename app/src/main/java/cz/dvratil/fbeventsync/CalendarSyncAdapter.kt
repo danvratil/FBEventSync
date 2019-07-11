@@ -112,11 +112,10 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         }
 
         val mgr = AccountManager.get(context)
-        val accessToken: String?
+        val cookies: String?
         try {
-            val result = mgr.getAuthToken(account, Authenticator.FB_OAUTH_TOKEN, null, false, null, null).result
-            accessToken = result.getString(AccountManager.KEY_AUTHTOKEN)
-            if (accessToken == null) {
+            cookies = mgr.getUserData(account, Authenticator.FB_COOKIES)
+            if (cookies == null) {
                 logger.debug(TAG, "Needs to re-authenticate, will wait for user")
                 createAuthNotification()
                 return
@@ -140,7 +139,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         }
 
         val preferences = Preferences(context)
-        val syncContext = SyncContext(context, account, accessToken, provider, syncResult, preferences, logger)
+        val syncContext = SyncContext(context, account, cookies, provider, syncResult, preferences, logger)
         mSyncContext = syncContext
 
         val calendars = FBCalendar.Set()
@@ -212,7 +211,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         EVENTS,
         BIRTHDAYS
     }
-
+/*
     private fun getICalSyncURI(uriType: ICalURIType): Uri? {
         val syncContext = mSyncContext ?: return null
         val accManager = AccountManager.get(syncContext.context)
@@ -278,7 +277,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         }
 
     }
-
+*/
     private fun syncEventsViaWeb(calendars: FBCalendar.Set, context: SyncContext): Boolean {
         val accountManager = AccountManager.get(context.context)
         val cookies = accountManager.getUserData(context.account, Authenticator.FB_COOKIES)
@@ -328,7 +327,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         logger.debug(TAG, "Web sync of birthdays done")
         return true
     }
-
+/*
     private fun syncEventsViaICal(calendars: FBCalendar.Set): Boolean {
         val uri = getICalSyncURI(ICalURIType.EVENTS) ?: return false
 
@@ -395,7 +394,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
         return success
     }
-
+*/
     private fun removeOldBirthdayCalendar(context: SyncContext) {
         // remove old "birthday" calendar
         logger.debug(TAG, "Removing legacy birthday calendar")
