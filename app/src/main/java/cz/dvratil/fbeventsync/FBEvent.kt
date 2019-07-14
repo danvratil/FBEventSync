@@ -29,6 +29,8 @@ import java.util.TimeZone
 
 import biweekly.component.VEvent
 import org.jsoup.nodes.Element
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 open class FBEvent protected constructor() {
 
@@ -167,59 +169,159 @@ open class FBEvent protected constructor() {
             return date.time
         }
 
+        private val weekDays = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).keys.joinToString("|")
+        private val longMonths = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.MONTH, Calendar.LONG, Locale.US).keys.joinToString("|")
+        private val shortMonths = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.MONTH, Calendar.SHORT, Locale.US).keys.joinToString("|")
+
+        val re_singleDaySoon = Pattern.compile("(Today|Tomorrow) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
+        val re_singleDayNoYear = Pattern.compile("($weekDays) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
+        val re_singleDayWithYear = Pattern.compile("($weekDays), ($longMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
+        val re_multiDayNoYear = Pattern.compile("($shortMonths) ([0-9]{1,2}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
+        val re_multiDayWithYear = Pattern.compile("($shortMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
+
         data class FancyDateResult(val dtStart: Long, val dtEnd: Long)
-        fun parseFancyDate(dt_: String, timezone: TimeZone = TimeZone.getDefault(), context: SyncContext? = null): FancyDateResult {
-            fun parseInner(dt: String, hourFormat: SimpleDateFormat, minuteFormat: SimpleDateFormat, context: SyncContext?): Long {
-                try {
-                    return (if (dt.contains(':')) minuteFormat.parse(dt) else hourFormat.parse(dt)).time
-                } catch (e: java.text.ParseException) {
-                    context?.logger?.error("SYNC.EVENT", e.toString())
-                    throw e
-                }
+
+        private fun parseSingleDayNoYear(match: Matcher, timezone: TimeZone): FancyDateResult {
+            val day = match.group(1)
+            val startHour = match.group(2)
+            val startMinute = match.group(4)
+            val startAmPm = match.group(5)
+            val endHour = match.group(7)
+            val endMinute = match.group(9)
+            val endAmPm = match.group(10)
+
+            var cal = Calendar.getInstance(timezone)
+            cal.set(Calendar.SECOND, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+            when(day) {
+                "Today" -> {} // cal is already today
+                "Tomorrow" -> cal.add(Calendar.DATE, 1) // add 1 day
+                else -> while (cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US) != day) {
+                            cal.add(Calendar.DATE, 1)
+                        }
             }
 
-            fun dateFormat(format: String, timezone: TimeZone): SimpleDateFormat {
-                return SimpleDateFormat(format, Locale.US).apply {
-                    timeZone = timezone
-                }
-            }
+            cal.set(Calendar.HOUR, startHour.toInt())
+            cal.set(Calendar.MINUTE, startMinute?.toInt() ?: 0)
+            cal.set(Calendar.AM_PM, if (startAmPm == "AM") Calendar.AM else Calendar.PM)
+            val dtStart = cal.time.time
 
-            // FIXME: This code is ugly!
-            val dt = dt_.trim()
-            val dtStart: Long
-            val dtEnd: Long
-            if (dt[3] == ' ') { // 3 letters of month at the beginning indicate multi-day event
-                if (dt.contains(",")) { // If there's comma, then the string contains a year
-                    val hourFormat = dateFormat("MMM d, yyyyy 'at' h a", timezone)
-                    val minuteFormat = dateFormat("MMM d, yyyy 'at' h:mm a", timezone)
-                    val ds = dt.split(" – ")
-                    dtStart = parseInner(ds[0], hourFormat, minuteFormat, context)
-                    dtEnd = parseInner(ds[1], hourFormat, minuteFormat, context)
-                } else { // no comma means no year information - implies current year
-                    val hourFormat = dateFormat("yyyy MMM d 'at' h a", timezone)
-                    val minuteFormat = dateFormat("yyyy MMM d 'at' h:mm a", timezone)
-                    val ds = dt.split(" – ")
-                    val currentYear = Calendar.getInstance(Locale.US).get(Calendar.YEAR)
-                    dtStart = parseInner("$currentYear ${ds[0]}", hourFormat, minuteFormat, context)
-                    dtEnd = parseInner("$currentYear ${ds[1]}", hourFormat, minuteFormat, context)
-                }
-            } else { // single day event
-                val hourFormat = dateFormat("EEEEE, MMMMM d, yyyy 'at' h a", timezone)
-                val minuteFormat = dateFormat("EEEEE, MMMMM d, yyyy 'at' h:mm a", timezone)
-                if (dt.contains(" – ")) { // if the event has start and end
-                    val ds = dt.split(" – ")
-                    dtStart = parseInner(ds[0], hourFormat, minuteFormat, context)
-                    val pos = ds[0].indexOf(" at ") // replace the start time by the end time
-                    val endStr = ds[0].substring(0, pos + 4 /* len of " at " */) + ds[1]
-                    dtEnd = parseInner(endStr, hourFormat, minuteFormat, context)
-                } else {
-                    dtStart = parseInner(dt, hourFormat, minuteFormat, context)
-                    // for events without end time, the webcal uses default duration of 3 hours
-                    dtEnd = dtStart + (3 * 60 * 60 * 1000) // 3 hours in milliseconds
-                }
+            val dtEnd = if (endHour == null) {
+                cal.add(Calendar.HOUR, 3)
+                cal.time.time
+            } else {
+                cal.set(Calendar.HOUR, endHour.toInt())
+                cal.set(Calendar.MINUTE, endMinute?.toInt() ?: 0)
+                cal.set(Calendar.AM_PM, if (endAmPm == "AM") Calendar.AM else Calendar.PM)
+                cal.time.time
             }
 
             return FancyDateResult(dtStart, dtEnd)
+        }
+
+        private fun parseSingleDayWithYear(match: Matcher, timezone: TimeZone): FancyDateResult {
+            val month = match.group(2)
+            val day = match.group(3)
+            val year = match.group(4)
+            val startHour = match.group(5)
+            val startMinute = match.group(7) ?: "00"
+            val startAmPm = match.group(8)
+            val endHour = match.group(10)
+            val endMinute = match.group(12)
+            val endAmPm = match.group(13)
+
+            var date = SimpleDateFormat("MMMMM dd, yyyy hh:mm a", Locale.US).parse("$month $day, $year $startHour:$startMinute $startAmPm")
+            val dtStart = date.time
+
+            var cal = Calendar.getInstance(timezone)
+            cal.set(Calendar.SECOND, 0)
+            cal.set(Calendar.MILLISECOND, 0)
+            cal.time = date
+            val dtEnd = if (endHour == null) {
+                cal.add(Calendar.HOUR, 3)
+                cal.time.time
+            } else {
+                cal.set(Calendar.HOUR, endHour.toInt())
+                cal.set(Calendar.MINUTE, endMinute?.toInt() ?: 0)
+                cal.set(Calendar.AM_PM, if (endAmPm == "AM") Calendar.AM else Calendar.PM)
+                cal.time.time
+            }
+
+            return FancyDateResult(dtStart, dtEnd)
+        }
+
+        private fun parseMultiDayNoYear(match: Matcher, timezone: TimeZone): FancyDateResult {
+            fun parseGroup(match: Matcher, timezone: TimeZone): Long {
+                val month = match.group(1)
+                val day = match.group(2)
+                val hour = match.group(3)
+                val minute = match.group(5) ?: "00"
+                val amPm = match.group(6)
+                val year = Calendar.getInstance(timezone).get(Calendar.YEAR)
+
+                var date = SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.US).parse("$month $day, $year $hour:$minute $amPm")
+                return date.time
+            }
+
+            val dtStart = parseGroup(match, timezone)
+            if (!match.find()) {
+                throw IllegalArgumentException()
+            }
+            val dtEnd = parseGroup(match, timezone)
+
+            return FancyDateResult(dtStart, dtEnd)
+        }
+
+        private fun parseMultiDayWithYear(match: Matcher, timezone: TimeZone): FancyDateResult {
+            fun parseGroup(match: Matcher, timezone: TimeZone): Long {
+                val month = match.group(1)
+                val day = match.group(2)
+                val year = match.group(3)
+                val hour = match.group(4)
+                val minute = match.group(6) ?: "00"
+                val amPm = match.group(7)
+
+                var date = SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.US).parse("$month $day, $year $hour:$minute $amPm")
+                return date.time
+            }
+
+            val dtStart = parseGroup(match, timezone)
+            if (!match.find()) {
+                throw IllegalArgumentException()
+            }
+            val dtEnd = parseGroup(match, timezone)
+
+            return FancyDateResult(dtStart, dtEnd)
+        }
+
+
+        fun parseFancyDate(dt_: String, timezone: TimeZone = TimeZone.getDefault(), context: SyncContext? = null): FancyDateResult {
+            val dt = dt_.trim()
+
+            var match = re_singleDaySoon.matcher(dt)
+            if (match.matches()) {
+                return parseSingleDayNoYear(match, timezone)
+            }
+            match = re_singleDayNoYear.matcher(dt)
+            if (match.matches()) {
+                return parseSingleDayNoYear(match, timezone)
+            }
+            match = re_singleDayWithYear.matcher(dt)
+            if (match.matches()) {
+                return parseSingleDayWithYear(match, timezone)
+            }
+            match = re_multiDayNoYear.matcher(dt)
+            if (match.find()) {
+                return parseMultiDayNoYear(match, timezone)
+            }
+            match = re_multiDayWithYear.matcher(dt)
+            if (match.find()) {
+                return parseMultiDayWithYear(match, timezone)
+            }
+
+            println("$dt");
+            context?.logger?.error("FBEVENT", "Unknown datetime format: '$dt'.")
+            throw IllegalArgumentException()
         }
 
         fun parse(event: Element, context: SyncContext, rsvp: FBCalendar.CalendarType? = null): FBEvent? {

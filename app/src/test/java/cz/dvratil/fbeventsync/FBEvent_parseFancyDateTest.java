@@ -24,10 +24,24 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 @RunWith(DataProviderRunner.class)
 public class FBEvent_parseFancyDateTest {
+
+    private Calendar today() {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Prague"));
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.AM_PM, Calendar.AM);
+        return cal;
+    }
 
     @Test
     @UseDataProvider(value = "load", location = ExternalFileDataProvider.class)
@@ -35,10 +49,24 @@ public class FBEvent_parseFancyDateTest {
     public void test(String name, String input, String expectedOutput) {
         String[] expected = expectedOutput.split(",");
         Assert.assertEquals(2, expected.length);
+
+        List<Long> expectedLong = Arrays.asList(Long.parseLong(expected[0]), Long.parseLong(expected[1]));
+
+        if (input.startsWith("Today")) {
+            Calendar now = today();
+            expectedLong.set(0, now.getTimeInMillis() + expectedLong.get(0));
+            expectedLong.set(1, now.getTimeInMillis() + expectedLong.get(1));
+        } else if (input.startsWith("Tomorrow")) {
+            Calendar now = today();
+            now.add(Calendar.DATE, 1);
+            expectedLong.set(0, now.getTimeInMillis() + expectedLong.get(0));
+            expectedLong.set(1, now.getTimeInMillis() + expectedLong.get(1));
+        }
+
         FBEvent.Companion.FancyDateResult result = FBEvent.Companion.parseFancyDate(input.trim(), TimeZone.getTimeZone("Europe/Prague"), null);
 
-        Assert.assertEquals(Long.parseLong(expected[0]), result.getDtStart());
-        Assert.assertEquals(Long.parseLong(expected[1]), result.getDtEnd());
+        Assert.assertEquals(expectedLong.get(0).longValue(), result.getDtStart());
+        Assert.assertEquals(expectedLong.get(1).longValue(), result.getDtEnd());
     }
 }
 

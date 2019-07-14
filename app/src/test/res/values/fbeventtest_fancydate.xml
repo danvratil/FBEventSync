@@ -54,4 +54,19 @@
         <input>Monday, July 29, 2019 at 11:15 AM – 4:45 PM</input>
         <output>1564391700000,1564411500000</output>
     </testcase>
+
+    <testcase name="today_hour_start_no_end">
+        <input>Today at 7 AM</input>
+        <output>25200000,36000000</output>
+    </testcase>
+
+    <testcase name="today_hour_start_minute_end">
+        <input>Today at 2 PM – 4:40 PM</input>
+        <output>50400000,60000000</output>
+    </testcase>
+
+    <testcase name="tomorrow_minute">
+        <input>Tomorrow at 9:30 AM</input>
+        <output>34200000,45000000</output>
+    </testcase>
 </test>
