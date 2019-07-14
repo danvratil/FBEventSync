@@ -13,3 +13,4 @@ release.properties
 .idea
 app/release
 app/build
+app/.attach_*
