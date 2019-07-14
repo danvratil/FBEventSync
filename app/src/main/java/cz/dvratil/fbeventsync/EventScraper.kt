@@ -21,9 +21,12 @@ package cz.dvratil.fbeventsync
 import android.provider.CalendarContract
 import org.jsoup.Connection
 import org.jsoup.Jsoup
+import java.net.URL
 import java.util.*
 
 class EventScraper {
+
+    class CookiesExpiredException: Exception() {}
 
     fun fetchInvites(context: SyncContext, cookies: String): List<FBEvent> {
         return doFetchEvents("invites", FBCalendar.CalendarType.TYPE_NOT_REPLIED, context, cookies)
@@ -40,6 +43,7 @@ class EventScraper {
             var conn = prepareConnection("https://mbasic.facebook.com/events/birthdays?cursor=$year-%02d-01&locale=en_US".format(month), cookies)
             val document = conn.get()
             context.logger.debug("SCRAPER", "Fetched ${conn.request().url()}")
+            checkRequestUrlIsValid(conn.request().url())
             val eventElements = document.select("div[role='article'] ul>li")
 
             val newEvents = eventElements.mapNotNull { FBBirthdayEvent.parse(it, context) }
@@ -53,6 +57,12 @@ class EventScraper {
     fun fetchEvents(skipEvents: List<String>, context: SyncContext, cookies: String): List<FBEvent> {
         return doFetchEvents("calendar", null, context, cookies).filter {
             !skipEvents.contains(it.values.get(CalendarContract.Events.UID_2445))
+        }
+    }
+
+    private fun checkRequestUrlIsValid(url: URL) {
+        if (!url.path.startsWith("/events")) {
+            throw CookiesExpiredException()
         }
     }
 
@@ -72,6 +82,7 @@ class EventScraper {
         while (true) {
             val document = conn.get()
             context.logger.debug("SCRAPER", "Fetched ${conn.request().url()}")
+            checkRequestUrlIsValid(conn.request().url())
             val eventElements = document.select("div[role='article']")
             if (eventElements?.first()?.text() == "Currently No Events") {
                 return events

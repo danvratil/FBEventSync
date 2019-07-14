@@ -172,18 +172,22 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             calendars.initialize(syncContext)
         }
 
-        if (syncEventsViaWeb(calendars, syncContext)) {
-            calendars.forEach {
-                if (it.value.type() != FBCalendar.CalendarType.TYPE_BIRTHDAY) {
-                    it.value.finalizeSync()
+        try {
+            if (syncEventsViaWeb(calendars, syncContext)) {
+                calendars.forEach {
+                    if (it.value.type() != FBCalendar.CalendarType.TYPE_BIRTHDAY) {
+                        it.value.finalizeSync()
+                    }
                 }
             }
-        }
 
-        if (calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]?.isEnabled == true) {
-            if (syncBirthdaysViaWeb(calendars)) {
-                calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]!!.finalizeSync()
+            if (calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]?.isEnabled == true) {
+                if (syncBirthdaysViaWeb(calendars)) {
+                    calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]!!.finalizeSync()
+                }
             }
+        } catch (e: EventScraper.CookiesExpiredException) {
+            createAuthNotification()
         }
 
         /*
@@ -448,6 +452,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
     }
 
     private fun createAuthNotification() {
+        mSyncContext?.logger?.debug(TAG, "Sending \"Authentication required\" notification.")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
            val channel = NotificationChannel(AuthenticatorActivity.AUTH_NOTIFICATION_CHANNEL_ID,
                    context.getString(R.string.sync_ntf_needs_reauthentication_title),
