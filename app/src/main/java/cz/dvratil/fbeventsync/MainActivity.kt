@@ -53,6 +53,9 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_menu_white)
+            if (BuildConfig.VERSION_NAME.endsWith("-beta")) {
+                title = title.toString() + " (BETA)"
+            }
         }
 
         mDrawerLayout = findViewById(R.id.main_drawer_layout)
@@ -145,7 +148,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        registerSyncIfNeeded();
+        registerSyncIfNeeded()
     }
 
     override fun onResume() {
