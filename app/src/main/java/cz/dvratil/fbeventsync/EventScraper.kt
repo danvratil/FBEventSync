@@ -84,11 +84,19 @@ class EventScraper {
             context.logger.debug("SCRAPER", "Fetched ${conn.request().url()}")
             checkRequestUrlIsValid(conn.request().url())
             val eventElements = document.select("div[role='article']")
+            context.logger.debug("SCRAPER", "Found ${eventElements.size} event elements")
             if (eventElements?.first()?.text() == "Currently No Events") {
                 return events
             }
 
-            val newEvents = eventElements.mapNotNull { FBEvent.parse(it, context, rsvp) }
+            val newEvents = eventElements.mapNotNull {
+                val parsed = FBEvent.parse(it, context, rsvp)
+                if (parsed == null) {
+                    context.logger.error("SCRAPER", "Failed to parse event: \"${it.html()}\"")
+                }
+                parsed
+            }
+
             context.logger.debug("SCRAPER", "Scraped ${newEvents.size} events")
             events.addAll(newEvents)
 
