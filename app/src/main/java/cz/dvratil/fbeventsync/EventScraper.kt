@@ -20,7 +20,9 @@ package cz.dvratil.fbeventsync
 
 import android.provider.CalendarContract
 import org.jsoup.Connection
+import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.net.URL
 import java.util.*
 
@@ -41,7 +43,8 @@ class EventScraper {
         var events: MutableList<FBEvent> = mutableListOf()
         for (month in 1..12) {
             var conn = prepareConnection("https://mbasic.facebook.com/events/birthdays?cursor=$year-%02d-01&locale=en_US".format(month), cookies)
-            val document = conn.get()
+            val document = doRunRequest(conn, context) ?: return events
+
             context.logger.debug("SCRAPER", "Fetched ${conn.request().url()}")
             checkRequestUrlIsValid(conn.request().url())
             val eventElements = document.select("div[role='article'] ul>li")
@@ -76,11 +79,25 @@ class EventScraper {
         return conn
     }
 
+    private fun doRunRequest(conn: Connection, context: SyncContext): Document? {
+        return try {
+            conn.get()
+        } catch (e: HttpStatusException) {
+            if (e.statusCode == 500) {
+                context.logger.debug("SCRAPER", "Error 500 while fetching ${conn.request().url()}, this is usually OK")
+            } else {
+                context.logger.error("SCRAPER", "Error while fetching ${conn.request().url()}: $e")
+            }
+            null
+        }
+    }
+
     private fun doFetchEvents(resource: String, rsvp: FBCalendar.CalendarType?, context: SyncContext, cookies: String): List<FBEvent> {
         var conn = prepareConnection("https://mbasic.facebook.com/events/$resource?locale=en_US", cookies)
         var events: MutableList<FBEvent> = mutableListOf()
         while (true) {
-            val document = conn.get()
+            val document = doRunRequest(conn, context) ?: return events
+
             context.logger.debug("SCRAPER", "Fetched ${conn.request().url()}")
             checkRequestUrlIsValid(conn.request().url())
             val eventElements = document.select("div[role='article']")

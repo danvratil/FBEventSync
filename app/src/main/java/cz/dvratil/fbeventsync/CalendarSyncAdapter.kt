@@ -57,8 +57,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
     init {
         PreferencesMigrator.migrate(context)
         logger = Logger.getInstance(context)
-
         checkPermissions()
+        logger.info(TAG, "CalendarSyncAdapter initialized")
     }
 
 
@@ -187,7 +187,9 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 }
             }
         } catch (e: EventScraper.CookiesExpiredException) {
+            logger.info(TAG, "Cookies have expired, requesting authentication")
             createAuthNotification()
+            return
         }
 
         /*
