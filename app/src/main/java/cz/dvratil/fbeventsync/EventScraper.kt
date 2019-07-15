@@ -58,6 +58,7 @@ class EventScraper {
     }
 
     fun fetchEvents(skipEvents: List<String>, context: SyncContext, cookies: String): List<FBEvent> {
+        // TODO: Also check if "Invites" link exists so we don't trigger the HTTP 500 error unnecessarily
         return doFetchEvents("calendar", null, context, cookies).filter {
             !skipEvents.contains(it.values.get(CalendarContract.Events.UID_2445))
         }
