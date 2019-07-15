@@ -104,6 +104,7 @@ class EventScraper {
             val eventElements = document.select("div[role='article']")
             context.logger.debug("SCRAPER", "Found ${eventElements.size} event elements")
             if (eventElements?.first()?.text() == "Currently No Events") {
+                context.logger.debug("SCRAPER", "Currently no events")
                 return events
             }
 
