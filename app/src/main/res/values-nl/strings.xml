@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="app_name">FB-evenementsynchronisatie</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FB-evenementsynchronisatie</string>
     <string name="full_app_name">Evenementsynchronisatie voor Facebook</string>
     <string name="main_version_label">Versie: %s</string>
     <string name="main_tagline">Nu met verjaardagssynchronisatie. Woehoeeeee!</string>
@@ -10,16 +11,13 @@
     <string name="main_configure_misc_btn">Overige voorkeuren instellen</string>
     <string name="main_sync_now">Nu synchroniseren</string>
     <string name="main_sync_in_progress">Bezig met synchroniseren...</string>
-
     <string name="perms_activity_title">Toestemmingsverzoek</string>
-
     <string name="log_activity_title">Logweergave</string>
     <string name="log_clear_log_action">Log wissen</string>
     <string name="log_send_to_dev_action">Versturen aan ontwikkelaar</string>
     <string name="log_send_email_action">E-mail versturen…</string>
     <string name="log_email_template">[Beschrijf hier uw probleem, het liefst in het Engels]</string>
     <string name="log_error_sending_log_toast">Versturen van logbestanden mislukt: het logbestand kan niet worden gelezen</string>
-
     <string name="auth_activity_title">Authenticeren met Facebook</string>
     <string name="auth_account_creation_error_toast">Fout tijdens authenticatie</string>
     <string name="auth_account_creation_success_toast">Account toegevoegd</string>
@@ -28,7 +26,6 @@
     <string name="auth_progress_retrieving_calendars">Bezig met ophalen van kalenders…</string>
     <string name="auth_progress_retrieving_userinfo">Bezig met ophalen van gebruikersinformatie…</string>
     <string name="auth_calendar_uri_error_toast">Ophalen van kalender-URL is mislukt</string>
-
     <string name="calendar_not_responded_title">Evenementen waarop ik nog niet gereageerd heb</string>
     <string name="calendar_declined_title">Evenementen die ik niet bijwoon</string>
     <string name="calendar_tentative_title">Evenementen die ik misschien ga bijwonen</string>
@@ -36,12 +33,9 @@
     <string name="calendar_birthday_title">Verjaardagen van vrienden</string>
     <string name="sync_ntf_needs_reauthentication_title">Evenementsynchronisatie voor Facebook moet inloggen</string>
     <string name="sync_ntf_needs_reauthentication_description">Druk hier om opnieuw te authenticeren met Facebook</string>
-
     <string name="pref_activity_title">Instellingen</string>
-
     <string name="pref_sync_settings_title">Synchronisatie-instellingen</string>
     <string name="pref_sync_settings_summary">Stel in hoe vaak en wanneer evenementen gesynchroniseerd moeten worden.</string>
-
     <string name="pref_sync_frequency_title">Synchronisatie-frequentie</string>
     <string name="pref_sync_frequency_summary">Hoe vaak moeten uw Facebook-evenemenen worden gesynchroniseerd?</string>
     <string name="pref_language_title">Taal</string>
@@ -51,19 +45,14 @@
     <string name="pref_misc_report_bug_title">Fout (bug) rapporteren</string>
     <string name="pref_misc_contact_developer_title">Contact opnemen met ontwikkelaar</string>
     <string name="pref_misc_rate_app_title">App beoordelen</string>
-
-
     <string name="pref_calendar_settings_title">Kalenders</string>
     <string name="pref_calendar_settings_summary">Kalenders, kleuren en herinneringen instellen</string>
-
     <string name="pref_calendar_enabled_title">Ingeschakeld</string>
     <string name="pref_calendar_reminders_title">Herinneringen</string>
     <string name="pref_calendar_color_title">Kleur</string>
-
     <string name="color_dlg_title">Kies een kleur</string>
     <string name="color_dlg_save_btn_title">Opslaan</string>
     <string name="color_dlg_close_btn_title">Sluiten</string>
-
     <string name="pref_reminder_0minutes_entry">0 minuten</string>
     <string name="pref_reminder_5minutes_entry">5 minuten</string>
     <string name="pref_reminder_10minutes_entry">10 minuten</string>
@@ -85,14 +74,11 @@
     <string name="pref_sync_frequency_12hours_entry">12 uur</string>
     <string name="pref_sync_frequency_24hours_entry">24 uur</string>
     <string name="pref_general_settings_title">Algemeen</string>
-<string name="pref_sync_fblink_title">Facebook-link toevoegen</string>
+    <string name="pref_sync_fblink_title">Facebook-link toevoegen</string>
     <string name="pref_sync_fblink_summary">Een Facebook-link toevoegen naar evenement-omschrijvingen.</string>
-
     <string name="btn_save">Opslaan</string>
     <string name="btn_cancel">Annuleren</string>
     <string name="btn_remove">Verwijderen</string>
-
-
     <string name="nav_sync_all">Alles synchroniseren</string>
     <string name="nav_configure_calendars">Kalenders configureren</string>
     <string name="nav_configure_sync">Synchronisatie configureren</string>
@@ -100,10 +86,8 @@
     <string name="nav_report_bug">Bug rapporteren</string>
     <string name="nav_faq">Veelgestelde vragen</string>
     <string name="nav_about">Over</string>
-
     <string name="auth_remove_account_title">Wil je het account \'%s\' verwijderen?</string>
     <string name="auth_remove_account_text">Het account wordt alleen verwijderd uit deze app; je Facebook-account en andere apps blijven ongemoeid.</string>
-
     <string name="about_activity_title">Over</string>
     <string name="pref_about_rate_app_title">App beoordelen</string>
     <string name="pref_about_privacy_title">Privacy</string>
@@ -111,18 +95,17 @@
     <string name="pref_about_license_summary">GNU General Public License v3.0
 \n</string>
     <string name="pref_about_version_title">Versie</string>
-
-
     <string name="pref_calendar_allday_reminders_title">Herinneringen over gehele dag-gebeurtenissen</string>
     <plurals name="pref_reminder_allday_description">
-	<item quantity="one">%d dag voor %s</item>
-	<item quantity="other">%d dagen voor %s</item>
-</plurals>
+        <item quantity="one">%d dag voor %s</item>
+        <item quantity="other">%d dagen voor %s</item>
+    </plurals>
     <string name="allday_reminder_daysBeforeAt">dagen voor</string>
-
     <plurals name="pref_reminder_anyminutes">
-	<item quantity="one">%d minuut</item>
-	<item quantity="other">$d minuten</item>
-</plurals>
-
-    </resources>
+        <item quantity="one">%d minuut</item>
+        <item quantity="other">$d minuten</item>
+    </plurals>
+    <string name="birthday_event_title">%1$s\'s verjaardag</string>
+    <string name="main_fbpage_link">Volg ons op &lt;a href=https://www.facebook.com/294071114749578&gt;Facebook&lt;/a&gt; om op de hoogte te blijven van het laatste nieuws en informatie over updates!</string>
+    <string name="nav_homepage">Website</string>
+</resources>
