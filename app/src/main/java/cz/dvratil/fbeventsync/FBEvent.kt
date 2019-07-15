@@ -177,9 +177,11 @@ open class FBEvent protected constructor() {
         val re_singleDayNoYear = Pattern.compile("($weekDays) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
         val re_singleDayWithYear = Pattern.compile("($weekDays), ($longMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
         val re_multiDayNoYear = Pattern.compile("($shortMonths) ([0-9]{1,2}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
+        val re_multiDayAllDay = Pattern.compile("($shortMonths) ([0-9]{1,2})(, ([0-9]{4}))? – ($shortMonths) ([0-9]{1,2})(, ([0-9]{4}))?")
+        val re_singleDayAllDay = Pattern.compile("(Today|Tomorrow|$shortMonths)( ([0-9]{1,2}))?(, ([0-9]{4}))?")
         val re_multiDayWithYear = Pattern.compile("($shortMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
 
-        data class FancyDateResult(val dtStart: Long, val dtEnd: Long)
+        data class FancyDateResult(val dtStart: Long, val dtEnd: Long, val allDay: Boolean = false)
 
         private fun parseSingleDayNoYear(match: Matcher, timezone: TimeZone): FancyDateResult {
             val day = match.group(1)
@@ -272,6 +274,46 @@ open class FBEvent protected constructor() {
             return FancyDateResult(dtStart, dtEnd)
         }
 
+        private fun parseMultiDayAllDay(match: Matcher, timezone: TimeZone): FancyDateResult {
+            val startMonth = match.group(1)
+            val startDay = match.group(2)
+            val startYear = match.group(4) ?: Calendar.getInstance(timezone).get(Calendar.YEAR)
+            val endMonth = match.group(5)
+            val endDay = match.group(6)
+            val endYear = match.group(8) ?: Calendar.getInstance(timezone).get(Calendar.YEAR)
+
+            var format = SimpleDateFormat("MMM dd, yyyy")
+            format.timeZone = TimeZone.getTimeZone("UTC")
+            val dtStart = format.parse("$startMonth $startDay, $startYear")
+            val dtEnd = format.parse("$endMonth $endDay, $endYear")
+
+            return FancyDateResult(dtStart.time, dtEnd.time, true)
+        }
+
+        private fun parseSingleDayAllDay(match: Matcher, timezone: TimeZone): FancyDateResult {
+            val month = match.group(1)
+            val day = match.group(3)
+            val year = match.group(5) ?: Calendar.getInstance(timezone).get(Calendar.YEAR)
+
+            if (month == "Today" || month == "Tomorrow") {
+                val today = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                today.set(Calendar.HOUR, 0)
+                today.set(Calendar.MINUTE, 0)
+                today.set(Calendar.SECOND, 0)
+                today.set(Calendar.MILLISECOND, 0)
+                if (month == "Tomorrow") {
+                    today.add(Calendar.DATE, 1)
+                }
+                return FancyDateResult(today.timeInMillis, today.timeInMillis, true)
+            }
+
+            val format = SimpleDateFormat("MMM dd, yyyy")
+            format.timeZone = TimeZone.getTimeZone("UTC")
+            val dt = format.parse("$month $day, $year").time
+
+            return FancyDateResult(dt, dt, true)
+        }
+
         private fun parseMultiDayWithYear(match: Matcher, timezone: TimeZone): FancyDateResult {
             fun parseGroup(match: Matcher, timezone: TimeZone): Long {
                 val month = match.group(1)
@@ -318,6 +360,14 @@ open class FBEvent protected constructor() {
             if (match.find()) {
                 return parseMultiDayWithYear(match, timezone)
             }
+            match = re_multiDayAllDay.matcher(dt)
+            if (match.matches()) {
+                return parseMultiDayAllDay(match, timezone)
+            }
+            match = re_singleDayAllDay.matcher(dt)
+            if (match.matches()) {
+                return parseSingleDayAllDay(match, timezone)
+            }
 
             println("$dt");
             context?.logger?.error("FBEVENT", "Unknown datetime format: '$dt'.")
@@ -341,9 +391,10 @@ open class FBEvent protected constructor() {
             val detail = content.child(1) ?: return null
 
             val date = detail.child(0)?.text() ?: return null
-            val (dtStart, dtEnd) = parseFancyDate(date, TimeZone.getDefault(), context)
+            val (dtStart, dtEnd, allDay) = parseFancyDate(date, TimeZone.getDefault(), context)
             values.put(CalendarContract.Events.DTSTART, dtStart)
             values.put(CalendarContract.Events.DTEND, dtEnd)
+            values.put(CalendarContract.Events.ALL_DAY, allDay)
             values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
 
             val location = detail.child(1)?.text() ?: return null

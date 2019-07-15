@@ -33,8 +33,8 @@ import java.util.TimeZone;
 @RunWith(DataProviderRunner.class)
 public class FBEvent_parseFancyDateTest {
 
-    private Calendar today() {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Prague"));
+    private Calendar today(String tzid) {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(tzid));
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
@@ -48,16 +48,17 @@ public class FBEvent_parseFancyDateTest {
     @ExternalFileDataProvider.ExternalFile(fileName = "fbeventtest_fancydate.xml")
     public void test(String name, String input, String expectedOutput) {
         String[] expected = expectedOutput.split(",");
-        Assert.assertEquals(2, expected.length);
+        Assert.assertEquals(3, expected.length);
 
         List<Long> expectedLong = Arrays.asList(Long.parseLong(expected[0]), Long.parseLong(expected[1]));
+        Boolean allDay = Boolean.parseBoolean(expected[2]);
 
         if (input.startsWith("Today")) {
-            Calendar now = today();
+            Calendar now = today(name.contains("all_day") ? "UTC" : "Europe/Prague");
             expectedLong.set(0, now.getTimeInMillis() + expectedLong.get(0));
             expectedLong.set(1, now.getTimeInMillis() + expectedLong.get(1));
         } else if (input.startsWith("Tomorrow")) {
-            Calendar now = today();
+            Calendar now = today(name.contains("all_day") ? "UTC" : "Europe/Prague");
             now.add(Calendar.DATE, 1);
             expectedLong.set(0, now.getTimeInMillis() + expectedLong.get(0));
             expectedLong.set(1, now.getTimeInMillis() + expectedLong.get(1));
@@ -67,6 +68,7 @@ public class FBEvent_parseFancyDateTest {
 
         Assert.assertEquals(expectedLong.get(0).longValue(), result.getDtStart());
         Assert.assertEquals(expectedLong.get(1).longValue(), result.getDtEnd());
+        Assert.assertEquals(allDay, result.getAllDay());
     }
 }
 

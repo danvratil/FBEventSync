@@ -2,71 +2,101 @@
 <test>
     <testcase name="multiday">
         <input>Oct 5 at 10 AM – Oct 6 at 5 PM</input>
-        <output>1570262400000,1570374000000</output>
+        <output>1570262400000,1570374000000,false</output>
     </testcase>
 
     <testcase name="multiday_start_minute">
         <input>Oct 10 at 3:30 AM – Oct 11 at 5 PM</input>
-        <output>1570671000000,1570806000000</output>
+        <output>1570671000000,1570806000000,false</output>
     </testcase>
 
     <testcase name="multiday_end_minute">
         <input>Oct 10 at 4 PM – Oct 12 at 10:30 AM</input>
-        <output>1570716000000,1570869000000</output>
+        <output>1570716000000,1570869000000,false</output>
     </testcase>
 
     <testcase name="multiday_start_end_minute">
         <input>Nov 14 at 7:30 PM – Nov 15 at 5:45 PM</input>
-        <output>1573756200000,1573836300000</output>
+        <output>1573756200000,1573836300000,false</output>
     </testcase>
 
     <testcase name="multiday_with_year">
         <input>Feb 14, 2020 at 2 PM – Feb 17, 2020 at 5 AM</input>
-        <output>1581685200000,1581912000000</output>
+        <output>1581685200000,1581912000000,false</output>
     </testcase>
 
     <testcase name="single_day_hour_no_end">
         <input>Saturday, July 27, 2019 at 5 PM</input>
-        <output>1564239600000,1564250400000</output>
+        <output>1564239600000,1564250400000,false</output>
     </testcase>
 
     <testcase name="single_day_minute_no_end">
         <input>Saturday, July 27, 2019 at 3:30 PM</input>
-        <output>1564234200000,1564245000000</output>
+        <output>1564234200000,1564245000000,false</output>
     </testcase>
 
     <testcase name="single_day_hour_start_hour_end">
         <input>Tuesday, July 30, 2019 at 6 PM – 11 PM</input>
-        <output>1564502400000,1564520400000</output>
+        <output>1564502400000,1564520400000,false</output>
     </testcase>
 
     <testcase name="single_day_minute_start_hour_end">
         <input>Tuesday, July 30, 2019 at 4:30 PM – 11 PM</input>
-        <output>1564497000000,1564520400000</output>
+        <output>1564497000000,1564520400000,false</output>
     </testcase>
 
     <testcase name="single_day_hour_start_minute_end">
         <input>Tuesday, July 30, 2019 at 10 AM – 6:15 PM</input>
-        <output>1564473600000,1564503300000</output>
+        <output>1564473600000,1564503300000,false</output>
     </testcase>
 
     <testcase name="single_day_minute_start_minute_end">
         <input>Monday, July 29, 2019 at 11:15 AM – 4:45 PM</input>
-        <output>1564391700000,1564411500000</output>
+        <output>1564391700000,1564411500000,false</output>
     </testcase>
 
     <testcase name="today_hour_start_no_end">
         <input>Today at 7 AM</input>
-        <output>25200000,36000000</output>
+        <output>25200000,36000000,false</output>
     </testcase>
 
     <testcase name="today_hour_start_minute_end">
         <input>Today at 2 PM – 4:40 PM</input>
-        <output>50400000,60000000</output>
+        <output>50400000,60000000,false</output>
     </testcase>
 
     <testcase name="tomorrow_minute">
         <input>Tomorrow at 9:30 AM</input>
-        <output>34200000,45000000</output>
+        <output>34200000,45000000,false</output>
+    </testcase>
+
+    <testcase name="all_day_single_day_tomorrow">
+        <input>Tomorrow</input>
+        <output>0,0,true</output>
+    </testcase>
+
+    <testcase name="all_day_single_day_no_year">
+        <input>Aug 28</input>
+        <output>1566950400000,1566950400000,true</output>
+    </testcase>
+
+    <testcase name="all_day_single_day_year">
+        <input>Feb 20, 2020</input>
+        <output>1582156800000,1582156800000,true</output>
+    </testcase>
+
+    <testcase name="all_day_multi_day_no_year">
+        <input>May 20 – Jun 1</input>
+        <output>1558310400000,1559347200000,true</output>
+    </testcase>
+
+    <testcase name="all_day_multi_day_year">
+        <input>Jan 25, 2020 – Jan 27, 2020</input>
+        <output>1579910400000,1580083200000,true</output>
+    </testcase>
+
+    <testcase name="all_day_multi_day_cross_year">
+        <input>Dec 28 – Jan 05, 2020</input>
+        <output>1577491200000,1578182400000,true</output>
     </testcase>
 </test>
