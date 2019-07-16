@@ -164,22 +164,22 @@ open class FBEvent protected constructor() {
             } else {
                 format = SimpleDateFormat("yyyyMMdd Z", Locale.US)
                 // HACK: Force SimpleDateFormat to treat the date as UTC
-                date = format.parse(dt + " +0000")
+                date = format.parse("$dt +0000")
             }
             return date.time
         }
 
-        private val weekDays = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).keys.joinToString("|")
-        private val longMonths = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.MONTH, Calendar.LONG, Locale.US).keys.joinToString("|")
+        val weekDays = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.US).keys.joinToString("|")
+        val longMonths = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.MONTH, Calendar.LONG, Locale.US).keys.joinToString("|")
         private val shortMonths = Calendar.getInstance(Locale.US).getDisplayNames(Calendar.MONTH, Calendar.SHORT, Locale.US).keys.joinToString("|")
 
-        val re_singleDaySoon = Pattern.compile("(Today|Tomorrow) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
-        val re_singleDayNoYear = Pattern.compile("($weekDays) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
-        val re_singleDayWithYear = Pattern.compile("($weekDays), ($longMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
-        val re_multiDayNoYear = Pattern.compile("($shortMonths) ([0-9]{1,2}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
-        val re_multiDayAllDay = Pattern.compile("($shortMonths) ([0-9]{1,2})(, ([0-9]{4}))? – ($shortMonths) ([0-9]{1,2})(, ([0-9]{4}))?")
-        val re_singleDayAllDay = Pattern.compile("(Today|Tomorrow|$shortMonths)( ([0-9]{1,2}))?(, ([0-9]{4}))?")
-        val re_multiDayWithYear = Pattern.compile("($shortMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
+        private val re_singleDaySoon: Pattern = Pattern.compile("(Today|Tomorrow) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
+        private val re_singleDayNoYear: Pattern = Pattern.compile("($weekDays) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
+        private val re_singleDayWithYear: Pattern = Pattern.compile("($weekDays), ($longMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)( – ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM))?")
+        private val re_multiDayNoYear: Pattern = Pattern.compile("($shortMonths) ([0-9]{1,2}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
+        private val re_multiDayAllDay: Pattern = Pattern.compile("($shortMonths) ([0-9]{1,2})(, ([0-9]{4}))? – ($shortMonths) ([0-9]{1,2})(, ([0-9]{4}))?")
+        private val re_singleDayAllDay: Pattern = Pattern.compile("(Today|Tomorrow|$shortMonths)( ([0-9]{1,2}))?(, ([0-9]{4}))?")
+        private val re_multiDayWithYear: Pattern = Pattern.compile("($shortMonths) ([0-9]{1,2}), ([0-9]{4}) at ([0-9]{1,2})(:([0-9]{1,2}))? (AM|PM)")
 
         data class FancyDateResult(val dtStart: Long, val dtEnd: Long, val allDay: Boolean = false)
 
@@ -369,7 +369,6 @@ open class FBEvent protected constructor() {
                 return parseSingleDayAllDay(match, timezone)
             }
 
-            println("$dt");
             context?.logger?.error("FBEVENT", "Unknown datetime format: '$dt'.")
             throw IllegalArgumentException()
         }

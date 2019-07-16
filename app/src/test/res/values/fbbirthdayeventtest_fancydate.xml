@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test>
+    <testcase name="today">
+        <input>Today</input>
+        <output>0</output>
+    </testcase>
+
+    <testcase name="tomorrow">
+        <input>Tomorrow, July 17</input>
+        <output>0</output>
+    </testcase>
+
+    <testcase name="date_with_year">
+        <input>Saturday, July 20, 2019</input>
+        <output>1563580800000</output>
+    </testcase>
+</test>

@@ -4,23 +4,62 @@ import android.provider.CalendarContract
 import org.jsoup.nodes.Element
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 class FBBirthdayEvent: FBEvent() {
 
     companion object {
-        private fun parseFancyBirthdayDate(dt: String, context: SyncContext): Date {
-            try {
-                return if (dt.count { it == ',' } == 2) {
-                    SimpleDateFormat("EEEEE, MMMMM d, yyyy", Locale.US).parse(dt)
-                } else { // handle fancy dates like "Tomorrow, July 11"
-                    val ds = dt.split(", ")
-                    val year = Calendar.getInstance().get(Calendar.YEAR)
-                    SimpleDateFormat("MMMMM d yyyy", Locale.US).parse("${ds[1]} $year")
-                }
-            } catch (e: java.text.ParseException) {
-                context.logger.error("SYNC.BIRTHDAYEVENT", e.toString())
-                throw e
+
+        private val re_soon: Pattern = Pattern.compile("Tomorrow, ($longMonths) ([0-9]{1,2})(, ([0-9]{4}))?")
+        private val re_birthday: Pattern = Pattern.compile("($weekDays), ($longMonths) ([0-9]{1,2}), ([0-9]{4})")
+
+        private fun parseDate(month: String, day: String, year: Int): Date {
+            val format = SimpleDateFormat("MMMMM dd, yyyy", Locale.US);
+            format.timeZone = TimeZone.getTimeZone("UTC")
+            return format.parse("$month $day, $year")
+        }
+
+        private fun parseSoonBirthdayDate(match: Matcher): Date {
+            val month = match.group(1)
+            val day = match.group(2)
+            val year = match.group(4)?.toInt() ?: Calendar.getInstance().get(Calendar.YEAR)
+
+            return parseDate(month, day, year)
+        }
+
+        private fun parseRegularBirthdayDate(match: Matcher): Date {
+            val month = match.group(2)
+            val day = match.group(3)
+            val year = match.group(4).toInt()
+
+            return parseDate(month, day, year)
+        }
+
+        fun parseFancyBirthdayDate(dt_: String, context: SyncContext? = null): Date {
+            val dt = dt_.trim()
+
+            if (dt == "Today") {
+                var cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                cal.set(Calendar.HOUR, 0)
+                cal.set(Calendar.MINUTE, 0)
+                cal.set(Calendar.SECOND, 0)
+                cal.set(Calendar.MILLISECOND, 0)
+                cal.set(Calendar.AM_PM, Calendar.AM)
+                return cal.time
             }
+
+            var match = re_soon.matcher(dt)
+            if (match.matches()) {
+                return parseSoonBirthdayDate(match)
+            }
+            match = re_birthday.matcher(dt)
+            if (match.matches()) {
+                return parseRegularBirthdayDate(match);
+            }
+
+            context?.logger?.error("FBBIRTHDAYEVENT", "Unknown datetime format: '$dt'.")
+            throw IllegalArgumentException()
         }
 
         fun parse(event: Element, context: SyncContext): FBEvent? {
