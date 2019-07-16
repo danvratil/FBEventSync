@@ -11,6 +11,8 @@ class FBBirthdayEvent: FBEvent() {
 
     companion object {
 
+        private const val TAG = "FBBirthdayEvent"
+
         private val re_soon: Pattern = Pattern.compile("Tomorrow, ($longMonths) ([0-9]{1,2})(, ([0-9]{4}))?")
         private val re_birthday: Pattern = Pattern.compile("($weekDays), ($longMonths) ([0-9]{1,2}), ([0-9]{4})")
 
@@ -58,7 +60,7 @@ class FBBirthdayEvent: FBEvent() {
                 return parseRegularBirthdayDate(match);
             }
 
-            context?.logger?.error("FBBIRTHDAYEVENT", "Unknown datetime format: '$dt'.")
+            context?.logger?.error(TAG, "Unknown datetime format: '$dt'.")
             throw IllegalArgumentException()
         }
 

@@ -154,6 +154,9 @@ open class FBEvent protected constructor() {
     }
 
     companion object {
+
+        private const val TAG = "FBEvent"
+
         @Throws(java.text.ParseException::class)
         fun parseDateTime(dt: String): Long {
             val format: SimpleDateFormat
@@ -369,7 +372,7 @@ open class FBEvent protected constructor() {
                 return parseSingleDayAllDay(match, timezone)
             }
 
-            context?.logger?.error("FBEVENT", "Unknown datetime format: '$dt'.")
+            context?.logger?.error(TAG, "Unknown datetime format: '$dt'.")
             throw IllegalArgumentException()
         }
 
@@ -498,7 +501,7 @@ open class FBEvent protected constructor() {
                         "TENTATIVE" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_MAYBE
                         "DECLINED" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_DECLINED
                         "NEEDS-ACTION" -> fbEvent.rsvp = FBCalendar.CalendarType.TYPE_NOT_REPLIED
-                        else -> context.logger.warning("SYNC.EVENT", "Unknown RSVP status '${prop.value}'")
+                        else -> context.logger.warning(TAG, "Unknown RSVP status '${prop.value}'")
                     }
                 }
 
