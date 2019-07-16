@@ -369,7 +369,6 @@ open class FBEvent protected constructor() {
                 return parseSingleDayAllDay(match, timezone)
             }
 
-            println("$dt");
             context?.logger?.error("FBEVENT", "Unknown datetime format: '$dt'.")
             throw IllegalArgumentException()
         }
