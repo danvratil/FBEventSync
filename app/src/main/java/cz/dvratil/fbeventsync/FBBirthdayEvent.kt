@@ -41,7 +41,7 @@ class FBBirthdayEvent: FBEvent() {
         fun parseFancyBirthdayDate(dt_: String, context: SyncContext? = null): Date {
             val dt = dt_.trim()
 
-            if (dt == "Today") {
+            if (dt.startsWith("Today")) {
                 var cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 cal.set(Calendar.HOUR, 0)
                 cal.set(Calendar.MINUTE, 0)

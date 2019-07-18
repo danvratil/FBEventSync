@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <test>
     <testcase name="today">
-        <input>Today</input>
+        <input>Today, July 16</input>
         <output>0</output>
     </testcase>
 
     <testcase name="tomorrow">
         <input>Tomorrow, July 17</input>
-        <output>0</output>
+        <output>1563321600000</output>
     </testcase>
 
     <testcase name="date_with_year">

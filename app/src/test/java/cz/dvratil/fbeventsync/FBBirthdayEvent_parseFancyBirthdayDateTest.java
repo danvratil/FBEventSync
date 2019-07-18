@@ -52,10 +52,6 @@ public class FBBirthdayEvent_parseFancyBirthdayDateTest {
         if (input.startsWith("Today")) {
             Calendar now = today("UTC");
             expected = now.getTimeInMillis();
-        } else if (input.startsWith("Tomorrow")) {
-            Calendar now = today("UTC");
-            now.add(Calendar.DATE, 1);
-            expected = now.getTimeInMillis();
         }
 
         Date result = FBBirthdayEvent.Companion.parseFancyBirthdayDate(input.trim(), null);
