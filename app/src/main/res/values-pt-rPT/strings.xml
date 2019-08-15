@@ -1,2 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">FB Event Sync</string>
+    <string name="full_app_name">Sincronização de Eventos para o Facebook</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_remove">Remover</string>
+    <string name="main_version_label">Versão: %s</string>
+    <string name="main_add_account_btn">Adicionar Conta</string>
+    <string name="main_show_logs_btn">Mostrar Registos</string>
+    <string name="main_configure_calendars_btn">Configurar Calendários</string>
+    <string name="main_configure_sync_btn">Configurar Preferências de Sincronização</string>
+    <string name="main_configure_misc_btn">Configurar Diversos</string>
+    <string name="main_sync_now">Sincronizar Agora</string>
+    <string name="main_sync_in_progress">Sincronização em progresso...</string>
+    <string name="nav_sync_all">Sincronizar Tudo</string>
+    <string name="nav_configure_calendars">Configurar Calendários</string>
+    <string name="nav_configure_sync">Configurar Sincronização</string>
+    <string name="nav_sync_logs">Registos de Sincronização</string>
+    <string name="nav_report_bug">Reportar Erro</string>
+    <string name="nav_faq">Perguntas Mais Frequentes</string>
+    <string name="nav_about">Sobre</string>
+    <string name="nav_homepage">Página Inicial</string>
+    <string name="perms_activity_title">Pedido de Permissões</string>
+    <string name="log_activity_title">Visualização de Registos</string>
+    <string name="log_clear_log_action">Limpar Registo</string>
+    <string name="log_send_to_dev_action">Enviar para o Programador</string>
+    <string name="log_send_email_action">Enviar E-mail…</string>
+    <string name="log_email_template">[Por favor, descreva o seu problema aqui, preferencialmente em inglês]</string>
+    <string name="auth_account_creation_success_toast">Conta adicionada</string>
+</resources>
