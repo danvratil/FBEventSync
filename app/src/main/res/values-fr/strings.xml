@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="app_name">Synchronisation d\'événements FB</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Synchronisation d\'événements FB</string>
     <string name="full_app_name">Synchronisation d\'événement pour Facebook</string>
     <string name="main_version_label">Version : %s</string>
     <string name="main_tagline">Maintenant avec la synchronisation des anniversaires. Aaawww yeah !</string>
@@ -10,16 +11,13 @@
     <string name="main_configure_misc_btn">Autres configurations</string>
     <string name="main_sync_now">Synchroniser maintenant</string>
     <string name="main_sync_in_progress">Synchronisation en cours...</string>
-
     <string name="perms_activity_title">Demande de permissions</string>
-
     <string name="log_activity_title">Logs</string>
     <string name="log_clear_log_action">Effacer les logs</string>
     <string name="log_send_to_dev_action">Envoyer au développeur</string>
     <string name="log_send_email_action">Envoi de l\'email…</string>
     <string name="log_email_template">[Décrivez votre problème ici, de préférence en anglais, merci]</string>
     <string name="log_error_sending_log_toast">Échec lors de l\'envoi des logs : Impossible de lire le fichier de log</string>
-
     <string name="auth_activity_title">S\'authentifier avec Facebook</string>
     <string name="auth_account_creation_error_toast">Erreur lors de l\'authentification</string>
     <string name="auth_account_creation_success_toast">Compte ajouté</string>
@@ -28,7 +26,6 @@
     <string name="auth_progress_retrieving_calendars">Récupération des calendriers…</string>
     <string name="auth_progress_retrieving_userinfo">Récupération des informations de l\'utilisateur…</string>
     <string name="auth_calendar_uri_error_toast">Échec lors de la récupération de l\'URI du calendrier</string>
-
     <string name="calendar_not_responded_title">Événements auxquels je n\'ai pas répondu</string>
     <string name="calendar_declined_title">Événements auxquels je ne participe pas</string>
     <string name="calendar_tentative_title">Événements auxquels je vais peut-être participer</string>
@@ -36,17 +33,13 @@
     <string name="calendar_birthday_title">Anniversaires d\'Amis</string>
     <string name="sync_ntf_needs_reauthentication_title">Event Sync for Facebook a besoin de se connecter</string>
     <string name="sync_ntf_needs_reauthentication_description">Taper ici pour vous reconnecter avec Facebook</string>
-
     <string name="pref_activity_title">Préférences</string>
-
     <string name="pref_sync_settings_title">Préférences de Synchronisation</string>
     <string name="pref_sync_settings_summary">Configurer à quelle fréquence et quand synchroniser les événements.</string>
-
     <string name="pref_sync_frequency_title">Fréquence de synchronisation</string>
     <string name="pref_sync_frequency_summary">A quelle fréquence les événements Facebook doivent-ils être synchronisés ?</string>
     <string name="pref_sync_fblink_title">Ajouter un lien vers Facebook</string>
     <string name="pref_sync_fblink_summary">Ajouter un lien vers Facebook sur les descriptions d\'événement.</string>
-
     <string name="pref_language_title">Langage</string>
     <string name="pref_language_summary">Langage pour les anniversaires et événements</string>
     <string name="pref_language_default_entry">Langage de l\'appareil</string>
@@ -54,19 +47,14 @@
     <string name="pref_misc_report_bug_title">Signaler un bug</string>
     <string name="pref_misc_contact_developer_title">Contacter le développeur</string>
     <string name="pref_misc_rate_app_title">Noter l\'application</string>
-
-
     <string name="pref_calendar_settings_title">Calendriers</string>
     <string name="pref_calendar_settings_summary">Choisir les calendriers, couleurs et rappels</string>
-
     <string name="pref_calendar_enabled_title">Activé</string>
     <string name="pref_calendar_reminders_title">Rappels</string>
     <string name="pref_calendar_color_title">Couleur</string>
-
     <string name="color_dlg_title">Choisir une couleur</string>
     <string name="color_dlg_save_btn_title">Sauvegarder</string>
     <string name="color_dlg_close_btn_title">Fermer</string>
-
     <string name="pref_reminder_0minutes_entry">0 minutes</string>
     <string name="pref_reminder_5minutes_entry">5 minutes</string>
     <string name="pref_reminder_10minutes_entry">10 minutes</string>
@@ -88,11 +76,9 @@
     <string name="pref_sync_frequency_12hours_entry">12 heures</string>
     <string name="pref_sync_frequency_24hours_entry">24 heures</string>
     <string name="pref_general_settings_title">Général</string>
-<string name="btn_save">Enregistrer</string>
+    <string name="btn_save">Enregistrer</string>
     <string name="btn_cancel">Annuler</string>
     <string name="btn_remove">Supprimer</string>
-
-
     <string name="nav_sync_all">Tout Synchroniser</string>
     <string name="nav_configure_calendars">Configurer les calendriers</string>
     <string name="nav_configure_sync">Configurer la synchronisation</string>
@@ -100,28 +86,25 @@
     <string name="nav_report_bug">Signaler un Bug</string>
     <string name="nav_faq">FAQ</string>
     <string name="nav_about">À propos</string>
-
     <string name="auth_remove_account_title">Supprimer le compte %s ?</string>
     <string name="auth_remove_account_text">Le compte ne sera supprimé que de cette application, votre compte Facebook et les autres applications ne seront pas affectés.</string>
-
     <string name="about_activity_title">À propos</string>
     <string name="pref_about_rate_app_title">Noter l\'application</string>
     <string name="pref_about_privacy_title">Confidentialité</string>
     <string name="pref_about_license_title">Licence</string>
-    <string name="pref_about_license_summary">GNU General Public License v3.0</string>
+    <string name="pref_about_license_summary">Licence publique générale GNU v3.0</string>
     <string name="pref_about_version_title">Version</string>
-
-
     <string name="pref_calendar_allday_reminders_title">Rappels d\'événements chaque jours</string>
     <plurals name="pref_reminder_allday_description">
-	<item quantity="one">%d jour avant à %s</item>
-	<item quantity="other">%d jours avant à %s</item>
-</plurals>
+        <item quantity="one">%d jour avant à %s</item>
+        <item quantity="other">%d jours avant à %s</item>
+    </plurals>
     <string name="allday_reminder_daysBeforeAt">"jours avant "</string>
-
     <plurals name="pref_reminder_anyminutes">
-	<item quantity="one">%d minute</item>
-	<item quantity="other">%d minutes</item>
-</plurals>
-
-    </resources>
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <string name="birthday_event_title">%1$s\'s Anniversaire</string>
+    <string name="main_fbpage_link">Suivez notre &lt;a href=https://www.facebook.com/294071114749578&gt;page Facebook&lt;/a&gt;pour recevoir les dernières actualités et informations à propos des mises à jour !</string>
+    <string name="nav_homepage">Page d\'accueil</string>
+</resources>
