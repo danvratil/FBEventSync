@@ -10,7 +10,7 @@
     <string name="main_configure_sync_btn">Synchronisatie-voorkeuren instellen</string>
     <string name="main_configure_misc_btn">Overige voorkeuren instellen</string>
     <string name="main_sync_now">Nu synchroniseren</string>
-    <string name="main_sync_in_progress">Bezig met synchroniseren...</string>
+    <string name="main_sync_in_progress">Bezig met synchroniseren…</string>
     <string name="perms_activity_title">Toestemmingsverzoek</string>
     <string name="log_activity_title">Logweergave</string>
     <string name="log_clear_log_action">Log wissen</string>
