@@ -22,7 +22,7 @@
     <string name="main_configure_sync_btn">Configure Sync Preferences</string>
     <string name="main_configure_misc_btn">Configure Miscellaneous</string>
     <string name="main_sync_now">Sync Now</string>
-    <string name="main_sync_in_progress">Sync in progress...</string>
+    <string name="main_sync_in_progress">Sync in progress…</string>
     <string name="main_fbpage_link">Follow our &lt;a href=https://www.facebook.com/294071114749578>Facebook page&lt;/a> to get the latest news and information about updates!</string>
 
     <!-- NAVIGATION DRAWER ACTIONS //-->
