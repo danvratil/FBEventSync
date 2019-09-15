@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- GLOBAL STRINGS //-->
     <string name="app_name">FB Event Sync</string>
@@ -7,13 +8,10 @@
     <string name="fileprovider_authority" translatable="false">cz.dvratil.fbeventsync.FileProvider</string>
     <string name="facebook_app_id" translatable="false">1775235912769870</string>
     <string name="cfg_prefs_version" translatable="false">prefs_version</string>
-
     <string name="btn_save">Save</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_remove">Remove</string>
-
     <string name="birthday_event_title">%1$s\'s Birthday</string>
-
     <!-- MAIN ACTIVITY //-->
     <string name="main_version_label">Version: %s</string>
     <string name="main_add_account_btn">Add Account</string>
@@ -22,9 +20,8 @@
     <string name="main_configure_sync_btn">Configure Sync Preferences</string>
     <string name="main_configure_misc_btn">Configure Miscellaneous</string>
     <string name="main_sync_now">Sync Now</string>
-    <string name="main_sync_in_progress">Sync in progress…</string>
-    <string name="main_fbpage_link">Follow our &lt;a href=https://www.facebook.com/294071114749578>Facebook page&lt;/a> to get the latest news and information about updates!</string>
-
+    <string name="main_sync_in_progress">Synchronizing…</string>
+    <string name="main_fbpage_link">Follow our &lt;a href=https://www.facebook.com/294071114749578&gt;Facebook page&lt;/a&gt; to get the latest news and information about updates!</string>
     <!-- NAVIGATION DRAWER ACTIONS //-->
     <string name="nav_sync_all">Sync All</string>
     <string name="nav_configure_calendars">Configure Calendars</string>
@@ -35,31 +32,26 @@
     <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
     <string name="nav_about">About</string>
     <string name="nav_homepage">Homepage</string>
-
     <!-- PERMISSIONS ACTIVITY //-->
     <string name="perms_activity_title">Permissions Request</string>
-
     <!-- LOGVIEW ACTIVITY //-->
     <string name="log_activity_title">Log View</string>
     <string name="log_clear_log_action">Clear Log</string>
     <string name="log_send_to_dev_action">Send to Developer</string>
-    <string name="log_send_email_action">Send Email&#8230;</string>
+    <string name="log_send_email_action">Send Email…</string>
     <string name="log_email_template">[Please, describe your problem here, preferably in English]</string>
     <string name="log_error_sending_log_toast">Failed to send logs: Cannot read the log file</string>
-
     <!-- AUTHENTICATION ACTIVITY //-->
     <string name="auth_activity_title">Authenticate with Facebook</string>
     <string name="auth_account_creation_error_toast">Error during authentication</string>
     <string name="auth_account_creation_success_toast">Account added</string>
     <string name="auth_rate_limiting_toast">Facebook API is currently experiencing problems. Please try again later.</string>
-    <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook&#8230;</string>
-    <string name="auth_progress_retrieving_calendars">Retrieving calendars&#8230;</string>
-    <string name="auth_progress_retrieving_userinfo">Retrieving user info&#8230;</string>
+    <string name="auth_progress_authenticating_with_fb">Authenticating with Facebook…</string>
+    <string name="auth_progress_retrieving_calendars">Retrieving calendars…</string>
+    <string name="auth_progress_retrieving_userinfo">Retrieving user info…</string>
     <string name="auth_calendar_uri_error_toast">Failed to retrieve calendar URI</string>
-
     <string name="auth_remove_account_title">Remove account %s?</string>
     <string name="auth_remove_account_text">The account will only be removed from this app, your Facebook account and other apps will remain unaffected.</string>
-
     <!-- ABOUT ACTIVITY //-->
     <!-- "About" as in "About the app" - like Help->About in desktop programs //-->
     <string name="about_activity_title">About</string>
@@ -72,8 +64,6 @@
     <string name="pref_about_license_summary">GNU General Public License v3.0</string>
     <string name="pref_about_version" translatable="false">pref_about_version</string>
     <string name="pref_about_version_title">Version</string>
-
-
     <!-- CALENDAR SYNC //-->
     <string name="calendar_not_responded_title">Events I have not Responded To</string>
     <string name="calendar_declined_title">Events I\'m not Attending</string>
@@ -82,24 +72,19 @@
     <string name="calendar_birthday_title">Friends\' Birthdays</string>
     <string name="sync_ntf_needs_reauthentication_title">Event Sync for Facebook needs to log in</string>
     <string name="sync_ntf_needs_reauthentication_description">Tap here to re-authenticate with Facebook</string>
-
     <!-- PREFERENCES //-->
     <string name="pref_activity_title">Settings</string>
-
     <!-- Sync settings //-->
     <string name="pref_sync_settings" translatable="false">pref_sync_settings</string>
     <string name="pref_sync_settings_title">Sync Settings</string>
     <string name="pref_sync_settings_summary">Configure how often and when to sync events.</string>
-
     <string name="pref_sync_frequency" translatable="false">pref_sync_frequency</string>
     <string name="pref_sync_frequency_title">Sync Frequency</string>
     <string name="pref_sync_frequency_summary">How often should your Facebook events be synced?</string>
     <string name="pref_sync_frequency_default_value" translatable="false">@string/pref_sync_frequency_1hour_value</string>
-
     <string name="pref_sync_fblink" translatable="false">pref_sync_fblink</string>
     <string name="pref_sync_fblink_title">Add link to Facebook</string>
     <string name="pref_sync_fblink_summary">Add a link to Facebook to event descriptions.</string>
-
     <string name="pref_language" translatable="false">pref_language</string>
     <string name="pref_language_title">Language</string>
     <string name="pref_language_summary">Language for birthdays and events</string>
@@ -111,12 +96,10 @@
     <string-array name="pref_language_values">
         <item>@string/pref_language_default_value</item>
     </string-array>
-
     <!-- Calendar settings //-->
     <string name="pref_calendar_settings" translatable="false">pref_calendar_settings</string>
     <string name="pref_calendar_settings_title">Calendars</string>
     <string name="pref_calendar_settings_summary">Set calendars, colors and reminders</string>
-
     <string name="pref_calendar_attending_enabled" translatable="false">pref_attending_enabled</string>
     <string name="pref_calendar_attending_reminders" translatable="false">pref_attending_reminders</string>
     <string name="pref_calendar_attending_allday_reminders" translatable="false">pref_attending_allday_reminders</string>
@@ -136,20 +119,16 @@
     <string name="pref_calendar_birthday_enabled" translatable="false">pref_birthday_enabled</string>
     <string name="pref_calendar_birthday_allday_reminders" translatable="false">pref_birthday_allday_reminders</string>
     <string name="pref_calendar_birthday_color" translatable="false">pref_birthday_color</string>
-
     <string name="pref_calendar_enabled_title">Enabled</string>
     <string name="pref_calendar_reminders_title">Reminders</string>
     <string name="pref_calendar_allday_reminders_title">All-day Events Reminders</string>
     <string name="pref_calendar_color_title">Color</string>
-
     <string name="color_dlg_title">Choose Color</string>
     <string name="color_dlg_save_btn_title">Save</string>
     <string name="color_dlg_close_btn_title">Close</string>
-
     <string name="cfg_last_sync_time" translatable="false">lastSyncTime</string>
     <string name="cfg_syncs_per_hour" translatable="false">syncPerHour</string>
     <string name="cfg_last_version" translatable="false">lastVersion</string>
-
     <!-- N day(s) before at HH:MM //-->
     <plurals name="pref_reminder_allday_description">
         <item quantity="one">%d day before at %s</item>
@@ -157,17 +136,14 @@
     </plurals>
     <!-- [ number picker ] days before at [ time picker ] //-->
     <string name="allday_reminder_daysBeforeAt">days before at</string>
-
     <!-- Minutes,allday, see FBReminder.fromString for details //-->
     <string-array name="pref_allday_reminders_default_value">
         <item>720,true</item>
     </string-array>
-
     <plurals name="pref_reminder_anyminutes">
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
-
     <string name="pref_reminder_0minutes_entry">0 minutes</string>
     <string name="pref_reminder_0minutes_value" translatable="false">0</string>
     <string name="pref_reminder_5minutes_entry">5 minutes</string>
@@ -194,7 +170,6 @@
     <string name="pref_reminder_2days_value" translatable="false">2880</string>
     <string name="pref_reminder_1week_entry">1 week</string>
     <string name="pref_reminder_1week_value" translatable="false">10080</string>
-
     <string-array name="pref_reminders_entries">
         <item>@string/pref_reminder_0minutes_entry</item>
         <item>@string/pref_reminder_5minutes_entry</item>
@@ -228,7 +203,6 @@
     <string-array name="pref_reminders_default_value">
         <item>@string/pref_reminder_1hour_value</item>
     </string-array>
-
     <string name="pref_sync_frequency_never_entry">Never</string>
     <string name="pref_sync_frequency_never_value" translatable="false">0</string>
     <string name="pref_sync_frequency_1hour_entry">1 hour</string>
