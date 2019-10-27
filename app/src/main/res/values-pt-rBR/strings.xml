@@ -5,6 +5,7 @@
     <string name="btn_save">Salvar</string>
     <string name="btn_cancel">Cancelar</string>
     <string name="btn_remove">Remover</string>
+    <string name="birthday_event_title">Aniversário de %1$s</string>
     <string name="main_version_label">Versão: %s</string>
     <string name="main_add_account_btn">Adicionar Conta</string>
     <string name="main_show_logs_btn">Mostrar Registros</string>
