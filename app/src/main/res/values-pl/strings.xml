@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="app_name">FB Event Sync</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FB Event Sync</string>
     <string name="full_app_name">Event Sync dla Facebook\'a</string>
     <string name="main_version_label">Wersja: %s</string>
     <string name="main_tagline">Teraz również z synchronizacją urodzin. Aaaawwww yeah!</string>
@@ -10,16 +11,13 @@
     <string name="main_configure_misc_btn">Skonfiguruj różne</string>
     <string name="main_sync_now">Synchronizuj teraz</string>
     <string name="main_sync_in_progress">W trakcie synchronizacji...</string>
-
     <string name="perms_activity_title">Żądanie uprawnień</string>
-
     <string name="log_activity_title">Widok dziennika</string>
     <string name="log_clear_log_action">Wyczyść dzienniki</string>
     <string name="log_send_to_dev_action">Wyślij do twórcy oprogramowania</string>
     <string name="log_send_email_action">Wyślij e-mail…</string>
     <string name="log_email_template">[Tutaj opisz swój problem, najlepiej po angielsku]</string>
     <string name="log_error_sending_log_toast">Nie udało się wysłać dzienników: Nie można odczytać pliku dziennika</string>
-
     <string name="auth_activity_title">Uwierzytelnij za pomocą Facebook\'a</string>
     <string name="auth_account_creation_error_toast">Błąd podczas uwierzytelniania</string>
     <string name="auth_account_creation_success_toast">Dodano konto</string>
@@ -28,7 +26,6 @@
     <string name="auth_progress_retrieving_calendars">Przetwarzanie kalendarzy…</string>
     <string name="auth_progress_retrieving_userinfo">Przetwarzanie informacji o użytkowniku…</string>
     <string name="auth_calendar_uri_error_toast">Nie udało się przetworzyć URI kalendarza</string>
-
     <string name="calendar_not_responded_title">Wydarzenia, na które nie odpowiedziałem</string>
     <string name="calendar_declined_title">Wydarzenia, w których nie uczestniczę</string>
     <string name="calendar_tentative_title">Wydarzenia, w których mogę uczestniczyć</string>
@@ -36,12 +33,9 @@
     <string name="calendar_birthday_title">Urodziny przyjaciół</string>
     <string name="sync_ntf_needs_reauthentication_title">Event Sync dla Facebook\'a chce się zalogować</string>
     <string name="sync_ntf_needs_reauthentication_description">Kliknij tutaj, aby ponownie uwierzytelnić się za pomocą Facebook\'a</string>
-
     <string name="pref_activity_title">Ustawienia</string>
-
     <string name="pref_sync_settings_title">Ustawienia synchronizacji</string>
     <string name="pref_sync_settings_summary">Skonfiguruj jak często i kiedy synchornizować wydarzenia.</string>
-
     <string name="pref_sync_frequency_title">Częstość synchronizacji</string>
     <string name="pref_sync_frequency_summary">Jak często wydarzenia z Facebook`a powinny być synchronizowane?</string>
     <string name="pref_language_title">Język</string>
@@ -51,19 +45,14 @@
     <string name="pref_misc_report_bug_title">Zgłoś błąd</string>
     <string name="pref_misc_contact_developer_title">Skontaktuj się z twórcą oprogramowania</string>
     <string name="pref_misc_rate_app_title">Oceń aplikację</string>
-
-
     <string name="pref_calendar_settings_title">Kalendarze</string>
     <string name="pref_calendar_settings_summary">Ustaw kalendarze, kolory i przypomnienia</string>
-
     <string name="pref_calendar_enabled_title">Włączony</string>
     <string name="pref_calendar_reminders_title">Przypomnienia</string>
     <string name="pref_calendar_color_title">Kolor</string>
-
     <string name="color_dlg_title">Wybierz kolor</string>
     <string name="color_dlg_save_btn_title">Zapisz</string>
     <string name="color_dlg_close_btn_title">Zamknij</string>
-
     <string name="pref_reminder_0minutes_entry">0 minut</string>
     <string name="pref_reminder_5minutes_entry">5 minut</string>
     <string name="pref_reminder_10minutes_entry">10 minut</string>
@@ -85,14 +74,11 @@
     <string name="pref_sync_frequency_12hours_entry">12 godzin</string>
     <string name="pref_sync_frequency_24hours_entry">24 godziny</string>
     <string name="pref_general_settings_title">Ogólne</string>
-<string name="pref_sync_fblink_title">Dodaj odsyłacz do Facebook\'a</string>
+    <string name="pref_sync_fblink_title">Dodaj odsyłacz do Facebook\'a</string>
     <string name="pref_sync_fblink_summary">Dodaj odsyłacz do Facebook\'a dla opisu wydarzeń.</string>
-
     <string name="btn_save">Zapisz</string>
     <string name="btn_cancel">Anuluj</string>
     <string name="btn_remove">Usuń</string>
-
-
     <string name="nav_sync_all">Synchronizuj wszystko</string>
     <string name="nav_configure_calendars">Konfiguruj kalendarze</string>
     <string name="nav_configure_sync">Konfiguruj synchronizację</string>
@@ -100,30 +86,26 @@
     <string name="nav_report_bug">Raport o błędach</string>
     <string name="nav_faq">FAQ</string>
     <string name="nav_about">O aplikacji</string>
-
     <string name="auth_remove_account_title">Usunąć konto %s?</string>
     <string name="auth_remove_account_text">Konto zostanie usunięte tylko z aplikacji. Twoje konto Facebook zostanie nie ruszone.</string>
-
     <string name="about_activity_title">O aplikacji</string>
     <string name="pref_about_rate_app_title">Oceń aplikację</string>
     <string name="pref_about_privacy_title">Polityka prywatności</string>
     <string name="pref_about_license_title">Licencja</string>
     <string name="pref_about_license_summary">Licencja publiczna GNU v3.0</string>
     <string name="pref_about_version_title">Wersja aplikacji</string>
-
-
     <string name="pref_calendar_allday_reminders_title">Przypomnienia o całodniowych wydarzeniach</string>
     <plurals name="pref_reminder_allday_description">
-	<item quantity="one">%d dzień przed wydarzeniem o %s</item>
-	<item quantity="few"></item>
-	<item quantity="many">%d dni przed wydarzeniem o %s</item>
-</plurals>
+        <item quantity="one">%d dzień przed wydarzeniem o %s</item>
+        <item quantity="few"/>
+        <item quantity="many">%d dni przed wydarzeniem o %s</item>
+    </plurals>
     <string name="allday_reminder_daysBeforeAt">dni przed wydarzeniem o</string>
-
     <plurals name="pref_reminder_anyminutes">
-	<item quantity="one">%d minut</item>
-	<item quantity="few"></item>
-	<item quantity="many">"%d minut "</item>
-</plurals>
-
-    </resources>
+        <item quantity="one">%d minut</item>
+        <item quantity="few"/>
+        <item quantity="many">"%d minut "</item>
+    </plurals>
+    <string name="main_fbpage_link">Obserwuj naszą &lt;a href=https://www.facebook.com/294071114749578&gt;stronę Facebook&lt;/a&gt; aby mieć najnowsze wiadomości i informacje na temat aktualizacji!</string>
+    <string name="nav_homepage">Strona główna</string>
+</resources>
