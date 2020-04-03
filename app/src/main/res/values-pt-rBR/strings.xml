@@ -12,7 +12,7 @@
     <string name="main_configure_sync_btn">Configurações de Sincronização</string>
     <string name="main_configure_misc_btn">Outras Configurações</string>
     <string name="main_sync_now">Sincronizar</string>
-    <string name="main_sync_in_progress">Sincronizando...</string>
+    <string name="main_sync_in_progress">Sincronizando…</string>
     <string name="nav_sync_all">Sincronizar Todos</string>
     <string name="nav_configure_calendars">Configurar Calendários</string>
     <string name="nav_configure_sync">Opções de Sincronização</string>
