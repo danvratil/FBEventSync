@@ -31,8 +31,8 @@
     <string name="log_activity_title">Log ansehen</string>
     <string name="log_clear_log_action">Log-Datei löschen</string>
     <string name="log_send_to_dev_action">An den Entwickler senden</string>
-    <string name="log_send_email_action">Sende Email…</string>
-    <string name="log_email_template">[Bitte beschreibe dein Problem hier,https://github.com/sindresorhus/refined-github/issues/1123 möglichst auf Englisch]</string>
+    <string name="log_send_email_action">E-Mail wird gesendet…</string>
+    <string name="log_email_template">[Bitte beschreibe dein Problem hier, möglichst auf Englisch]</string>
     <string name="log_error_sending_log_toast">Log senden fehlgeschlagen: Auf Logdatei kann nicht zugegriffen werden</string>
     <!-- AUTHENTICATION ACTIVITY //-->
     <string name="auth_activity_title">Facebook-Authentifizierung</string>
