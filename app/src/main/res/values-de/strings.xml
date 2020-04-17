@@ -51,7 +51,7 @@
     <string name="pref_about_rate_app_title">Bewerte die App</string>
     <string name="pref_about_privacy_title">Datenschutz</string>
     <string name="pref_about_license_title">Lizenz</string>
-    <string name="pref_about_license_summary">GNU General Public License v3.0</string>
+    <string name="pref_about_license_summary">GNU GPL Lizenz v3.0</string>
     <string name="pref_about_version_title">Version</string>
     <!-- CALENDAR SYNC //-->
     <string name="calendar_not_responded_title">Veranstaltungen, auf die ich nicht reagiert habe</string>
