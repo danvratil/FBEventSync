@@ -5,19 +5,19 @@
     <string name="main_version_label">Version : %s</string>
     <string name="main_tagline">Maintenant avec la synchronisation des anniversaires. Aaawww yeah !</string>
     <string name="main_add_account_btn">Ajouter un compte</string>
-    <string name="main_show_logs_btn">Voir les logs</string>
+    <string name="main_show_logs_btn">Voir l\'historique</string>
     <string name="main_configure_calendars_btn">Configurer les calendriers</string>
     <string name="main_configure_sync_btn">Configurer les préférences de synchronisation</string>
     <string name="main_configure_misc_btn">Autres configurations</string>
     <string name="main_sync_now">Synchroniser maintenant</string>
     <string name="main_sync_in_progress">Synchronisation…</string>
     <string name="perms_activity_title">Demande de permissions</string>
-    <string name="log_activity_title">Logs</string>
-    <string name="log_clear_log_action">Effacer les logs</string>
+    <string name="log_activity_title">Journaux</string>
+    <string name="log_clear_log_action">Effacer les journaux</string>
     <string name="log_send_to_dev_action">Envoyer au développeur</string>
-    <string name="log_send_email_action">Envoi de l\'email…</string>
+    <string name="log_send_email_action">Envoi du courriel…</string>
     <string name="log_email_template">[Décrivez votre problème ici, de préférence en anglais, merci]</string>
-    <string name="log_error_sending_log_toast">Échec lors de l\'envoi des logs : Impossible de lire le fichier de log</string>
+    <string name="log_error_sending_log_toast">Échec lors de l\'envoi des journaux : impossible de lire le journal</string>
     <string name="auth_activity_title">S\'authentifier avec Facebook</string>
     <string name="auth_account_creation_error_toast">Erreur lors de l\'authentification</string>
     <string name="auth_account_creation_success_toast">Compte ajouté</string>
@@ -37,12 +37,12 @@
     <string name="pref_sync_settings_title">Préférences de Synchronisation</string>
     <string name="pref_sync_settings_summary">Configurer à quelle fréquence et quand synchroniser les événements.</string>
     <string name="pref_sync_frequency_title">Fréquence de synchronisation</string>
-    <string name="pref_sync_frequency_summary">A quelle fréquence les événements Facebook doivent-ils être synchronisés ?</string>
+    <string name="pref_sync_frequency_summary">À quelle fréquence les événements Facebook doivent-ils être synchronisés \?</string>
     <string name="pref_sync_fblink_title">Ajouter un lien vers Facebook</string>
     <string name="pref_sync_fblink_summary">Ajouter un lien vers Facebook sur les descriptions d\'événement.</string>
-    <string name="pref_language_title">Langage</string>
-    <string name="pref_language_summary">Langage pour les anniversaires et événements</string>
-    <string name="pref_language_default_entry">Langage de l\'appareil</string>
+    <string name="pref_language_title">Langue</string>
+    <string name="pref_language_summary">Langue pour les anniversaires et événements</string>
+    <string name="pref_language_default_entry">Langue de l\'appareil</string>
     <string name="pref_misc_settings_title">Divers</string>
     <string name="pref_misc_report_bug_title">Signaler un bug</string>
     <string name="pref_misc_contact_developer_title">Contacter le développeur</string>
@@ -82,11 +82,11 @@
     <string name="nav_sync_all">Tout Synchroniser</string>
     <string name="nav_configure_calendars">Configurer les calendriers</string>
     <string name="nav_configure_sync">Configurer la synchronisation</string>
-    <string name="nav_sync_logs">Synchronisation des Journaux</string>
+    <string name="nav_sync_logs">Synchronisation des journaux</string>
     <string name="nav_report_bug">Signaler un Bug</string>
     <string name="nav_faq">FAQ</string>
     <string name="nav_about">À propos</string>
-    <string name="auth_remove_account_title">Supprimer le compte %s ?</string>
+    <string name="auth_remove_account_title">Retirer le compte %s \?</string>
     <string name="auth_remove_account_text">Le compte ne sera supprimé que de cette application, votre compte Facebook et les autres applications ne seront pas affectés.</string>
     <string name="about_activity_title">À propos</string>
     <string name="pref_about_rate_app_title">Noter l\'application</string>
@@ -99,12 +99,12 @@
         <item quantity="one">%d jour avant à %s</item>
         <item quantity="other">%d jours avant à %s</item>
     </plurals>
-    <string name="allday_reminder_daysBeforeAt">"jours avant "</string>
+    <string name="allday_reminder_daysBeforeAt">jours avant à</string>
     <plurals name="pref_reminder_anyminutes">
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
-    <string name="birthday_event_title">%1$s\'s Anniversaire</string>
+    <string name="birthday_event_title">Anniversaire de %1$s</string>
     <string name="main_fbpage_link">Suivez notre &lt;a href=https://www.facebook.com/294071114749578&gt;page Facebook&lt;/a&gt;pour recevoir les dernières actualités et informations à propos des mises à jour !</string>
     <string name="nav_homepage">Page d\'accueil</string>
 </resources>
