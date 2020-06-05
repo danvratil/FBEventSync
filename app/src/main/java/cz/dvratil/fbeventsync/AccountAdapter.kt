@@ -72,9 +72,9 @@ class AccountAdapter(private var mContext: Context) : RecyclerView.Adapter<Accou
         holder.name.text = account.account.name
         holder.syncBtn.isEnabled = !account.isSyncing
         holder.syncIndicator.visibility = if (account.isSyncing) View.VISIBLE else View.GONE
-        AvatarProvider.getAvatar(mContext, account.account, {
+        /*AvatarProvider.getAvatar(mContext, account.account, {
             holder.avatarView.setImageDrawable(it)
-        })
+        })*/
 
         holder.syncBtn.setOnClickListener {
             CalendarSyncAdapter.requestSync(mContext, account.account)

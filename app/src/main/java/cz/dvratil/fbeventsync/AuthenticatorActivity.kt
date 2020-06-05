@@ -53,10 +53,10 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     data class Cookies(val cookies: String = String(), val url: String = String())
 
     private lateinit var mAccountManager: AccountManager
-    private var mAccessToken = String()
     private var mCookies = Cookies()
     private var mUserId = String()
     private var mKey = String()
+    private var mAccountName = String()
 
     private lateinit var mWebView: WebView
     private lateinit var mWebClient: AuthenticatorWebView
@@ -64,17 +64,10 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
     private lateinit var mProgressLabel: TextView
     private lateinit var mLogger: Logger
 
-    /*
     private fun linkExtractionFailed(s: String) {
         mLogger.debug("AUTH", "Link extraction failed: $s")
         Toast.makeText(this, "Authentication error: $s", Toast.LENGTH_LONG)
                 .show()
-
-        mWebClient.unsubscribeFromEvent(mWebView) {
-            if (!DEBUG_WEBVIEW) {
-                finish()
-            }
-        }
     }
 
     private fun linkExtracted(s: String) {
@@ -85,14 +78,25 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
         if (key == null || key.isEmpty()) {
             linkExtractionFailed("Failed to parse calendar URI.")
         } else {
-            mWebClient.unsubscribeFromEvent(mWebView) {
-                mKey = key
-                mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
-                fetchUserInfo(mAccessToken)
+            mKey = key
+
+            // Once we've reached this point we no longer need the webview, so reset cookies
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                CookieManager.getInstance().removeAllCookies(null)
+            } else {
+                CookieManager.getInstance().removeAllCookie()
             }
+
+            createAccount()
         }
     }
-    */
+
+    private fun userNameFetched(s: String) {
+        mLogger.debug("AUTH", "Username detected!")
+        mAccountName = s
+        mProgressLabel.text = getString(R.string.auth_progress_retrieving_calendars)
+        mWebClient.loadEventsPage(mWebView)
+    }
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
@@ -130,24 +134,13 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             }
 
             override fun onLoginSuccess(webView: WebView, uri: Uri) {
-                mLogger.debug("AUTH", "Reached login_success with token")
+                mLogger.debug("AUTH", "Logged in.")
                 mWebView.visibility = if (DEBUG_WEBVIEW) View.VISIBLE else View.GONE
                 mProgressBar.visibility = if (DEBUG_WEBVIEW) View.GONE else View.VISIBLE
                 mProgressLabel.visibility = if (DEBUG_WEBVIEW) View.GONE else View.VISIBLE
-                mProgressLabel.text = getString(R.string.auth_progress_retrieving_calendars)
+                mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
 
-                val token = Uri.parse("http://localhost/?${uri.fragment}")?.getQueryParameter("access_token")
-                if (token == null) {
-                    mLogger.error("AUTH", "Failed to extract access_token, the URI was '$uri'")
-                    Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
-                            .show()
-                    if (!DEBUG_WEBVIEW) {
-                        finish()
-                    }
-                    return
-                }
                 mCookies = Cookies(CookieManager.getInstance().getCookie(uri.toString()), uri.toString())
-                mAccessToken = token
 
                 var cuser = mCookies.cookies
                         .split(';')
@@ -165,25 +158,41 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
                 }
 
                 mUserId = cuser
-
-                mProgressLabel.text = getString(R.string.auth_progress_retrieving_userinfo)
-                fetchUserInfo(mAccessToken)
             }
-/*
-            override fun onEventPageReached(webView: WebView, uri: Uri) {
-                subscribeToEvent(webView,
-                        { findExportUri(webView, { linkExtracted(it) }, { linkExtractionFailed(it) }) },
-                        { linkExtractionFailed(it) }
-                )
+
+            override fun onHomePageReached(webView: WebView, uri: Uri) {
+                mLogger.debug("AUTH", "Home page loaded.")
+                loadProfilePage(mWebView) {
+                    mLogger.error("AUTH", it)
+                    Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_LONG).show()
+                    if (!DEBUG_WEBVIEW) {
+                        finish()
+                    }
+                }
+            }
+
+            override fun onUserPageReached(webView: WebView, uri: Uri) {
+                mLogger.debug("AUTH", "User page loaded.")
+                findUserName(webView,
+                        { userNameFetched(it) },
+                        {
+                            Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
+                                .show()
+                            if (!DEBUG_WEBVIEW) {
+                                finish()
+                            }
+                        })
             }
 
             override fun onEventsPageReached(webView: WebView, uri: Uri) {
+                mLogger.debug("AUTH", "Events page loaded.")
                 findWebCalUri(webView,
                         { linkExtracted(it) },
                         { webView.loadUrl("https://www.facebook.com/events/${AuthenticatorActivity.EXPORT_EVENT_FBID}") }
                 )
             }
-*/
+
+
         }
 
         mWebView.webViewClient = mWebClient
@@ -212,91 +221,18 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
 
         mWebView.loadUrl(Uri.Builder()
                     .scheme("https")
-                    .authority("www.facebook.com")
-                    .path("/v2.9/dialog/oauth")
-                    .appendQueryParameter("client_id", getString(R.string.facebook_app_id))
-                    .appendQueryParameter("redirect_uri", "https://www.facebook.com/connect/login_success.html")
-                    .appendQueryParameter("response_type", "token")
-                    .appendQueryParameter("scopes", TOKEN_SCOPE)
+                    .authority("mbasic.facebook.com")
+                    .path("login.php")
                     .build().toString())
     }
 
-    private fun fetchUserInfo(accessToken: String) {
+    private fun createAccount() {
         if (isFinishing) {
             return
         }
-
-        // Once we've reached this point we no longer need the webview, so reset cookies
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().removeAllCookies(null)
-        } else {
-            CookieManager.getInstance().removeAllCookie()
-        }
-
-        val activity = this
-        Graph.me(accessToken, object : JsonHttpResponseHandler() {
-            override fun onSuccess(statusCode: Int, headers: Array<Header>?, response: JSONObject?) {
-                if (activity.isFinishing) {
-                    return
-                }
-                if (response != null) {
-                    try {
-                        val accountName = response.getString("name")
-                        createAccount(accessToken, accountName)
-                    } catch (e: org.json.JSONException) {
-                        mLogger.error("AUTH", "JSON exception: ${e.message}")
-                        Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast),
-                                Toast.LENGTH_SHORT)
-                                .show()
-                        activity.finish()
-                    }
-                } else {
-                    mLogger.error("AUTH", "Empty fetchUserInfo response")
-                    Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast),
-                            Toast.LENGTH_SHORT)
-                            .show()
-                    activity.finish()
-                }
-
-            }
-
-            override fun onFailure(statusCode: Int, headers: Array<Header>?, throwable: Throwable, errorResponse: JSONObject?) {
-                if (activity.isFinishing) {
-                    return
-                }
-                if (errorResponse != null) {
-                    try {
-                        val err = errorResponse.getJSONObject("error")
-                        val errCode = err.getInt("code")
-                        if (errCode == 4) {
-                            mLogger.error("AUTH", "FetchUserInfo: rate limiting error")
-                            Toast.makeText(activity, getString(R.string.auth_rate_limiting_toast), Toast.LENGTH_SHORT)
-                                    .show()
-                            activity.finish()
-                            return
-                        }
-                    } catch (e: org.json.JSONException) {
-                        // pass
-                    }
-
-                    mLogger.error("AUTH", "FetchUserInfo failure: $errorResponse")
-                } else {
-                    mLogger.error("AUTH", "FetchUserInfo failure: unknown error")
-                }
-                Toast.makeText(activity, getString(R.string.auth_account_creation_error_toast), Toast.LENGTH_SHORT)
-                        .show()
-                activity.finish()
-            }
-        })
-    }
-
-    private fun createAccount(accessToken: String, accountName: String) {
-        if (isFinishing) {
-            return
-        }
-        mLogger.debug("AUTH", "Creating account $accountName")
+        mLogger.debug("AUTH", "Creating account $mAccountName")
         val intent = intent
-        val account = Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
+        val account = Account(mAccountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
         if (intent.getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
             mAccountManager.addAccountExplicitly(account, null, null)
 
@@ -304,7 +240,7 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             ContentResolver.setSyncAutomatically(account, CalendarContract.AUTHORITY, true)
         }
 
-        if (/*mKey.isEmpty() ||*/ mUserId.isEmpty()) {
+        if (mKey.isEmpty() || mUserId.isEmpty()) {
             mLogger.error("AUTH", "Failed to retrieve UID ($mUserId)")
             Toast.makeText(this, getString(R.string.auth_calendar_uri_error_toast), Toast.LENGTH_SHORT)
                     .show()
@@ -314,24 +250,20 @@ class AuthenticatorActivity : AccountAuthenticatorActivity() {
             return
         }
         mAccountManager.setUserData(account, Authenticator.DATA_BDAY_URI, null) // clear the legacy storage
-        /*mAccountManager.setAuthToken(account, Authenticator.FB_OAUTH_TOKEN, accessToken)
-        mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, mKey)*/
+        mAccountManager.setAuthToken(account, Authenticator.FB_KEY_TOKEN, mKey)
         mAccountManager.setAuthToken(account, Authenticator.FB_UID_TOKEN, mUserId)
         mAccountManager.setUserData(account, Authenticator.FB_COOKIES, mCookies.cookies)
 
         val result = Intent()
-        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, accountName)
+        result.putExtra(AccountManager.KEY_ACCOUNT_NAME, mAccountName)
         result.putExtra(AccountManager.KEY_ACCOUNT_TYPE, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE))
         val authTokenType = intent.getStringExtra(ARG_AUTH_TOKEN_TYPE)
-        /*if (authTokenType != null && authTokenType == Authenticator.FB_KEY_TOKEN) {
+        if (authTokenType != null && authTokenType == Authenticator.FB_KEY_TOKEN) {
             result.putExtra(AccountManager.KEY_AUTHTOKEN, mKey)
-        } else */
-        if (authTokenType != null && authTokenType == Authenticator.FB_UID_TOKEN) {
+        } else if (authTokenType != null && authTokenType == Authenticator.FB_UID_TOKEN) {
             result.putExtra(AccountManager.KEY_AUTHTOKEN, mUserId)
         } else if (authTokenType != null && authTokenType == Authenticator.FB_COOKIES) {
             result.putExtra(AccountManager.KEY_AUTHTOKEN, mCookies.cookies)
-        } else {
-            result.putExtra(AccountManager.KEY_AUTHTOKEN, accessToken)
         }
 
         setAccountAuthenticatorResult(result.extras)
