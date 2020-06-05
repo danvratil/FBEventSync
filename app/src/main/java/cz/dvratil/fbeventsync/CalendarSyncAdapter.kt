@@ -172,6 +172,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             calendars.initialize(syncContext)
         }
 
+        /*
         try {
             if (syncEventsViaWeb(calendars, syncContext)) {
                 calendars.forEach {
@@ -191,8 +192,8 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
             createAuthNotification()
             return
         }
+        */
 
-        /*
         if (syncEventsViaICal(calendars)) {
             calendars.forEach {
                 if (it.value.type() != FBCalendar.CalendarType.TYPE_BIRTHDAY) {
@@ -206,7 +207,6 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
                 calendars[FBCalendar.CalendarType.TYPE_BIRTHDAY]!!.finalizeSync()
             }
         }
-        */
 
         mSyncContext = null
 
@@ -217,7 +217,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         EVENTS,
         BIRTHDAYS
     }
-/*
+
     private fun getICalSyncURI(uriType: ICalURIType): Uri? {
         val syncContext = mSyncContext ?: return null
         val accManager = AccountManager.get(syncContext.context)
@@ -283,7 +283,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         }
 
     }
-*/
+/*
     private fun syncEventsViaWeb(calendars: FBCalendar.Set, context: SyncContext): Boolean {
         val accountManager = AccountManager.get(context.context)
         val cookies = accountManager.getUserData(context.account, Authenticator.FB_COOKIES)
@@ -333,7 +333,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
         logger.debug(TAG, "Web sync of birthdays done")
         return true
     }
-/*
+*/
     private fun syncEventsViaICal(calendars: FBCalendar.Set): Boolean {
         val uri = getICalSyncURI(ICalURIType.EVENTS) ?: return false
 
@@ -400,7 +400,7 @@ class CalendarSyncAdapter(context: Context, autoInitialize: Boolean) : AbstractT
 
         return success
     }
-*/
+
     private fun removeOldBirthdayCalendar(context: SyncContext) {
         // remove old "birthday" calendar
         logger.debug(TAG, "Removing legacy birthday calendar")
