@@ -77,7 +77,7 @@ object PreferencesMigrator {
         new.setAttendingCalendarAllDayReminders(
                 old.getStringSet(
                         context.getString(R.string.pref_calendar_attending_allday_reminders),
-                        new.attendingCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                        new.attendingCalendarAllDayReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
         new.setAttendingCalendarColor(old.getInt(context.getString(R.string.pref_calendar_attending_color),
                 new.attendingCalendarColor()))
@@ -85,12 +85,12 @@ object PreferencesMigrator {
                 new.attendingCalendarEnabled()))
         new.setAttendingCalendarReminders(old.getStringSet(
                     context.getString(R.string.pref_calendar_attending_reminders),
-                    new.attendingCalendarReminders().map{ it.serialize() }.toSet())
+                    new.attendingCalendarReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
 
         new.setBirthdayCalendarAllDayReminders(old.getStringSet(
                     context.getString(R.string.pref_calendar_birthday_allday_reminders),
-                    new.birthdayCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                    new.birthdayCalendarAllDayReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
         new.setBirthdayCalendarColor(old.getInt(context.getString(R.string.pref_calendar_birthday_color),
                 new.birthdayCalendarColor()))
@@ -99,7 +99,7 @@ object PreferencesMigrator {
 
         new.setDeclinedCalendarAllDayReminders(
                     old.getStringSet(context.getString(R.string.pref_calendar_declined_allday_reminders),
-                    new.declinedCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                    new.declinedCalendarAllDayReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
         new.setDeclinedCalendarColor(old.getInt(context.getString(R.string.pref_calendar_declined_color),
                 new.declinedCalendarColor()))
@@ -107,35 +107,35 @@ object PreferencesMigrator {
                 new.declinedCalendarEnabled()))
         new.setDeclinedCalendarReminders(
                     old.getStringSet(context.getString(R.string.pref_calendar_declined_reminders),
-                    new.declinedCalendarReminders().map{ it.serialize() }.toSet())
+                    new.declinedCalendarReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
 
         new.setMaybeAttendingCalendarAllDayReminders(old.getStringSet(context.getString(R.string.pref_calendar_tentative_allday_reminders),
-                new.maybeAttendingCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                new.maybeAttendingCalendarAllDayReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
         new.setMaybeAttendingCalendarColor(old.getInt(context.getString(R.string.pref_calendar_tentative_color),
                 new.maybeAttendingCalendarColor()))
         new.setMaybeAttendingCalendarEnabled(old.getBoolean(context.getString(R.string.pref_calendar_tentative_enabled),
                 new.maybeAttendingCalendarEnabled()))
         new.setMaybeAttendingCalendarReminders(old.getStringSet(context.getString(R.string.pref_calendar_tentative_reminders),
-                new.maybeAttendingCalendarReminders().map{ it.serialize() }.toSet())
+                new.maybeAttendingCalendarReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
 
         new.setNotRespondedCalendarAllDayReminders(old.getStringSet(context.getString(R.string.pref_calendar_not_responded_allday_reminders),
-                new.notRespondedCalendarAllDayReminders().map{ it.serialize() }.toSet())
+                new.notRespondedCalendarAllDayReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
         new.setNotRespondedCalendarColor(old.getInt(context.getString(R.string.pref_calendar_not_responded_color),
                 new.notRespondedCalendarColor()))
         new.setNotRespondedCalendarEnabled(old.getBoolean(context.getString(R.string.pref_calendar_not_responded_enabled),
                 new.notRespondedCalendarEnabled()))
         new.setNotRespondedCalendarReminders(old.getStringSet(context.getString(R.string.pref_calendar_not_responded_reminders),
-                new.notRespondedCalendarReminders().map{ it.serialize() }.toSet())
+                new.notRespondedCalendarReminders().map{ it.serialize() }.toSet())!!
                 .map{ FBReminder.fromString(it) })
 
         new.setFbLink(old.getBoolean(context.getString(R.string.pref_sync_fblink), new.fbLink()))
-        new.setLanguage(old.getString(context.getString(R.string.pref_language), new.language()))
+        new.setLanguage(old.getString(context.getString(R.string.pref_language), new.language())!!)
         new.setLastVersion(old.getInt(context.getString(R.string.cfg_last_version), new.lastVersion()))
         new.setSyncsPerHour(old.getInt(context.getString(R.string.cfg_syncs_per_hour), new.syncsPerHour()))
-        new.setSyncFrequency(Integer.parseInt(old.getString(context.getString(R.string.pref_sync_frequency), new.syncFrequency().toString())))
+        new.setSyncFrequency(Integer.parseInt(old.getString(context.getString(R.string.pref_sync_frequency), new.syncFrequency().toString())!!))
     }
 }

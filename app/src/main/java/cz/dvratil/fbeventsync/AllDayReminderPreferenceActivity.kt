@@ -37,7 +37,7 @@ class AllDayReminderPreferenceActivity : AppCompatActivity()
     class AllDayReminderAdapter(context: AllDayReminderPreferenceActivity, layoutId: Int, textViewId: Int)
         : ArrayAdapter<FBReminder>(context, layoutId, textViewId) {
 
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = super.getView(position, convertView, parent)
             view.findViewById<Button>(R.id.allday_reminder_remove_button).setOnClickListener {
                 val activity = context as AllDayReminderPreferenceActivity
@@ -64,7 +64,7 @@ class AllDayReminderPreferenceActivity : AppCompatActivity()
             setDisplayHomeAsUpEnabled(true)
         }
 
-        m_calendarType = when (intent.extras.getString("calendarType")) {
+        m_calendarType = when (intent.extras?.getString("calendarType")) {
             getString(R.string.pref_calendar_attending_allday_reminders) -> FBCalendar.CalendarType.TYPE_ATTENDING
             getString(R.string.pref_calendar_tentative_allday_reminders) -> FBCalendar.CalendarType.TYPE_MAYBE
             getString(R.string.pref_calendar_not_responded_allday_reminders) -> FBCalendar.CalendarType.TYPE_NOT_REPLIED

@@ -58,8 +58,7 @@ class PreferencesProvider: ContentProvider() {
             sUriMatcher.addURI(AUTHORITY, "float/*", ValueType.FLOAT.id())
         }
 
-        fun buildUri(key: String, type: ValueType) = Uri.parse("content://$AUTHORITY/${type.typeName()}/$key")
-
+        fun buildUri(key: String, type: ValueType): Uri = Uri.parse("content://$AUTHORITY/${type.typeName()}/$key")
     }
 
     private lateinit var mStoreHelper: StoreHelper
@@ -70,17 +69,15 @@ class PreferencesProvider: ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
-
-        mStoreHelper = StoreHelper(context, dbName)
-
+        mStoreHelper = StoreHelper(context!!, dbName)
         return true
     }
 
-    override fun insert(uri: Uri, values: ContentValues): Uri? {
+    override fun insert(uri: Uri, values: ContentValues?): Uri? {
         val db = mStoreHelper.writableDatabase
         val table = matchTable(uri) ?: return null
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE)
-        context.contentResolver.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return uri
     }
 
@@ -90,11 +87,11 @@ class PreferencesProvider: ContentProvider() {
         return db.query(table, projection, selection, selectionArgs, null, null, null, null)
     }
 
-    override fun update(uri: Uri, values: ContentValues, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
         val db = mStoreHelper.writableDatabase
         val table = matchTable(uri) ?: return -1
         var res = db.update(table, values, selection, selectionArgs)
-        context.contentResolver.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return res
     }
 
@@ -102,9 +99,9 @@ class PreferencesProvider: ContentProvider() {
         val db = mStoreHelper.writableDatabase
         val table = matchTable(uri) ?: return -1
         var res = db.delete(table, selection, selectionArgs)
-        context.contentResolver.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return res
     }
 
-    override fun getType(uri: Uri?): String? = null
+    override fun getType(uri: Uri): String? = null
 }

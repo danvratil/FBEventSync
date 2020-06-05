@@ -59,7 +59,7 @@ open class FBEvent protected constructor() {
                 context.contentUri(CalendarContract.Events.CONTENT_URI),
                 values)
         if (uri != null && mCalendar != null) {
-            val eventId = uri.lastPathSegment.toLong()
+            val eventId = uri.lastPathSegment!!.toLong()
             val reminders = if (isAllDay() == true) mCalendar!!.allDayReminderIntervals else mCalendar!!.reminderIntervals
             if (reminders.isNotEmpty()) {
                 createReminders(context, eventId, reminders)

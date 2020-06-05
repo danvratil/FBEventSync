@@ -41,7 +41,7 @@ class Preferences(private var mContext: Context){
 
     internal fun syncFrequency(): Int {
         return Integer.parseInt(mPrefs.getString(mContext.getString(R.string.pref_sync_frequency),
-                mContext.getString(R.string.pref_sync_frequency_default_value)))
+                mContext.getString(R.string.pref_sync_frequency_default_value))!!)
     }
 
     internal fun setSyncFrequency(frequency: Int) {
