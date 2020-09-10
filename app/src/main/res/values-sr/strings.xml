@@ -12,7 +12,7 @@
     <string name="main_configure_sync_btn">Podesi prefrence sinhronizacije</string>
     <string name="main_configure_misc_btn">Podesi ostalo</string>
     <string name="main_sync_now">Sinhronizuj sad</string>
-    <string name="main_sync_in_progress">Sinhronizacija u toku...</string>
+    <string name="main_sync_in_progress">Sinhronizacija u toku…</string>
     <string name="main_fbpage_link">Prati našu &lt;a href=https://www.facebook.com/294071114749578&gt;Facebook stranicu&lt;/a&gt; radi zadnjih novosti i informacija o ažuriranjima!</string>
     <string name="nav_sync_all">Sinhronizuj sve</string>
     <string name="nav_configure_calendars">Podesi Kalendare</string>
@@ -74,13 +74,13 @@
     <plurals name="pref_reminder_allday_description">
         <item quantity="one">%d dan pre nego što %s</item>
         <item quantity="few">%d dana pre nego što %s</item>
-        <item quantity="other">"%d dana pre nego što  %s"</item>
+        <item quantity="other">%d dana pre nego što %s</item>
     </plurals>
     <string name="allday_reminder_daysBeforeAt">dana pre nego što na</string>
     <plurals name="pref_reminder_anyminutes">
         <item quantity="one">%d minut</item>
         <item quantity="few">%d minuta</item>
-        <item quantity="other">"%d minuta "</item>
+        <item quantity="other">%d minuta</item>
     </plurals>
     <string name="pref_reminder_0minutes_entry">0 minuta</string>
     <string name="pref_reminder_5minutes_entry">5 minuta</string>
@@ -103,4 +103,5 @@
     <string name="pref_sync_frequency_12hours_entry">12 sati</string>
     <string name="pref_sync_frequency_24hours_entry">24 sata</string>
     <string name="pref_general_settings_title">Opšte</string>
+    <string name="birthday_event_title">%1$s ima rođendan</string>
 </resources>
