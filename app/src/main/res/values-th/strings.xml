@@ -1,2 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="nav_faq">คำถามที่พบบ่อย</string>
+    <string name="main_add_account_btn">เพิ่มบัญชีผู้ใช้</string>
+</resources>
