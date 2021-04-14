@@ -99,7 +99,7 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
             onLoginPageReached(view, uri)
         } else if (uri?.path == "/home.php") {
             onHomePageReached(view, uri)
-        } else if (uri?.path == "/events/") {
+        } else if (uri?.path == "/events/calendar") {
             onEventsPageReached(view, uri)
         } else if (uri.path == mProfileUri?.path) {
             onUserPageReached(view, uri)
@@ -160,7 +160,7 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
         // Use a desktop user-agent to make sure we get a desktop version, otherwise who
         // knows what response we might get...
         view.settings.userAgentString = "Mozilla/5.0 (X11;Linux x86_64;rv:58.0) Gecko/20100101 Firefox/58.0"
-        view.loadUrl("https://www.facebook.com/events")
+        view.loadUrl("https://www.facebook.com/events/calendar")
     }
 
     fun findWebCalUri(webView: WebView, success: (String) -> Unit, failure: (String) -> Unit) {
