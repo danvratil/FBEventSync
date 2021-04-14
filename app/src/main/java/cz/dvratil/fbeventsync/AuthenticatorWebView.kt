@@ -95,7 +95,7 @@ abstract class AuthenticatorWebView(val activity: Activity) : WebViewClient() {
         mLastUri = url
 
         val uri = Uri.parse(url)
-        if (uri?.path?.contains("/login.php") == true) {
+        if (uri?.path?.contains("/login.php") == true || uri?.path?.contains("/cookie/consent-page") == true) {
             onLoginPageReached(view, uri)
         } else if (uri?.path == "/home.php") {
             onHomePageReached(view, uri)
