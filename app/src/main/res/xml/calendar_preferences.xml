@@ -56,6 +56,7 @@
             app:showDialog="false" />
     </PreferenceCategory>
 
+    <!--
     <PreferenceCategory android:title="@string/calendar_not_responded_title">
         <SwitchPreferenceCompat
             android:defaultValue="true"
@@ -82,6 +83,7 @@
             android:title="@string/pref_calendar_color_title"
             app:showDialog="false" />
     </PreferenceCategory>
+    //-->
 
     <PreferenceCategory android:title="@string/calendar_declined_title">
         <SwitchPreferenceCompat
@@ -110,6 +112,7 @@
             app:showDialog="false" />
     </PreferenceCategory>
 
+    <!--
     <PreferenceCategory android:title="@string/calendar_birthday_title">
         <SwitchPreferenceCompat
             android:defaultValue="true"
@@ -130,4 +133,5 @@
             android:title="@string/pref_calendar_color_title"
             app:showDialog="false" />
     </PreferenceCategory>
+    //-->
 </PreferenceScreen>

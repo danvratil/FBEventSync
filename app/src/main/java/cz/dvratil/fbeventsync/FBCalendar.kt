@@ -217,8 +217,8 @@ open class FBCalendar protected constructor(protected var mContext: SyncContext,
             FBCalendar.CalendarType.TYPE_ATTENDING -> mContext.preferences.attendingCalendarEnabled()
             FBCalendar.CalendarType.TYPE_MAYBE -> mContext.preferences.maybeAttendingCalendarEnabled()
             FBCalendar.CalendarType.TYPE_DECLINED -> mContext.preferences.declinedCalendarEnabled()
-            FBCalendar.CalendarType.TYPE_NOT_REPLIED -> mContext.preferences.notRespondedCalendarEnabled()
-            FBCalendar.CalendarType.TYPE_BIRTHDAY -> mContext.preferences.birthdayCalendarEnabled()
+            FBCalendar.CalendarType.TYPE_NOT_REPLIED -> false /*mContext.preferences.notRespondedCalendarEnabled()*/
+            FBCalendar.CalendarType.TYPE_BIRTHDAY -> false /*mContext.preferences.birthdayCalendarEnabled()*/
         }
 
         mContext.logger.debug(TAG, "Calendar ${name()} is enabled? $isEnabled")

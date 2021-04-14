@@ -134,8 +134,8 @@ class SettingsActivity : FragmentActivity() {
             installColorDialogHandler(R.string.pref_calendar_attending_color)
             installColorDialogHandler(R.string.pref_calendar_tentative_color)
             installColorDialogHandler(R.string.pref_calendar_declined_color)
-            installColorDialogHandler(R.string.pref_calendar_not_responded_color)
-            installColorDialogHandler(R.string.pref_calendar_birthday_color)
+            //installColorDialogHandler(R.string.pref_calendar_not_responded_color)
+            //installColorDialogHandler(R.string.pref_calendar_birthday_color)
         }
 
         private fun installColorDialogHandler(keyId: Int) {
