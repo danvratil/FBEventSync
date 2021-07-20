@@ -1,2 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="pref_sync_fblink_title">Facebook\'a bağlantı ekle</string>
+    <string name="pref_sync_frequency_summary">Facebook etkinlikleriniz ne sıklıkla senkronize edilmelidir\?</string>
+    <string name="pref_sync_settings_summary">Etkinliklerin ne sıklıkta ve ne zaman senkronize edildiğini yapılandırın.</string>
+    <string name="pref_sync_frequency_title">Senkronizasyon Sıklığı</string>
+    <string name="full_app_name">Facebook için Etkinlik Senkronizasyonu</string>
+    <string name="app_name">FB Etkinlik Senkronizasyonu</string>
+    <string name="pref_sync_settings_title">Senkronize Etme Ayarları</string>
+    <string name="pref_activity_title">Ayarlar</string>
+    <string name="sync_ntf_needs_reauthentication_description">Facebook ile yeniden kimlik doğrulaması yapmak için buraya dokunun</string>
+    <string name="sync_ntf_needs_reauthentication_title">Facebook için Etkinlik Senkronizasyonu\'nun giriş yapması gerekiyor</string>
+    <string name="calendar_birthday_title">Arkadaşların Doğum Günleri</string>
+    <string name="calendar_attending_title">Katıldığım Etkinlikler</string>
+    <string name="calendar_tentative_title">Katılabileceğim Etkinlikler</string>
+    <string name="calendar_declined_title">Katılmadığım Etkinlikler</string>
+    <string name="calendar_not_responded_title">Cevap Vermediğim Olaylar</string>
+    <string name="pref_about_version_title">Sürüm</string>
+    <string name="pref_about_license_summary">GNU Genel Kamu Lisansı v3.0</string>
+    <string name="pref_about_license_title">Lisans</string>
+    <string name="pref_about_privacy_title">Gizlilik</string>
+    <string name="pref_about_rate_app_title">Uygulamayı oyla</string>
+    <string name="about_activity_title">Hakkında</string>
+    <string name="auth_remove_account_text">Bu hesap yalnızca uygulamadan kaldırılacak, Facebook hesabınız ve diğer uygulamalar etkilenmez.</string>
+    <string name="auth_remove_account_title">%s hesabı kaldırılsın mı\?</string>
+    <string name="auth_calendar_uri_error_toast">Takvim URI\'si alınamadı</string>
+    <string name="auth_progress_retrieving_userinfo">Kullanıcı bilgileri alınıyor…</string>
+    <string name="auth_progress_retrieving_calendars">Takvimler alınıyor…</string>
+    <string name="auth_progress_authenticating_with_fb">Facebook ile kimlik doğrulanıyor…</string>
+    <string name="auth_rate_limiting_toast">Facebook\'un API\'si şu anda sorun yaşıyor. Lütfen daha sonra yeniden deneyin.</string>
+    <string name="auth_account_creation_success_toast">Hesap eklendi</string>
+    <string name="auth_account_creation_error_toast">Kimlik doğrulama sırasında hata oluştu</string>
+    <string name="auth_activity_title">Facebook ile kimliğini doğrula</string>
+    <string name="log_error_sending_log_toast">Kayıtlar gönderilemedi: Kayıtların dosyası okunamıyor</string>
+    <string name="log_email_template">[Lütfen, sorununuzu burada, tercihe göre İngilizce olarak açıklayın]</string>
+    <string name="log_send_email_action">E-posta Gönder…</string>
+    <string name="log_send_to_dev_action">Geliştiriciye Gönder</string>
+    <string name="log_clear_log_action">Kayıtları Temizle</string>
+    <string name="log_activity_title">Kayıtların Görünümü</string>
+    <string name="perms_activity_title">İzin Talebi</string>
+    <string name="nav_homepage">Ana Sayfa</string>
+    <string name="nav_about">Hakkında</string>
+    <string name="nav_faq">SSS</string>
+    <string name="nav_report_bug">Hata Bildir</string>
+    <string name="nav_sync_logs">Kayıtları Senkronize Et</string>
+    <string name="nav_configure_sync">Senkronizasyonu Yapılandır</string>
+    <string name="nav_configure_calendars">Takvimleri Yapılandır</string>
+    <string name="nav_sync_all">Tümünü Senkronize Et</string>
+    <string name="main_fbpage_link">Güncellemeler hakkında en son haberleri ve bilgileri almak için &lt;a href=https://www.facebook.com/294071114749578&gt;Facebook sayfamızı&lt;/a&gt; takip edin!</string>
+    <string name="main_sync_in_progress">Senkronize ediliyor…</string>
+    <string name="main_sync_now">Şimdi Senkronize Et</string>
+    <string name="main_configure_misc_btn">Çeşitli Yapılandırma</string>
+    <string name="main_configure_sync_btn">Senkronizasyon Tercihlerini Yapılandırın</string>
+    <string name="main_configure_calendars_btn">Takvimleri Yapılandır</string>
+    <string name="main_show_logs_btn">Kayıtları Göster</string>
+    <string name="main_add_account_btn">Hesap Ekle</string>
+    <string name="main_version_label">Sürüm: %s</string>
+    <string name="birthday_event_title">%1$s\'in Doğum Günü</string>
+    <string name="btn_remove">Kaldır</string>
+    <string name="btn_cancel">İptal et</string>
+    <string name="btn_save">Kaydet</string>
+</resources>
