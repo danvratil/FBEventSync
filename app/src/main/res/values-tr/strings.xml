@@ -98,4 +98,8 @@
     <string name="pref_language_summary">Doğum günleri ve etkinlikler için dil</string>
     <string name="pref_language_title">Dil</string>
     <string name="pref_sync_fblink_summary">Etkinlik açıklamalarına Facebook\'a bir bağlantı ekleyin.</string>
+    <plurals name="pref_reminder_anyminutes">
+        <item quantity="one">%d dakika</item>
+        <item quantity="other">%d dakika</item>
+    </plurals>
 </resources>
