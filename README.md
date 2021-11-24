@@ -1,11 +1,23 @@
-# Event Sync for Facebook
+# PROJECT ARCHIVED
 
-[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
-     alt="Get it on Google Play"
-     height="80">](https://play.google.com/store/apps/details?id=cz.dvratil.fbeventsync)
-[<img src="https://f-droid.org/badge/get-it-on.png"
-     alt="Get it on F-Droid"
-     height="80">](https://f-droid.org/packages/cz.dvratil.fbeventsync/)
+Facebook has made it impossible for this application to work for new users, and I suspect it won't take long until
+it stops working for existing users as well. I've lost interest in playing this cat and mouse game where I spend lots
+of time trying to figure out yet another way to access user's events on Facebook just for Facebook to randomly change
+the code or the URL again (I know they don't do it because of this app, they have their working app so they don't have
+to care about changing they site as they need).
+
+Thus, this repository is archived, and the app has been unpublished from Google Play.
+
+It was my first Android app and although keeping up with Facebook changes was tough, it was overall fun and a great
+learning experience!
+
+I want to thank everyone who opened issues, created pull requests and submitted translations for the app. Thank you very much!
+
+/Dan
+
+---
+
+# Event Sync for Facebook
 
 Sync your Facebook Events into your Android calendar.
 
